@@ -9,7 +9,8 @@
     <title>EEG Display · Bootstrap v5.0</title>
 
     
-
+    <!-- IBRAIN javascript source -->
+    <script type="text/javascript" src="../static/index_source.js"></script>
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 
@@ -46,9 +47,10 @@
         <ul class="nav flex-column">
           <li class="nav-item">
             <!-- Code for selecting file from computer, action calls javascript function so that is TODO -->
-              <form action="">
-                <label for="eeg_file">Open File:</label><br>
+              <button class="btn btn-sm btn-outline-secondary" onclick="openEEGFILE();">Select File</button>
+              <form id="eeg_file_form" action="" style="display: none">
                 <input type="file" id="eeg_file" name="eeg_file"><br><br>
+                <input type="submit"/>
               </form>
           </li>
         </ul>
