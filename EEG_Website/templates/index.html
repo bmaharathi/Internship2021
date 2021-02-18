@@ -50,8 +50,10 @@
           <li class="nav-item">
 
               <button class="btn btn-sm btn-outline-secondary" onclick="openEEGFILE();">Select File</button>
+
               <form method = "POST" id="eeg_file_form" action="" style=" display: none" enctype="multipart/form-data">
                 <input type="file" id="eeg_file" name="eeg_file", accept=".rec, .edf"><br><br> <!-- 'eeg_file' to be called in flask-->
+
                 <input type="submit"/>
               </form>
           </li>
