@@ -1,3 +1,5 @@
+<!-- Authors: Elijah Rodriguez Beltran, Adi Dasgupta, Tarush Gupta !-->
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -46,12 +48,28 @@
       <div class="position-sticky pt-3">
         <ul class="nav flex-column">
           <li class="nav-item">
-            <!-- Code for selecting file from computer, action calls javascript function so that is TODO -->
+
               <button class="btn btn-sm btn-outline-secondary" onclick="openEEGFILE();">Select File</button>
-              <form id="eeg_file_form" action="" style="display: none">
-                <input type="file" id="eeg_file" name="eeg_file" , accept=".rec, .edf"><br><br>
+
+              <form method = "POST" id="eeg_file_form" action="" style=" display: none" enctype="multipart/form-data">
+                <input type="file" id="eeg_file" name="eeg_file", accept=".rec, .edf"><br><br> <!-- 'eeg_file' to be called in flask-->
+
                 <input type="submit"/>
+
               </form>
+            <!--Change this to look better and show only after file is uploaded is TODO -->
+            <button class="btn btn-sm btn-outline-info" onclick="dispElectrode()">Select Electrodes</button>
+            <div id="electrode_display"></div>
+            <script>
+              function dispElectrode() {
+                fetch('/electrode_send')
+                .then(response => response.json())
+                .then(json => {
+                  console.log(json);
+                  document.getElementById("electrode_display").innerHTML = JSON.stringify(json)
+    })
+              }
+            </script>
           </li>
         </ul>
       </div>

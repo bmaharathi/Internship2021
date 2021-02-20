@@ -3,3 +3,4 @@ function openEEGFILE() {
     fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
     console.log('File opened');
 }
+
