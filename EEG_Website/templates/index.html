@@ -55,7 +55,21 @@
                 <input type="file" id="eeg_file" name="eeg_file", accept=".rec, .edf"><br><br> <!-- 'eeg_file' to be called in flask-->
 
                 <input type="submit"/>
+
               </form>
+            <!--Change this to look better and show only after file is uploaded is TODO -->
+            <button class="btn btn-sm btn-outline-info" onclick="dispElectrode()">Select Electrodes</button>
+            <div id="electrode_display"></div>
+            <script>
+              function dispElectrode() {
+                fetch('/electrode_send')
+                .then(response => response.json())
+                .then(json => {
+                  console.log(json);
+                  document.getElementById("electrode_display").innerHTML = JSON.stringify(json)
+    })
+              }
+            </script>
           </li>
         </ul>
       </div>
