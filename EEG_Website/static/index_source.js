@@ -16,7 +16,30 @@ function openElectrodeSelect() {
     fetch('/electrode_send')
             .then(response => response.json())
             .then(json => {
-                electrodeForm.innerText = JSON.stringify(json)
-            })
+                console.log(JSON.stringify(json))
+
+                Object.keys(json.values).forEach( id=> {
+                    electrodeForm.appendChild(getElectrodeSelectElement(id,json.values[id]))
+                });
+                const submit = document.createElement('input');
+                submit.setAttribute('type', 'submit');
+                submit.setAttribute('onClick', 'openElectrodeSelect();')
+                electrodeForm.appendChild(submit);
+            });
 }
 
+function getElectrodeSelectElement(id, value) {
+    const elem = document.createElement('span');
+    const elemLabel = document.createElement('label');
+    elemLabel.textContent = value;
+    elemLabel.setAttribute('for', value )
+    const elemCheckBox = document.createElement('input');
+    elemCheckBox.setAttribute('type', 'checkbox');
+    elemCheckBox.setAttribute('value', id);
+    elemCheckBox.setAttribute('id', value);
+    elem.appendChild(elemCheckBox);
+    elem.appendChild(elemLabel);
+    elem.appendChild(document.createElement('br'));
+
+    return elem;
+}
