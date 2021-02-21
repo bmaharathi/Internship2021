@@ -37,6 +37,7 @@ function getElectrodeSelectElement(id, value) {
     elemCheckBox.setAttribute('type', 'checkbox');
     elemCheckBox.setAttribute('value', id);
     elemCheckBox.setAttribute('id', value);
+    elemCheckBox.setAttribute('name', value);
     elem.appendChild(elemCheckBox);
     elem.appendChild(elemLabel);
     elem.appendChild(document.createElement('br'));
