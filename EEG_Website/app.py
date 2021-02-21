@@ -6,8 +6,8 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def hello_world():
-    return render_template("index.html")
+def index():
+    return render_template('index.html')
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -18,7 +18,9 @@ def upload_file():
         filename = '%s' % eeg_file.filename
         if filename != '':
             eeg_file.save(eeg_file.filename)
-        return redirect(url_for('hello_world'))
+        else:
+            return redirect(url_for('index'))
+        return redirect(url_for('index', electrodes=True ))
     return render_template("index.html")
 
 
