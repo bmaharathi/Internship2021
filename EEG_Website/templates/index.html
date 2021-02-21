@@ -61,17 +61,12 @@
                                 <input onclick="openFileSelect();" type="submit"/>
                             </form>
                             <!-- SELECT ELECTRODE-->
+                            <label for="electrode_form">Select Electrodes</label>
                             <form method = "POST" id="electrode_form" action="" style="display: none" enctype="text/plain">
-                                <label for="electrode_form">Select Electrodes</label>
-                                <div class="form-group">
-                                    <div class="custom-control custom-checkbox">
-                                        <span>
-                                            <input type="checkbox" class="custom-control-input" id="customCheck1">
-                                            <label class="custom-control-label" for="customCheck1">Electrode Test</label>
-                                        </span>
-                                    </div>
-                                </div>
-                                <input onclick="openElectrodeSelect();" type="submit"/>
+                                <span>
+                                    <input type="checkbox" class="custom-control-input" id="customCheck1">
+                                    <label class="custom-control-label" for="customCheck1">Electrode Test</label>
+                                </span>
                             </form>
                         </li>
                     </ul>

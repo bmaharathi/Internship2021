@@ -36,7 +36,8 @@ def electrode_send():
     e_dict = {}
     for i in range(0, n_elec):
         e_dict[i] = hdl.getSignalLabel(i)
-    return jsonify(e_dict)
+    return jsonify(amount=len(e_dict.keys()),
+                   values=e_dict)
 
 
 if __name__ == '__main__':
