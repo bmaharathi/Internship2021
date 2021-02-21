@@ -52,7 +52,7 @@
                         <li class="nav-item">
                             <!-- SELECT EEG FILE -->
                             <button class="btn btn-sm btn-outline-secondary" onclick="openFileSelect();">Select File</button><br>
-                            <form method="POST" id="file_form" action="" style=" display: none" enctype="multipart/form-data">
+                            <form method="POST" id="file_form" action="/upload_eeg" style=" display: none" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="eeg_file" name="eeg_file" accept=".rec, .edf"><br> <!-- 'eeg_file' to be called in flask-->
