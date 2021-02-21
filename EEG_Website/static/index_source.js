@@ -13,7 +13,7 @@ function openFileSelect() {
 function openElectrodeSelect() {
     const electrodeForm = document.getElementById('electrode_form');
     electrodeForm.style.display = (electrodeForm.style.display === 'none') ? 'block' : 'none';
-    fetch('/electrode_send')
+    fetch('/electrode_get')
             .then(response => response.json())
             .then(json => {
                 console.log(JSON.stringify(json))

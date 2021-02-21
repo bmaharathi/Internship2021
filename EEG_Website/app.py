@@ -10,7 +10,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/upload_eeg', methods=['POST', 'GET'])
 def upload_file():
     if request.method == 'POST':
         eeg_file = request.files['eeg_file']
@@ -24,7 +24,7 @@ def upload_file():
     return render_template("index.html")
 
 
-@app.route('/electrode_send', methods=['GET'])
+@app.route('/electrode_get', methods=['GET'])
 def electrode_send():
     @after_this_request
     def add_header(response):
