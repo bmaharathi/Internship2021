@@ -34,19 +34,21 @@ def electrode_send():
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
-    return edf_manager.get_electrodes((session['filename']))
+    return edf_manager.get_electrodes(session)
 
 
 # POST SELECTED ELECTRODES
 @app.route('/electrode_select', methods=['POST'])
 def selecting_electrodes():
-    selected = []
-    for id in request.form.keys():
-        selected.append(id)
-    for id in request.args.items():
-        selected.append(id)
-    print( list(request.form.keys()),app.logger)
-    return jsonify(selected)
+    session['selected_id'] = list(request.form.values())
+    session['duration'] = 1000;
+    return redirect(url_for('index', display=True))
+
+
+# GET SELECTED DATA
+@app.route('/data', methods=['GET'])
+def get_relevant_data():
+    return edf_manager.get_electrode_date(session)
 
 
 if __name__ == '__main__':
