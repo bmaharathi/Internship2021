@@ -1,15 +1,46 @@
+/*
+ Function that runs on load, calling other functions as designated by url parameters
+ */
 function loadIndexPage() {
     const queryString = window.location.search;
     let urlParams = new URLSearchParams(queryString);
     if (urlParams.has("electrodes")) {
         openElectrodeSelect();
     }
+    if (urlParams.has("display")) {
+        displayData();
+    }
 }
+
+/*
+ Fetch selected electrode data
+ */
+function displayData() {
+    fetch('/data')
+            .then(response => response.json())
+            .then(json => {
+                console.log(JSON.stringify(json));
+                const context = document.getElementById('graph');
+                var chart = new Chart
+            });
+}
+
+
+
+/*
+ Toggle select file form
+ */
 function openFileSelect() {
     const fileForm = document.getElementById('file_form');
     fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
 }
 
+
+/*
+ Toggle select electrode form
+ Fetch electrode labels
+ Dynamically add check inputs to electrode form for each electrode
+ */
 function openElectrodeSelect() {
     const electrodeForm = document.getElementById('electrode_form');
     electrodeForm.style.display = (electrodeForm.style.display === 'none') ? 'block' : 'none';
@@ -28,6 +59,10 @@ function openElectrodeSelect() {
             });
 }
 
+
+/*
+ Create HTML element for electrode
+ */
 function getElectrodeSelectElement(id, value) {
     const elem = document.createElement('span');
     const elemLabel = document.createElement('label');
