@@ -19,10 +19,36 @@ function displayData() {
     fetch('/data')
             .then(response => response.json())
             .then(json => {
-                console.log(JSON.stringify(json));
+                console.log(Object.keys(json.data));
+                // Object.keys(json.data).forEach( id=> {
+                //     console.log(id);
+                // })
+                let data_maps = []
+                let id;
+
+                for (id in Object.keys(json.data)) {
+                    const name = Object.keys(json.data)[id];
+                    console.log(name);
+                    let data_map = {};
+                    data_map['label'] = name;
+                    data_map['data'] = json.data[name].map(Number);
+                    data_maps.push(data_map);
+                }
                 const context = document.getElementById('graph');
-                var chart = new Chart
-            });
+                let ctx = document.getElementById("graph").getContext('2d');
+                let myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: json.time,
+                        datasets: data_maps
+                        //     [{
+                        //     label: 'Time series',
+                        //     data: json.data['EEG E1-REF1     '].map(Number),
+                        // }]
+                    },
+                });
+            })
+
 }
 
 

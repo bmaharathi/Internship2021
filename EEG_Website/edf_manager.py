@@ -17,10 +17,11 @@ def get_electrodes(session):
 def get_electrode_date(session):
     hdl = EDFreader(session['filename'])
     N = int(session['duration'])
+
     data = {}
     # for each signal in edf file
-    for id in session['selected_id']:
-        signal = int(id)
+    for s_id in session['selected_id']:
+        signal = int(s_id)
         # buffer to hold samples for single signal
         buf = np.zeros(N)
         # read N samples for signal
@@ -29,4 +30,6 @@ def get_electrode_date(session):
         buf = buf * (-1)
         # Add data to list
         data[hdl.getSignalLabel(signal)] = list(buf)
-    return jsonify(data=data)
+
+    return jsonify(time=list(range(0, 1000)),
+                   data=data)
