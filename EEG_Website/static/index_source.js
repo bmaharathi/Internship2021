@@ -19,36 +19,36 @@ function displayData() {
     fetch('/data')
             .then(response => response.json())
             .then(json => {
-                console.log(Object.keys(json.data));
-                // Object.keys(json.data).forEach( id=> {
-                //     console.log(id);
-                // })
-                let data_maps = []
                 let id;
-
+                const graphs = document.getElementById('time_series');
                 for (id in Object.keys(json.data)) {
-                    const name = Object.keys(json.data)[id];
-                    console.log(name);
-                    let data_map = {};
-                    data_map['label'] = name;
-                    data_map['data'] = json.data[name].map(Number);
-                    data_maps.push(data_map);
+                    graphs.appendChild(createChartElementFrom(json, id));
                 }
-                const context = document.getElementById('graph');
-                let ctx = document.getElementById("graph").getContext('2d');
-                let myChart = new Chart(ctx, {
+            })
+
+}
+
+function createChartElementFrom(json, id) {
+    const name = Object.keys(json.data)[id];
+    console.log(name);
+    let data_map = {};
+    data_map['label'] = name;
+    data_map['data'] = json.data[name].map(Number);
+
+    let canvasElem = document.createElement('canvas');
+
+    canvasElem.setAttribute('height', '280');
+    canvasElem.setAttribute('width', '900');
+    canvasElem.setAttribute('id', [name,'chart'].join(''));
+
+    let chart = new Chart(canvasElem.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: json.time,
-                        datasets: data_maps
-                        //     [{
-                        //     label: 'Time series',
-                        //     data: json.data['EEG E1-REF1     '].map(Number),
-                        // }]
+                        datasets: [data_map]
                     },
                 });
-            })
-
+    return canvasElem;
 }
 
 
