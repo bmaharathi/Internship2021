@@ -19,10 +19,36 @@ function displayData() {
     fetch('/data')
             .then(response => response.json())
             .then(json => {
-                console.log(JSON.stringify(json));
-                const context = document.getElementById('graph');
-                var chart = new Chart
-            });
+                let id;
+                const graphs = document.getElementById('time_series');
+                for (id in Object.keys(json.data)) {
+                    graphs.appendChild(createChartElementFrom(json, id));
+                }
+            })
+
+}
+
+function createChartElementFrom(json, id) {
+    const name = Object.keys(json.data)[id];
+    console.log(name);
+    let data_map = {};
+    data_map['label'] = name;
+    data_map['data'] = json.data[name].map(Number);
+
+    let canvasElem = document.createElement('canvas');
+
+    canvasElem.setAttribute('height', '280');
+    canvasElem.setAttribute('width', '900');
+    canvasElem.setAttribute('id', [name,'chart'].join(''));
+
+    let chart = new Chart(canvasElem.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: json.time,
+                        datasets: [data_map]
+                    },
+                });
+    return canvasElem;
 }
 
 
