@@ -29,4 +29,8 @@ def get_electrode_date(session):
         buf = buf * (-1)
         # Add data to list
         data[hdl.getSignalLabel(signal)] = list(buf)
+<<<<<<< HEAD
     return jsonify(data=data)
+=======
+    return jsonify(data=data)
+>>>>>>> origin/dev1

@@ -1,39 +1,54 @@
+from flask import Flask, render_template, redirect, url_for, request, jsonify, after_this_request, session
+import edf_manager
 
-from flask import Flask, render_template, redirect, url_for, request, jsonify, after_this_request
-from edfreader import EDFreader
-
-filename = '' #reusable filename variable
+filename = ''  # reusable filename variable
 app = Flask(__name__)
+app.config['SECRET_KEY'] = "CHANGE BEFORE DEPLOYMENT!!!!!"
+
+
+# HOME PAGE: NO FILE TO DISPLAY
 @app.route('/')
-def hello_world():
-   return render_template("index.html")
+def index():
+    return render_template('index.html')
 
 
-
-@app.route('/', methods=['POST', 'GET'])
+# POST EEG FILE
+@app.route('/upload_eeg', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
         eeg_file = request.files['eeg_file']
-        global filename
-        filename = '%s'%eeg_file.filename
-        if filename != '':
+        if eeg_file.filename != '':
             eeg_file.save(eeg_file.filename)
-        return redirect(url_for('hello_world'))
-    return render_template("index.html")
+        else:
+            return redirect(url_for('index'))
 
-@app.route('/electrode_send', methods=['GET'])
+        session['filename'] = eeg_file.filename
+        return redirect(url_for('index', electrodes=True))
+
+
+# GET ELECTRODES TO CHOOSE FROM
+@app.route('/electrode_get', methods=['GET'])
 def electrode_send():
     @after_this_request
     def add_header(response):
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
-    hdl = EDFreader(filename)
-    n_elec = hdl.getNumSignals()
-    e_dict = {}
-    for i in range(0,n_elec):
-        e_dict[i] = hdl.getSignalLabel(i)
-    return jsonify(e_dict)
+    return edf_manager.get_electrodes(session)
+
+
+# POST SELECTED ELECTRODES
+@app.route('/electrode_select', methods=['POST'])
+def selecting_electrodes():
+    session['selected_id'] = list(request.form.values())
+    session['duration'] = 1000;
+    return redirect(url_for('index', display=True))
+
+
+# GET SELECTED DATA
+@app.route('/data', methods=['GET'])
+def get_relevant_data():
+    return edf_manager.get_electrode_date(session)
 
 
 if __name__ == '__main__':
