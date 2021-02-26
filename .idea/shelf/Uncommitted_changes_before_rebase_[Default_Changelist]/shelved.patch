@@ -1,0 +1,38 @@
+Index: EEG_Website/edf_manager.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from edfreader import EDFreader\nfrom flask import jsonify\nimport numpy as np\n\n\n# PARSE AVAILABLE ELECTRODES AND RETURN DICTIONARY => INDEX : ELECTRODE NAME\ndef get_electrodes(session):\n    hdl = EDFreader(session['filename'])\n    n_elec = hdl.getNumSignals()\n    e_dict = {}\n    for i in range(0, n_elec):\n        e_dict[i] = hdl.getSignalLabel(i)\n    return jsonify(amount=len(e_dict.keys()),\n                   values=e_dict)\n\n\ndef get_electrode_date(session):\n    hdl = EDFreader(session['filename'])\n    N = int(session['duration'])\n\n    data = {}\n    # for each signal in edf file\n    for s_id in session['selected_id']:\n        signal = int(s_id)\n        # buffer to hold samples for single signal\n        buf = np.zeros(N)\n        # read N samples for signal\n        hdl.readSamples(signal, buf, N)\n        # invert data\n        buf = buf * (-1)\n        # Add data to list\n        data[hdl.getSignalLabel(signal)] = list(buf)\n\n    return jsonify(time=list(range(0, 1000)),\n                   data=data)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/EEG_Website/edf_manager.py b/EEG_Website/edf_manager.py
+--- a/EEG_Website/edf_manager.py	(revision 4adf8277d153cee522e25809b570ff9815d65a1c)
++++ b/EEG_Website/edf_manager.py	(date 1614369601655)
+@@ -14,7 +14,7 @@
+                    values=e_dict)
+ 
+ 
+-def get_electrode_date(session):
++def get_electrode_date(session): #date is data
+     hdl = EDFreader(session['filename'])
+     N = int(session['duration'])
+ 
+Index: EEG_Website/app.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from flask import Flask, render_template, redirect, url_for, request, jsonify, after_this_request, session\nimport edf_manager\n\nfilename = ''  # reusable filename variable\napp = Flask(__name__)\napp.config['SECRET_KEY'] = \"CHANGE BEFORE DEPLOYMENT!!!!!\"\n\n\n# HOME PAGE: NO FILE TO DISPLAY\n@app.route('/')\ndef index():\n    return render_template('index.html')\n\n\n# POST EEG FILE\n@app.route('/upload_eeg', methods=['POST'])\ndef upload_file():\n    if request.method == 'POST':\n        eeg_file = request.files['eeg_file']\n        if eeg_file.filename != '':\n            eeg_file.save(eeg_file.filename)\n        else:\n            return redirect(url_for('index'))\n\n        session['filename'] = eeg_file.filename\n        return redirect(url_for('index', electrodes=True))\n\n\n# GET ELECTRODES TO CHOOSE FROM\n@app.route('/electrode_get', methods=['GET'])\ndef electrode_send():\n    @after_this_request\n    def add_header(response):\n        response.headers.add('Access-Control-Allow-Origin', '*')\n        return response\n\n    return edf_manager.get_electrodes(session)\n\n\n# POST SELECTED ELECTRODES\n@app.route('/electrode_select', methods=['POST'])\ndef selecting_electrodes():\n    session['selected_id'] = list(request.form.values())\n    session['duration'] = 1000;\n    return redirect(url_for('index', display=True))\n\n\n# GET SELECTED DATA\n@app.route('/data', methods=['GET'])\ndef get_relevant_data():\n    return edf_manager.get_electrode_date(session)\n\n\nif __name__ == '__main__':\n    app.run()\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/EEG_Website/app.py b/EEG_Website/app.py
+--- a/EEG_Website/app.py	(revision 4adf8277d153cee522e25809b570ff9815d65a1c)
++++ b/EEG_Website/app.py	(date 1614369906439)
+@@ -41,7 +41,7 @@
+ @app.route('/electrode_select', methods=['POST'])
+ def selecting_electrodes():
+     session['selected_id'] = list(request.form.values())
+-    session['duration'] = 1000;
++    session['duration'] = 1000; #TODO: add user funtionality to change this value
+     return redirect(url_for('index', display=True))
+ 
+ 
