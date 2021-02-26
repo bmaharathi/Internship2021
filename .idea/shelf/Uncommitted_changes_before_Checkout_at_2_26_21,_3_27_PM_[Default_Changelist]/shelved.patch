@@ -1,0 +1,19 @@
+Index: EEG_Website/app.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from flask import Flask, render_template, redirect, url_for, request, jsonify, after_this_request, session\nimport edf_manager\n\nfilename = ''  # reusable filename variable\napp = Flask(__name__)\napp.config['SECRET_KEY'] = \"CHANGE BEFORE DEPLOYMENT!!!!!\"\n\n\n# HOME PAGE: NO FILE TO DISPLAY\n@app.route('/')\ndef index():\n    return render_template('index.html')\n\n\n# POST EEG FILE\n@app.route('/upload_eeg', methods=['POST'])\ndef upload_file():\n    if request.method == 'POST':\n        eeg_file = request.files['eeg_file']\n        if eeg_file.filename != '':\n            eeg_file.save(eeg_file.filename)\n        else:\n            return redirect(url_for('index'))\n\n        session['filename'] = eeg_file.filename\n        return redirect(url_for('index', electrodes=True))\n\n\n# GET ELECTRODES TO CHOOSE FROM\n@app.route('/electrode_get', methods=['GET'])\ndef electrode_send():\n    @after_this_request\n    def add_header(response):\n        response.headers.add('Access-Control-Allow-Origin', '*')\n        return response\n\n    return edf_manager.get_electrodes(session)\n\n\n# POST SELECTED ELECTRODES\n@app.route('/electrode_select', methods=['POST'])\ndef selecting_electrodes():\n    session['selected_id'] = list(request.form.values())\n    session['duration'] = 1000;\n    return redirect(url_for('index', display=True))\n\n\n# GET SELECTED DATA\n@app.route('/data', methods=['GET'])\ndef get_relevant_data():\n    return edf_manager.get_electrode_date(session)\n\n\nif __name__ == '__main__':\n    app.run()\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/EEG_Website/app.py b/EEG_Website/app.py
+--- a/EEG_Website/app.py	(revision 8ab4fb21ee4306bb191387b88cf5d24ac184eb09)
++++ b/EEG_Website/app.py	(date 1614374407836)
+@@ -41,7 +41,7 @@
+ @app.route('/electrode_select', methods=['POST'])
+ def selecting_electrodes():
+     session['selected_id'] = list(request.form.values())
+-    session['duration'] = 1000;
++    session['duration'] = 1000
+     return redirect(url_for('index', display=True))
+ 
+ 
