@@ -59,6 +59,7 @@ function createChartElementFrom(json, id) {
 function openFileSelect() {
     const fileForm = document.getElementById('file_form');
     fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
+    console.log("File opened")
 }
 
 
