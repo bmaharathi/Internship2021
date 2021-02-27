@@ -5,16 +5,17 @@ function loadIndexPage() {
     const queryString = window.location.search;
     let urlParams = new URLSearchParams(queryString);
     if (urlParams.has("electrodes")) {
-        select();
+
         openElectrodeSelect();
 
     }
     if (urlParams.has("display")) {
         displayData();
+        openElectrodeSelect();
+        saveElectrodeSelect();
 
     }
 }
-
 /*
  Fetch selected electrode data
  */
@@ -27,8 +28,8 @@ function displayData() {
                 for (id in Object.keys(json.data)) {
                     graphs.appendChild(createChartElementFrom(json, id));
                 }
-            }
-            openElectrodeSelect();)
+
+            })
 }
 
 function createChartElementFrom(json, id) {
@@ -67,7 +68,7 @@ function openFileSelect() {
 }
 function select() {
     document.getElementById("elec_button").style.display = 'block';
-    openElectrodeSelect();
+    //openElectrodeSelect();
 }
 
 /*
@@ -75,6 +76,9 @@ function select() {
  Fetch electrode labels
  Dynamically add check inputs to electrode form for each electrode
  */
+
+
+
 function openElectrodeSelect() {
     const electrodeForm = document.getElementById('electrode_form');
     electrodeForm.style.display = (electrodeForm.style.display === 'none') ? 'block' : 'none';
@@ -94,7 +98,21 @@ function openElectrodeSelect() {
             });
 }
 
+//save the state of the checkboxes
+function saveElectrodeSelect() {
+    fetch('/data')
+        .then(response => response.json())
+        .then(json=> {
+            var val;
 
+            for (val in Object.keys(json.data)) {
+
+                let str = Object.keys(json.data)[val].trim();
+                document.getElementById(str).checked = true;
+                }
+        })
+
+}
 /*
  Create HTML element for electrode
  */
@@ -106,7 +124,7 @@ function getElectrodeSelectElement(id, value) {
     const elemCheckBox = document.createElement('input');
     elemCheckBox.setAttribute('type', 'checkbox');
     elemCheckBox.setAttribute('value', id);
-    elemCheckBox.setAttribute('id', value);
+    elemCheckBox.setAttribute('id', value.trim());
     elemCheckBox.setAttribute('name', value);
     elem.appendChild(elemCheckBox);
     elem.appendChild(elemLabel);
@@ -114,4 +132,5 @@ function getElectrodeSelectElement(id, value) {
 
     return elem;
 }
+
 
