@@ -42,6 +42,7 @@ def electrode_send():
 def selecting_electrodes():
     session['selected_id'] = list(request.form.values())
     session['duration'] = 1000;
+    electrode_send()
     return redirect(url_for('index', display=True))
 
 

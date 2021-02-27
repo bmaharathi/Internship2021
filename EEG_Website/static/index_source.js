@@ -5,10 +5,13 @@ function loadIndexPage() {
     const queryString = window.location.search;
     let urlParams = new URLSearchParams(queryString);
     if (urlParams.has("electrodes")) {
+        select();
         openElectrodeSelect();
+
     }
     if (urlParams.has("display")) {
         displayData();
+
     }
 }
 
@@ -24,8 +27,8 @@ function displayData() {
                 for (id in Object.keys(json.data)) {
                     graphs.appendChild(createChartElementFrom(json, id));
                 }
-            })
-
+            }
+            openElectrodeSelect();)
 }
 
 function createChartElementFrom(json, id) {
@@ -59,9 +62,13 @@ function createChartElementFrom(json, id) {
 function openFileSelect() {
     const fileForm = document.getElementById('file_form');
     fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
-    console.log("File opened")
-}
+    //console.log("File opened")
 
+}
+function select() {
+    document.getElementById("elec_button").style.display = 'block';
+    openElectrodeSelect();
+}
 
 /*
  Toggle select electrode form
@@ -82,6 +89,7 @@ function openElectrodeSelect() {
                 const submit = document.createElement('input');
                 submit.setAttribute('type', 'submit');
                 submit.setAttribute('onClick', 'openElectrodeSelect();')
+
                 electrodeForm.appendChild(submit);
             });
 }
@@ -106,3 +114,4 @@ function getElectrodeSelectElement(id, value) {
 
     return elem;
 }
+

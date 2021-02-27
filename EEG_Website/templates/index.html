@@ -34,7 +34,6 @@
     </style>
 </head>
 <body onLoad = "loadIndexPage();">
-    
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
         <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">IBRAIN</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,16 +52,24 @@
                         <li class="nav-item">
                             <!-- SELECT EEG FILE -->
                             <button class="btn btn-sm btn-outline-secondary" onclick="openFileSelect();">Select File</button><br>
+
                             <form method="POST" id="file_form" action="/upload_eeg" style=" display: none" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="eeg_file" name="eeg_file" accept=".rec, .edf"><br> <!-- 'eeg_file' to be called in flask-->
                                     </div>
                                 </div>
-                                <input onclick="openFileSelect();" type="submit"/>
+                                <script>
+                                function select() {
+                                console.log("running select");
+                                document.getElementById("elec_button").style.display = 'block';
+                                }
+                            </script>
+                                <input onclick="openFileSelect();select();" type="submit"/>
                             </form>
                             <!-- SELECT ELECTRODE-->
-                            <label for="electrode_form">Select Electrodes</label><!-- Make button that triggers the electrode list-->
+                            <button class = "btn btn-sm btn-outline-secondary" id="elec_button" style="display: none" > Select Electrodes </button>
+                            <label for="electrode_form">  </label>
                             <form method = "POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data">
                             </form>
                         </li>
