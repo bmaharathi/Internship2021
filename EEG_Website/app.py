@@ -12,6 +12,19 @@ def index():
     return render_template('index.html')
 
 
+# POST SELECTED DURATION
+@app.route('/upload_duration', methods=['POST'])
+def select_duration():
+    session['duration'] = request.form['duration']
+    print(session['duration'])
+    if session.get('filename') is None:
+        return redirect(url_for('index'))
+    elif session.get('selected_id') is None:
+        return redirect(url_for('index', electrodes=True))
+    else:
+        return redirect(url_for('index', display=True))
+
+
 # POST EEG FILE
 @app.route('/upload_eeg', methods=['POST'])
 def upload_file():
@@ -41,7 +54,6 @@ def electrode_send():
 @app.route('/electrode_select', methods=['POST'])
 def selecting_electrodes():
     session['selected_id'] = list(request.form.values())
-    session['duration'] = 1000;
     return redirect(url_for('index', display=True))
 
 
