@@ -61,6 +61,14 @@ function openFileSelect() {
     fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
 }
 
+/*
+ Toggle duration select
+ */
+function openDurationSelect() {
+    const fileForm = document.getElementById('duration_form');
+    fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
+}
+
 
 /*
  Toggle select electrode form
