@@ -11,6 +11,7 @@ function loadIndexPage() {
     }
     if (urlParams.has("display")) {
         displayData();
+        select();
         openElectrodeSelect();
         saveElectrodeSelect();
 

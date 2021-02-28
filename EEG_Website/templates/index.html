@@ -59,12 +59,6 @@
                                         <input type="file" class="custom-file-input" id="eeg_file" name="eeg_file" accept=".rec, .edf"><br> <!-- 'eeg_file' to be called in flask-->
                                     </div>
                                 </div>
-                                <script>
-                                function select() {
-                                console.log("running select");
-                                document.getElementById("elec_button").style.display = 'block';
-                                }
-                            </script>
                                 <input onclick="openFileSelect();select();" type="submit"/>
                             </form>
                             <!-- SELECT ELECTRODE-->
