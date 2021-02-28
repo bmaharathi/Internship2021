@@ -1,5 +1,5 @@
 from edfreader import EDFreader
-from flask import jsonify
+from flask import jsonify, session
 import numpy as np
 
 
@@ -16,7 +16,13 @@ def get_electrodes(session):
 
 def get_electrode_date(session):
     hdl = EDFreader(session['filename'])
-    N = int(session['duration'])
+    # Convert seconds to milliseconds
+
+    if not session.get('duration') is None:
+        N = int(session['duration']) * 1000
+    else:
+        N = 10 * 1000
+    print(N)
 
     data = {}
     # for each signal in edf file
@@ -31,5 +37,5 @@ def get_electrode_date(session):
         # Add data to list
         data[hdl.getSignalLabel(signal)] = list(buf)
 
-    return jsonify(time=list(range(0, 1000)),
+    return jsonify(time=list(range(0, N)),
                    data=data)
