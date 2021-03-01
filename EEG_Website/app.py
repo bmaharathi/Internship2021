@@ -15,8 +15,9 @@ def index():
 # POST SELECTED DURATION
 @app.route('/upload_duration', methods=['POST'])
 def select_duration():
+    # Set selected graph duration for session
     session['duration'] = request.form['duration']
-    print(session['duration'])
+    # Redirect user to current stage in flow: empty index; electrode select; or display graph
     if session.get('filename') is None:
         return redirect(url_for('index'))
     elif session.get('selected_id') is None:
@@ -28,15 +29,16 @@ def select_duration():
 # POST EEG FILE
 @app.route('/upload_eeg', methods=['POST'])
 def upload_file():
-    if request.method == 'POST':
-        eeg_file = request.files['eeg_file']
-        if eeg_file.filename != '':
-            eeg_file.save(eeg_file.filename)
-        else:
-            return redirect(url_for('index'))
-
-        session['filename'] = eeg_file.filename
-        return redirect(url_for('index', electrodes=True))
+    # Save file to server directory
+    eeg_file = request.files['eeg_file']
+    if eeg_file.filename != '':
+        eeg_file.save(eeg_file.filename)
+    else:
+        return redirect(url_for('index'))
+    # Save file path for session
+    session['filename'] = eeg_file.filename
+    # Redirect to electrode select
+    return redirect(url_for('index', electrodes=True))
 
 
 # GET ELECTRODES TO CHOOSE FROM
@@ -47,20 +49,33 @@ def electrode_send():
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
+    # Return edf electrodes by name and index in JSON
     return edf_manager.get_electrodes(session)
 
 
 # POST SELECTED ELECTRODES
 @app.route('/electrode_select', methods=['POST'])
 def selecting_electrodes():
+    # Save selected ids for session
     session['selected_id'] = list(request.form.values())
+    # Redirect user to index page, with url parameter to trigger graph displays
     return redirect(url_for('index', display=True))
 
 
 # GET SELECTED DATA
 @app.route('/data', methods=['GET'])
 def get_relevant_data():
-    return edf_manager.get_electrode_date(session)
+    # If duration not set -> set to 1 (second) by default
+    if session.get('duration') is None:
+        session['duration'] = '1'
+    # If offset not set -> set to 0 by default
+    if session.get('offset') is None:
+        session['offset'] = '0'
+    # Else calculate new offset utilizing url argument delta converted to milliseconds
+    else:
+        session['offset'] = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
+    data = edf_manager.get_electrode_date(session)
+    return data
 
 
 if __name__ == '__main__':
