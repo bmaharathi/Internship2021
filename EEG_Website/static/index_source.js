@@ -8,19 +8,25 @@ function loadIndexPage() {
         openElectrodeSelect();
     }
     if (urlParams.has("display")) {
-        displayData();
+        displayData(0);
     }
 }
 
 /*
  Fetch selected electrode data
  */
-function displayData() {
-    fetch('/data')
+function displayData(delta=0) {
+    const query = '/data?delta=' + delta.toString();
+    console.log(query);
+
+    fetch(query)
             .then(response => response.json())
             .then(json => {
                 let id;
                 const graphs = document.getElementById('time_series');
+                while (graphs.firstChild) {
+                    graphs.removeChild(graphs.firstChild);
+                }
                 for (id in Object.keys(json.data)) {
                     graphs.appendChild(createChartElementFrom(json, id));
                 }
