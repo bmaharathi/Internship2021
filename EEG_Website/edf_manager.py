@@ -21,6 +21,9 @@ def get_electrode_date(session):
     N = int(session['duration']) * 1000
 
     data = {}
+
+    if len(session['selected_id']) == 0:
+        session['selected_id'] = list(map(str, range(1, hdl.getNumSignals())))
     # for each signal in edf file
     for s_id in session['selected_id']:
         signal = int(s_id)
