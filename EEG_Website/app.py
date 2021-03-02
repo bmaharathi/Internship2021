@@ -4,6 +4,8 @@ import edf_manager
 filename = ''  # reusable filename variable
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "CHANGE BEFORE DEPLOYMENT!!!!!"
+duration_default = '1'
+offset_default = '0'
 
 
 # HOME PAGE: NO FILE TO DISPLAY
@@ -37,6 +39,9 @@ def upload_file():
         return redirect(url_for('index'))
     # Save file path for session
     session['filename'] = eeg_file.filename
+    # Set up session defaults for file
+    session['duration'] = duration_default
+    session['offset'] = offset_default
     # Redirect to electrode select
     return redirect(url_for('index', electrodes=True))
 
@@ -65,21 +70,13 @@ def selecting_electrodes():
 # GET SELECTED DATA
 @app.route('/data', methods=['GET'])
 def get_relevant_data():
-    # If duration not set -> set to 1 (second) by default
-    if session.get('duration') is None:
-        session['duration'] = '1'
-    # If offset not set -> set to 0 by default
-    if session.get('offset') is None:
-        session['offset'] = '0'
-    # Else calculate new offset utilizing url argument delta converted to milliseconds
+    # Calculate offset according to delta argumet, offset and current offset
+    new_offset = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
+    if new_offset > 0:
+        session['offset'] = new_offset
     else:
-        new_offset = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
-        if new_offset > 0:
-            session['offset'] = new_offset
-        else:
-            session['offset'] = 0
-    data = edf_manager.get_electrode_date(session)
-    return data
+        session['offset'] = offset_default
+    return edf_manager.get_electrode_date(session)
 
 
 if __name__ == '__main__':
