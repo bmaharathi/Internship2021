@@ -14,6 +14,14 @@ def index():
     return render_template('index.html')
 
 
+# DELETE ALL SESSION ITEMS
+@app.route('/delete', methods=['POST'])
+def delete_session():
+    while len(session):
+        session.popitem()
+    return redirect(url_for('index'))
+
+
 # POST SELECTED DURATION
 @app.route('/upload_duration', methods=['POST'])
 def select_duration():
