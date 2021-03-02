@@ -88,7 +88,15 @@ function openElectrodeSelect() {
             .then(response => response.json())
             .then(json => {
                 console.log(JSON.stringify(json))
-
+                //Delete all checkboxes except for label in form
+                while (electrodeForm.firstChild) {
+                    electrodeForm.removeChild(electrodeForm.firstChild);
+                }
+                const label = document.createElement('label');
+                label.innerText = 'Select Electrodes';
+                label.setAttribute('for', 'electrode_form');
+                electrodeForm.appendChild(label);
+                electrodeForm.appendChild(document.createElement('br'));
                 Object.keys(json.values).forEach( id=> {
                     electrodeForm.appendChild(getElectrodeSelectElement(id,json.values[id]))
                 });
