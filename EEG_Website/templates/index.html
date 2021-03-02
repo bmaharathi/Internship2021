@@ -64,7 +64,11 @@
                             <!-- SELECT ELECTRODE-->
                             <button class="btn btn-sm btn-outline-secondary" onclick="openElectrodeSelect();">Select Electrodes</button><br>
                             <form method = "POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data">
-                            <label for="electrode_form">Select Electrodes</label><br>
+                            </form>
+                            <!-- Close EEG FILE -->
+                            <form method = "POST" id="close_file" action="/delete" enctype="multipart/form-data">
+                                <input class="btn btn-sm btn-outline-secondary" type="submit" value="Close file">
+                                <br>
                             </form>
                         </li>
                     </ul>
