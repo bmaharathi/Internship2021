@@ -17,6 +17,7 @@ function loadIndexPage() {
  */
 function displayData() {
     fetch('/data')
+
             .then(response => response.json())
             .then(json => {
                 let id;
@@ -28,7 +29,25 @@ function displayData() {
 
 }
 
+
+
+
+
 function createChartElementFrom(json, id) {
+
+//       .chartWrapper {/* w w w. j a v  a2 s.co  m*/
+//               position: relative;
+//            }
+//            .chartWrapper > canvas {
+//               position: absolute;
+//               left: 0;
+//               top: 0;
+//               pointer-events:none;
+//            }
+//            .chartAreaWrapper {
+//               width: 600px;
+//               overflow-x: scroll;
+//            }
     const name = Object.keys(json.data)[id];
     console.log(name);
     let data_map = {};
