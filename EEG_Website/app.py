@@ -73,7 +73,11 @@ def get_relevant_data():
         session['offset'] = '0'
     # Else calculate new offset utilizing url argument delta converted to milliseconds
     else:
-        session['offset'] = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
+        new_offset = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
+        if new_offset > 0:
+            session['offset'] = new_offset
+        else:
+            session['offset'] = 0
     data = edf_manager.get_electrode_date(session)
     return data
 
