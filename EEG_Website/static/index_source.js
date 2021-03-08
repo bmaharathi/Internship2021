@@ -27,14 +27,15 @@ function displayData(delta=0) {
                 while (graphs.firstChild) {
                     graphs.removeChild(graphs.firstChild);
                 }
+                const graph_height = 560 / Object.keys(json.data).length;
                 for (id in Object.keys(json.data)) {
-                    graphs.appendChild(createChartElementFrom(json, id));
+                    graphs.appendChild(createChartElementFrom(json, id, graph_height));
                 }
             })
 
 }
 
-function createChartElementFrom(json, id) {
+function createChartElementFrom(json, id, height) {
     const name = Object.keys(json.data)[id];
     console.log(name);
     let data_map = {};
@@ -42,12 +43,12 @@ function createChartElementFrom(json, id) {
     data_map['data'] = json.data[name].map(Number);
     data_map['pointRadius'] = 0;
     data_map['fill'] = false;
-    // data_map['yAxisID'] = name;
+
 
 
     let canvasElem = document.createElement('canvas');
 
-    canvasElem.setAttribute('height', '280');
+    canvasElem.setAttribute('height', height.toString());
     canvasElem.setAttribute('width', '900');
     canvasElem.setAttribute('id', [name,'chart'].join(''));
 
@@ -55,20 +56,32 @@ function createChartElementFrom(json, id) {
                     type: 'line',
                     data: {
                         labels: json.time,
-                        datasets: [data_map]
+                        datasets: [data_map],
+                        position: 'left'
                     },
                     options: {
                             scales: {
                                 xAxes: [{
+                                    display: false,
                                     gridLines: {
                                         drawOnChartArea: false
                                     }
                                 }],
                                 yAxes: [{
+                                     ticks: {
+                                max: 200,
+                                min: -200,
+                                stepSize: 200,
+                                maxTicksLimit: 3
+                            },
                                     gridLines: {
                                         drawOnChartArea: false
                                     }
                                 }]
+                            },
+                            legend: {
+                                display: true,
+                                position: 'left',
                             }
                         }
                 });
