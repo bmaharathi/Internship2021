@@ -1,6 +1,7 @@
 from edfreader import EDFreader
-from flask import jsonify, session
+from flask import jsonify
 import numpy as np
+from datetime import datetime, timedelta
 
 
 # PARSE AVAILABLE ELECTRODES AND RETURN DICTIONARY => INDEX : ELECTRODE NAME
@@ -24,6 +25,7 @@ def get_electrode_date(session):
 
     if len(session['selected_id']) == 0:
         session['selected_id'] = list(map(str, range(1, hdl.getNumSignals())))
+    print(hdl.getStartDateTime())
     # for each signal in edf file
     for s_id in session['selected_id']:
         signal = int(s_id)
@@ -37,9 +39,13 @@ def get_electrode_date(session):
         buf = buf * (-1)
         # Add data to list
         data[hdl.getSignalLabel(signal)] = list(buf)
+    startTime = hdl.getStartDateTime()
+    times = []
+    for i in range(offset, offset + N):
+        times.append(str((startTime + timedelta(milliseconds=i)).time())[:-3])
 
     # Increment offset by samples read
 
-    return jsonify(time=list(range(offset, offset + N)),
+    return jsonify(time=times,
                    data=data,
                    offset=(offset + N))
