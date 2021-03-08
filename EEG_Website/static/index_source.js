@@ -28,14 +28,17 @@ function displayData(delta=0) {
                     graphs.removeChild(graphs.firstChild);
                 }
                 const graph_height = 560 / Object.keys(json.data).length;
+                let count = 1;
+                const total = Object.keys(json.data).length;
                 for (id in Object.keys(json.data)) {
-                    graphs.appendChild(createChartElementFrom(json, id, graph_height));
+                    graphs.appendChild(createChartElementFrom(json, id, count, total, graph_height));
+                    count++;
                 }
             })
 
 }
 
-function createChartElementFrom(json, id, height) {
+function createChartElementFrom(json, id, count, total, height) {
     const name = Object.keys(json.data)[id];
     console.log(name);
     let data_map = {};
@@ -43,6 +46,9 @@ function createChartElementFrom(json, id, height) {
     data_map['data'] = json.data[name].map(Number);
     data_map['pointRadius'] = 0;
     data_map['fill'] = false;
+    if (count % 2 === 1) {
+        data_map['borderColor'] = '#880808';
+    }
 
 
 
@@ -57,12 +63,11 @@ function createChartElementFrom(json, id, height) {
                     data: {
                         labels: json.time,
                         datasets: [data_map],
-                        position: 'left'
                     },
                     options: {
                             scales: {
                                 xAxes: [{
-                                    display: false,
+                                    display: (count === total),
                                     gridLines: {
                                         drawOnChartArea: false
                                     }
@@ -82,6 +87,7 @@ function createChartElementFrom(json, id, height) {
                             legend: {
                                 display: true,
                                 position: 'left',
+                                align: 'end'
                             }
                         }
                 });
