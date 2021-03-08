@@ -10,6 +10,12 @@ function loadIndexPage() {
     if (urlParams.has("display")) {
         displayData(0);
     }
+    if (urlParams.has("filename")) {
+        const title = document.createElement('h3')
+        title.innerText = urlParams.get('filename');
+         document.getElementById('title').appendChild(title);
+
+    }
     document.getElementById('body').addEventListener('keydown', function(event) {
         const key = event.code;
         if (key === "ArrowLeft") {
@@ -97,7 +103,8 @@ function createChartElementFrom(json, id, count, total, height) {
                             legend: {
                                 display: true,
                                 position: 'left',
-                                align: 'end'
+                                align: 'start'
+
                             }
                         }
                 });
@@ -139,11 +146,6 @@ function openElectrodeSelect() {
                 while (electrodeForm.firstChild) {
                     electrodeForm.removeChild(electrodeForm.firstChild);
                 }
-                const label = document.createElement('label');
-                label.innerText = 'Select Electrodes';
-                label.setAttribute('for', 'electrode_form');
-                electrodeForm.appendChild(label);
-                electrodeForm.appendChild(document.createElement('br'));
                 Object.keys(json.values).forEach( id=> {
                     electrodeForm.appendChild(getElectrodeSelectElement(id,json.values[id]))
                 });
@@ -151,6 +153,7 @@ function openElectrodeSelect() {
                 submit.setAttribute('type', 'submit');
                 submit.setAttribute('onClick', 'openElectrodeSelect();')
                 electrodeForm.appendChild(submit);
+                electrodeForm.appendChild(document.createElement('br'));
             });
 }
 
