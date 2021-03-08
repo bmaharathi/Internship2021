@@ -10,6 +10,16 @@ function loadIndexPage() {
     if (urlParams.has("display")) {
         displayData(0);
     }
+    document.getElementById('body').addEventListener('keydown', function(event) {
+        const key = event.code;
+        if (key === "ArrowLeft") {
+            displayData(-1);
+        }
+        else if (key === "ArrowRight") {
+            displayData(1);
+        }
+    } );
+
 }
 
 /*
