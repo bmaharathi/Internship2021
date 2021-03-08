@@ -11,7 +11,10 @@ offset_default = '0'
 # HOME PAGE: NO FILE TO DISPLAY
 @app.route('/')
 def index():
-    return render_template('index.html')
+    if session.get('filename') is None:
+        return render_template('index.html')
+    else:
+        return render_template('index.html', filename=session['filename'])
 
 
 # DELETE ALL SESSION ITEMS
@@ -31,9 +34,9 @@ def select_duration():
     if session.get('filename') is None:
         return redirect(url_for('index'))
     elif session.get('selected_id') is None:
-        return redirect(url_for('index', electrodes=True))
+        return redirect(url_for('index', electrodes=True, filename=session['filename']))
     else:
-        return redirect(url_for('index', display=True))
+        return redirect(url_for('index', display=True, filename=session['filename']))
 
 
 # POST EEG FILE
@@ -51,7 +54,7 @@ def upload_file():
     session['duration'] = duration_default
     session['offset'] = offset_default
     # Redirect to electrode select
-    return redirect(url_for('index', electrodes=True))
+    return redirect(url_for('index', electrodes=True, filename=session['filename']))
 
 
 # GET ELECTRODES TO CHOOSE FROM
@@ -72,7 +75,7 @@ def selecting_electrodes():
     # Save selected ids for session
     session['selected_id'] = list(request.form.values())
     # Redirect user to index page, with url parameter to trigger graph displays
-    return redirect(url_for('index', display=True))
+    return redirect(url_for('index', display=True, filename=session['filename']))
 
 
 # GET SELECTED DATA
