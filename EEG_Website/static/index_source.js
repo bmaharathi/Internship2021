@@ -40,6 +40,10 @@ function createChartElementFrom(json, id) {
     let data_map = {};
     data_map['label'] = name;
     data_map['data'] = json.data[name].map(Number);
+    data_map['pointRadius'] = 0;
+    data_map['fill'] = false;
+    // data_map['yAxisID'] = name;
+
 
     let canvasElem = document.createElement('canvas');
 
@@ -53,6 +57,20 @@ function createChartElementFrom(json, id) {
                         labels: json.time,
                         datasets: [data_map]
                     },
+                    options: {
+                            scales: {
+                                xAxes: [{
+                                    gridLines: {
+                                        drawOnChartArea: false
+                                    }
+                                }],
+                                yAxes: [{
+                                    gridLines: {
+                                        drawOnChartArea: false
+                                    }
+                                }]
+                            }
+                        }
                 });
     return canvasElem;
 }
