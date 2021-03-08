@@ -37,6 +37,7 @@ def get_electrode_date(session):
         buf = buf * (-1)
         # Add data to list
         data[hdl.getSignalLabel(signal)] = list(buf)
+
     # Increment offset by samples read
 
     return jsonify(time=list(range(offset, offset + N)),
