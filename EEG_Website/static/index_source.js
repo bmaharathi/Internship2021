@@ -56,7 +56,6 @@ function displayData(delta=0) {
 
 function createChartElementFrom(json, id, count, total, height) {
     const name = Object.keys(json.data)[id];
-    console.log(name);
     let data_map = {};
     data_map['label'] = name;
     data_map['data'] = json.data[name].map(Number);
@@ -141,19 +140,19 @@ function openElectrodeSelect() {
     fetch('/electrode_get')
             .then(response => response.json())
             .then(json => {
-                console.log(JSON.stringify(json))
                 //Delete all checkboxes except for label in form
                 while (electrodeForm.firstChild) {
                     electrodeForm.removeChild(electrodeForm.firstChild);
                 }
                 Object.keys(json.values).forEach( id=> {
-                    electrodeForm.appendChild(getElectrodeSelectElement(id,json.values[id]))
+                    electrodeForm.appendChild(getElectrodeSelectElement(id,json.values[id].trim()))
                 });
                 const submit = document.createElement('input');
                 submit.setAttribute('type', 'submit');
                 submit.setAttribute('onClick', 'openElectrodeSelect();')
                 electrodeForm.appendChild(submit);
                 electrodeForm.appendChild(document.createElement('br'));
+                saveElectrodeSelect();
             });
 }
 
@@ -176,4 +175,26 @@ function getElectrodeSelectElement(id, value) {
     elem.appendChild(document.createElement('br'));
 
     return elem;
+}
+
+function select() {
+    document.getElementById("elec_button").style.display = 'block';
+    //openElectrodeSelect();
+}
+
+//save the state of the checkboxes
+function saveElectrodeSelect() {
+    fetch('/electrode_select')
+        .then(response => response.json())
+        .then(json=> {
+            var val;
+            console.log(json);
+
+            for (val in json.data) {
+                let str = json.data[val].toString().trim();
+                console.log(str);
+                document.getElementById(str).checked = true;
+                }
+        })
+
 }
