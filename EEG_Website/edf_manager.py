@@ -15,6 +15,20 @@ def get_electrodes(session):
                    values=e_dict)
 
 
+# GET SELECT ELECTRODE NAMES
+def get_selected_electrodes(session):
+    hdl = EDFreader(session['filename'])
+    selected = []
+    if len(session['selected_id']) == 0:
+        session['selected_id'] = list(map(str, range(1, hdl.getNumSignals())))
+    # for each signal in edf file
+    for s_id in session['selected_id']:
+        signal = int(s_id)
+        selected.append(hdl.getSignalLabel(signal))
+
+    return jsonify(data=selected)
+
+
 def get_electrode_date(session):
     hdl = EDFreader(session['filename'])
     # Convert seconds to milliseconds
