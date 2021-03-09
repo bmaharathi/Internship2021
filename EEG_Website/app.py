@@ -70,12 +70,15 @@ def electrode_send():
 
 
 # POST SELECTED ELECTRODES
-@app.route('/electrode_select', methods=['POST'])
+@app.route('/electrode_select', methods=['POST', 'GET'])
 def selecting_electrodes():
-    # Save selected ids for session
-    session['selected_id'] = list(request.form.values())
-    # Redirect user to index page, with url parameter to trigger graph displays
-    return redirect(url_for('index', display=True, filename=session['filename']))
+    if request.method == 'POST':
+        # Save selected ids for session
+        session['selected_id'] = list(request.form.values())
+        # Redirect user to index page, with url parameter to trigger graph displays
+        return redirect(url_for('index', display=True, filename=session['filename']))
+    elif request.method == 'GET':
+        return edf_manager.get_selected_electrodes(session)
 
 
 # GET SELECTED DATA
