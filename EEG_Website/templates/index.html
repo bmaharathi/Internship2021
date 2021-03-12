@@ -33,23 +33,42 @@
         }
     </style>
 </head>
-<body onload="loadIndexPage();">
-    
+<body id="body" onload="loadIndexPage();">
+    <!-- TOP HEADER BAR -->
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <!-- Title -->
         <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">IBRAIN</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon">
+                <a>Menu</a>
+            </span>
         </button>
+        <!-- Tools (annotation, and time duration -->
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <!-- Open annotation-->
+                <button type="button" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
+                <!-- Select time duration-->
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Time</button>
+                <form method="POST" id="duration_form" action="/upload_duration" style=" display: none" enctype="multipart/form-data">
+                    <input type="number" id="duration" name="duration" min="1" max="60">
+                    <input onclick="openDurationSelect();" type="submit"/>
+                </form>
+            </div>
+        </div>
     </header>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 
 
-    <div class="container-fluid">
+    <div class="container-fluid" >
         <div class="row">
             <!-- SIDE BAR-->
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" >
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <div id="title"></div>
+                        </li>
                         <li class="nav-item">
                             <!-- SELECT EEG FILE -->
                             <button class="btn btn-sm btn-outline-secondary" onclick="openFileSelect();">Select File</button><br>
@@ -61,26 +80,27 @@
                                 </div>
                                 <input onclick="openFileSelect();" type="submit"/>
                             </form>
+                        </li>
+                        <li>
                             <!-- SELECT ELECTRODE-->
-                            <label for="electrode_form">Select Electrodes</label>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="openElectrodeSelect();">Select Electrodes</button><br>
                             <form method = "POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data">
+                            </form>
+                        </li>
+                        <li>
+                            <!-- Close EEG FILE -->
+                            <form method = "POST" id="close_file" action="/delete" enctype="multipart/form-data">
+                                <input class="btn btn-sm btn-outline-secondary" type="submit" value="Close file">
+                                <br>
                             </form>
                         </li>
                     </ul>
                 </div>
             </nav>
+            <!-- Graph area -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">EEG Display</h1>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Select Time</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="time_series">
-                </div>
+                <br>
+                <div id="time_series"></div>
             </main>
         </div>
     </div>
