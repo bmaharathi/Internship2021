@@ -107,6 +107,7 @@ function createChartElementFrom(json, id, count, total, height) {
                             }
                         }
                 });
+
     return canvasElem;
 }
 
