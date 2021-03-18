@@ -53,7 +53,7 @@ function displayData(delta=0) {
             })
 
 }
-
+//Build single time series chart
 function createChartElementFrom(json, id, count, total, height) {
     const name = Object.keys(json.data)[id];
     let data_map = {};
@@ -80,32 +80,41 @@ function createChartElementFrom(json, id, count, total, height) {
                         datasets: [data_map],
                     },
                     options: {
-                            scales: {
-                                xAxes: [{
-                                    display: (count === total),
-                                    gridLines: {
-                                        drawOnChartArea: false
-                                    }
-                                }],
-                                yAxes: [{
-                                     ticks: {
-                                max: 200,
-                                min: -200,
-                                stepSize: 200,
-                                maxTicksLimit: 3
+                        scales: {
+                            x: {
+                                type: 'timeseries'
                             },
-                                    gridLines: {
-                                        drawOnChartArea: false
-                                    }
-                                }]
-                            },
-                            legend: {
-                                display: true,
-                                position: 'left',
-                                align: 'start'
+                            xAxes: [{
+                                display: (count === total),
+                                gridLines: {
+                                    drawOnChartArea: false
+                                },
+                                ticks: {
+                                    stepSize: 1000,
+                                    maxTicksLimit: 2
+                                }
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    max: 200,
+                                    min: -200,
+                                    stepSize: 200,
+                                    maxTicksLimit: 3
+                                },
+                                gridLines: {
+                                    drawOnChartArea: false
+                                }
+                            }]
+                        },
+                        legend: {
+                            display: true,
+                            position: 'left',
+                            align: 'center',
+                            usePointStyle: true,
+                            rotation: 90
 
-                            }
                         }
+                    }
                 });
     return canvasElem;
 }
@@ -177,10 +186,6 @@ function getElectrodeSelectElement(id, value) {
     return elem;
 }
 
-function select() {
-    document.getElementById("elec_button").style.display = 'block';
-    //openElectrodeSelect();
-}
 
 //save the state of the checkboxes
 function saveElectrodeSelect() {
