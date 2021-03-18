@@ -52,7 +52,7 @@ def get_electrode_date(session):
         buf = buf * (-1)
         # Add data to list
         data[hdl.getSignalLabel(signal)] = list(buf)
-        print(len(buf))
+
 
     # Get time labels
     start_time = hdl.getStartDateTime() + timedelta(milliseconds=offset)
@@ -63,11 +63,9 @@ def get_electrode_date(session):
 
     # Increment offset by samples read
     new_offset = offset + N - 1
-    # Number of seconds for gridlines
-    ticks = int(session['duration']) + 1
-    print(len(times))
+    amplitude = session['amplitude']
 
     return jsonify(time=times,
                    data=data,
                    offset=new_offset,
-                   ticks=ticks)
+                   amplitude=amplitude)

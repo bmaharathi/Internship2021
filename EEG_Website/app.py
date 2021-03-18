@@ -6,6 +6,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = "CHANGE BEFORE DEPLOYMENT!!!!!"
 duration_default = '1'
 offset_default = '0'
+amplitude_default = '200'
 
 
 # HOME PAGE: NO FILE TO DISPLAY
@@ -39,7 +40,7 @@ def select_duration():
         return redirect(url_for('index', display=True, filename=session['filename']))
 
 
-# POST EEG FILE
+# POST EEG FILE (AND SET SESSION DEFAULTS
 @app.route('/upload_eeg', methods=['POST'])
 def upload_file():
     # Save file to server directory
@@ -53,6 +54,7 @@ def upload_file():
     # Set up session defaults for file
     session['duration'] = duration_default
     session['offset'] = offset_default
+    session['amplitude'] = amplitude_default
     # Redirect to electrode select
     return redirect(url_for('index', electrodes=True, filename=session['filename']))
 
@@ -91,6 +93,14 @@ def get_relevant_data():
     else:
         session['offset'] = offset_default
     return edf_manager.get_electrode_date(session)
+
+
+# CHANGE AMPLITUDE
+@app.route('/amplitude', methods=['GET'])
+def change_amplitude():
+    new_amplitude = int(session['amplitude']) + int(request.args.get('delta'))
+    session['amplitude'] = new_amplitude if new_amplitude > 0 else amplitude_default
+    return jsonify(amplitude=session['amplitude'])
 
 
 if __name__ == '__main__':
