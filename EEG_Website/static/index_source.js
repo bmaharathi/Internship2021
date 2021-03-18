@@ -1,3 +1,5 @@
+charts = []
+
 /*
  Function that runs on load, calling other functions as designated by url parameters
  */
@@ -50,7 +52,7 @@ function displayData(delta=0) {
                     graphs.appendChild(createChartElementFrom(json, id, count, total, graph_height));
                     count++;
                 }
-            })
+            });
 
 }
 //Build single time series chart
@@ -95,9 +97,9 @@ function createChartElementFrom(json, id, count, total, height) {
                             }],
                             yAxes: [{
                                 ticks: {
-                                    max: 200,
-                                    min: -200,
-                                    stepSize: 200,
+                                    max: parseInt(json.amplitude),
+                                    min: -1 * parseInt(json.amplitude),
+                                    stepSize: parseInt(json.amplitude),
                                     maxTicksLimit: 3
                                 },
                                 gridLines: {
@@ -111,10 +113,30 @@ function createChartElementFrom(json, id, count, total, height) {
                             align: 'center',
                             usePointStyle: true,
                             rotation: 90
-
                         }
                     }
                 });
+    charts.push(chart);
+
+    document.getElementById('body').addEventListener('keydown', function(event) {
+        const key = event.code;
+        let delta = 1;
+
+        if (key === "ArrowUp") { delta = 100; }
+        else if (key === "ArrowDown") { delta = -100; }
+        else {return;}
+
+        const query = '/amplitude?delta=' + delta.toString();
+        fetch(query).then(response => response.json()).then(json => {
+            const amplitude = parseInt(json.amplitude);
+            charts.forEach(chart => {
+                chart.options.scales.yAxes[0].ticks.max = amplitude;
+                chart.options.scales.yAxes[0].ticks.min = -1 * amplitude;
+                chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
+                chart.update()
+            });
+        });
+    } );
     return canvasElem;
 }
 
