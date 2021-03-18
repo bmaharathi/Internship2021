@@ -90,7 +90,6 @@ function createChartElementFrom(json, id, count, total, height) {
                                     drawOnChartArea: false
                                 },
                                 ticks: {
-                                    stepSize: 1000,
                                     maxTicksLimit: 2
                                 }
                             }],
