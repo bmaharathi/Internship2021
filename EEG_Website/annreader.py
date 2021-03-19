@@ -1,12 +1,12 @@
-import csv
 from flask import jsonify
-
+import csv
 
 # parse csv file into json object
 def parse_annotation_file(session):
     filename = session['annotation_file']
     lst = []
-    with open(filename, 'r') as hdl:
+    with open(filename, 'r') as csvfile:
+        hdl = csv.reader(csvfile)
         for rows in hdl:
             lst.append(rows)
 
