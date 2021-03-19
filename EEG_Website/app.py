@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify, after_this_request, session
 import edf_manager
+import annreader
 
 filename = ''  # reusable filename variable
 app = Flask(__name__)
@@ -84,13 +85,33 @@ def selecting_electrodes():
 # GET SELECTED DATA
 @app.route('/data', methods=['GET'])
 def get_relevant_data():
-    # Calculate offset according to delta argumet, offset and current offset
+    # Calculate offset according to delta argument, offset and current offset
     new_offset = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
     if new_offset > 0:
         session['offset'] = new_offset
     else:
         session['offset'] = offset_default
     return edf_manager.get_electrode_date(session)
+
+
+# UPLOAD ANNOTATION FILE
+@app.route('/upload_ann', methods=['POST'])
+def upload_ann():
+    ann_file = request.files['ann_file']  # update view in static
+    if ann_file.filename != '':
+        ann_file.save(ann_file.filename)
+    else:
+        return redirect(url_for('index'))
+    # save annotation filename to session
+    session['annotation_file'] = ann_file.filename
+
+    # fix to add if else statements for display, electrodes, filename
+    return redirect(url_for('index', annotations=True))
+
+
+@app.route('/ann_data', methods=["GET"])
+def ann_data():
+    return annreader.parse_annotation_file(session)
 
 
 if __name__ == '__main__':

@@ -9,12 +9,17 @@ function loadIndexPage() {
     }
     if (urlParams.has("display")) {
         displayData(0);
+        openElectrodeSelect();
+        saveElectrodeSelect();
     }
     if (urlParams.has("filename")) {
         const title = document.createElement('h3')
         title.innerText = urlParams.get('filename');
          document.getElementById('title').appendChild(title);
 
+    }
+    if (urlParams.has("annotations")) {
+        console.log("Annotations recieved ");
     }
     document.getElementById('body').addEventListener('keydown', function(event) {
         const key = event.code;

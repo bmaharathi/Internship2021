@@ -48,6 +48,14 @@
             <div class="btn-group me-2">
                 <!-- Open annotation-->
                 <button type="button" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
+                <form method = "POST" id = "ann_file_form" name = "annotation" enctype = 'multipart/form-data' action="/upload_ann">
+                    <div class="form-group-ann">
+                        <div class="custom-file-ann">
+                            <input type="file" class="csv-file" id="ann_file" name="ann_file" accept=".csv"><br>
+                        </div>
+                    </div>
+                    <input type="submit"/>
+                </form>
                 <!-- Select time duration-->
                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Time</button>
                 <form method="POST" id="duration_form" action="/upload_duration" style=" display: none" enctype="multipart/form-data">
