@@ -55,6 +55,7 @@ def upload_file():
     session['duration'] = duration_default
     session['offset'] = offset_default
     session['amplitude'] = amplitude_default
+    session['selected_id'] = []
     # Redirect to electrode select
     return redirect(url_for('index', electrodes=True, filename=session['filename']))
 

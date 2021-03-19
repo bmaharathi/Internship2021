@@ -120,23 +120,9 @@ function createChartElementFrom(json, id, count, total, height) {
 
     document.getElementById('body').addEventListener('keydown', function(event) {
         const key = event.code;
-        let delta = 1;
-
-        if (key === "ArrowUp") { delta = 100; }
-        else if (key === "ArrowDown") { delta = -100; }
-        else {return;}
-
-        const query = '/amplitude?delta=' + delta.toString();
-        fetch(query).then(response => response.json()).then(json => {
-            const amplitude = parseInt(json.amplitude);
-            charts.forEach(chart => {
-                chart.options.scales.yAxes[0].ticks.max = amplitude;
-                chart.options.scales.yAxes[0].ticks.min = -1 * amplitude;
-                chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
-                chart.update()
-            });
-        });
-    } );
+        if (key === "ArrowUp") { alterAmplitudes(100);}
+        else if (key === "ArrowDown") { alterAmplitudes(-100); }
+    });
     return canvasElem;
 }
 
@@ -222,5 +208,21 @@ function saveElectrodeSelect() {
                 document.getElementById(str).checked = true;
                 }
         })
+}
 
+/*
+  Change amplitude by 100 up/down
+ */
+
+function alterAmplitudes(delta) {
+    const query = '/amplitude?delta=' + delta.toString();
+        fetch(query).then(response => response.json()).then(json => {
+            const amplitude = parseInt(json.amplitude);
+            charts.forEach(chart => {
+                chart.options.scales.yAxes[0].ticks.max = amplitude;
+                chart.options.scales.yAxes[0].ticks.min = -1 * amplitude;
+                chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
+                chart.update()
+            });
+        });
 }
