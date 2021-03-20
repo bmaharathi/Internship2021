@@ -9,9 +9,9 @@ function displayData(delta=0) {
             .then(json => {
                 let id;
                 const graphs = document.getElementById('time_series');
-                // while (graphs.firstChild) {
-                //     graphs.removeChild(graphs.firstChild);
-                // }
+                while (graphs.firstChild) {
+                    graphs.removeChild(graphs.firstChild);
+                }
                 const graph_height = 560 / Object.keys(json.data).length;
                 let count = 1;
                 const total = Object.keys(json.data).length;
@@ -75,26 +75,35 @@ function toggleAnnotate() {
     const query = '/ann_data';
     fetch(query).then(response => response.json()).then(json => {
         const amplitude = parseInt(json.amplitude);
+        console.log(json);
         charts.forEach(chart => {
             if (!('annotations' in chart.options.annotation)) {
+                console.log("displaying..." + json.amplitude);
+
+                let index;
+                let anns = [];
+                for (index in json.annotations) {
+                    const annotation_config = {
+                        type: 'box',
+                        mode: 'vertical',
+                        xScaleID: 'x-axis-0',
+                        yScaleID: 'y-axis-0',
+                        scaleID: 'x-axis-0',
+                        // Left edge of the box. in units along the x axis
+                        xMin: json.annotations[index]['start'],
+                        xMax: json.annotations[index]['end'],
+                        yMax: amplitude,
+                        yMin: -1 * amplitude,
+                        content: "Test label",
+                        borderColor: 'grey',
+                        borderWidth: 0,
+                    }
+                    anns.push(annotation_config);
+                }
+                console.log(anns);
                 chart.options.annotation =
                     {
-                        annotations: [{
-                            id: 'a-box-1', // optional
-                            type: 'box',
-                            mode: 'vertical',
-                            xScaleID: 'x-axis-0',
-                            yScaleID: 'y-axis-0',
-                            scaleID: 'x-axis-0',
-                            // Left edge of the box. in units along the x axis
-                            xMin: '12:52:24.300000',
-                            xMax: '12:52:24.600000',
-                            yMax: amplitude,
-                            yMin: -1 * amplitude,
-                            content: "Test label",
-                            borderColor: 'grey',
-                            borderWidth: 0,
-                        }]
+                        annotations: anns
                     }
             }
             else {
