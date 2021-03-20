@@ -121,7 +121,7 @@ def upload_ann():
 
 @app.route('/ann_data', methods=["GET"])
 def ann_data():
-    return annreader.parse_annotation_file(session)
+    return annreader.get_annotations(session)
 
 
 if __name__ == '__main__':
