@@ -109,7 +109,27 @@ function createChartElementFrom(json, id, count, total, height) {
                                 position: 'left',
                                 align: 'start'
 
-                            }
+                            },
+                        annotation:{
+                            annotations: [{
+                                id: 'a-box-1', // optional
+                                type: 'box',
+                                mode: 'vertical',
+                                xScaleID: 'x-axis-0',
+                                yScaleID: 'y-axis-0',
+                                scaleID: 'x-axis-0',
+                                // Left edge of the box. in units along the x axis
+                                xMin: '12:52:24.192',
+
+                                xMax: '12:52:24.288',
+
+                                yMax: 40,
+
+                                yMin:  0,
+                                borderColor: 'red',
+                                borderWidth: 2,
+                            }]
+                        }
                         }
                 });
 
