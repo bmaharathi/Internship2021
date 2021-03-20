@@ -13,6 +13,7 @@
 
     <!-- IBRAIN javascript source -->
     <script type="text/javascript" src="../static/index_source.js"></script>
+    <script type="text/javascript" src="../static/server_requests.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>.
 
@@ -47,16 +48,8 @@
         <!-- Tools (annotation, and time duration -->
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
-                <!-- Open annotation-->
-                <button type="button" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
-                <form method = "POST" id = "ann_file_form" name = "annotation" enctype = 'multipart/form-data' action="/upload_ann">
-                    <div class="form-group-ann">
-                        <div class="custom-file-ann">
-                            <input type="file" class="csv-file" id="ann_file" name="ann_file" accept=".csv"><br>
-                        </div>
-                    </div>
-                    <input type="submit"/>
-                </form>
+                <!-- Display annotation-->
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAnnotate();">Annotate</button>
                 <!-- Select time duration-->
                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Time</button>
                 <form method="POST" id="duration_form" action="/upload_duration" style=" display: none" enctype="multipart/form-data">
@@ -94,6 +87,18 @@
                             <!-- SELECT ELECTRODE-->
                             <button class="btn btn-sm btn-outline-secondary" onclick="openElectrodeSelect();">Select Electrodes</button><br>
                             <form method = "POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data">
+                            </form>
+                        </li>
+                        <li>
+                            <!-- SELECT ANNOTATION FILE -->
+                            <button type="button" onclick="openAnnotationSelect();" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
+                            <form method = "POST" id = "ann_file_form" name = "annotation" enctype = 'multipart/form-data' action="/upload_ann" style="display: none">
+                                <div class="form-group-ann">
+                                    <div class="custom-file-ann">
+                                        <input type="file" class="csv-file" id="ann_file" name="ann_file" accept=".csv"><br>
+                                    </div>
+                                </div>
+                                <input type="submit"/>
                             </form>
                         </li>
                         <li>
