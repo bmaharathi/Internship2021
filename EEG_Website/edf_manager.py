@@ -56,10 +56,9 @@ def get_electrode_date(session):
 
     # Get time labels
     start_time = hdl.getStartDateTime() + timedelta(milliseconds=offset)
-    times = []
-    for i in range(offset, offset + N + 1):
-        time = str((start_time + timedelta(milliseconds=i)).time())
-        times.append(time[:-7] if len(time) > 8 else time)
+    times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
+    times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
+    times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
 
     # Increment offset by samples read
     new_offset = offset + N - 1
@@ -69,3 +68,8 @@ def get_electrode_date(session):
                    data=data,
                    offset=new_offset,
                    amplitude=amplitude)
+
+
+def get_file_start(session):
+    hdl = EDFreader(session['filename'])
+    return hdl.getStartDateTime()
