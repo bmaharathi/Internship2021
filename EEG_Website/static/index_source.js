@@ -1,3 +1,5 @@
+charts = []
+
 /*
  Function that runs on load, calling other functions as designated by url parameters
  */
@@ -8,55 +10,68 @@ function loadIndexPage() {
         openElectrodeSelect();
     }
     if (urlParams.has("display")) {
-        displayData();
+        displayData(0);
     }
+    if (urlParams.has("filename")) {
+        const title = document.createElement('h3')
+        title.innerText = urlParams.get('filename');
+         document.getElementById('title').appendChild(title);
+
+    }
+    document.getElementById('body').addEventListener('keydown', function(event) {
+        const key = event.code;
+        if (key === "ArrowLeft") {
+            displayData(-1);
+        }
+        else if (key === "ArrowRight") {
+            displayData(1);
+        }
+    } );
+
 }
 
 /*
  Fetch selected electrode data
  */
-function displayData() {
-    fetch('/data')
+function displayData(delta=0) {
+    const query = '/data?delta=' + delta.toString();
+    console.log(query);
 
+    fetch(query)
             .then(response => response.json())
             .then(json => {
                 let id;
                 const graphs = document.getElementById('time_series');
-                for (id in Object.keys(json.data)) {
-                    graphs.appendChild(createChartElementFrom(json, id));
+                while (graphs.firstChild) {
+                    graphs.removeChild(graphs.firstChild);
                 }
-            })
+                const graph_height = 560 / Object.keys(json.data).length;
+                let count = 1;
+                const total = Object.keys(json.data).length;
+                for (id in Object.keys(json.data)) {
+                    graphs.appendChild(createChartElementFrom(json, id, count, total, graph_height));
+                    count++;
+                }
+            });
 
 }
-
-
-
-
-
-function createChartElementFrom(json, id) {
-
-//       .chartWrapper {/* w w w. j a v  a2 s.co  m*/
-//               position: relative;
-//            }
-//            .chartWrapper > canvas {
-//               position: absolute;
-//               left: 0;
-//               top: 0;
-//               pointer-events:none;
-//            }
-//            .chartAreaWrapper {
-//               width: 600px;
-//               overflow-x: scroll;
-//            }
+//Build single time series chart
+function createChartElementFrom(json, id, count, total, height) {
     const name = Object.keys(json.data)[id];
-    console.log(name);
     let data_map = {};
     data_map['label'] = name;
     data_map['data'] = json.data[name].map(Number);
+    data_map['pointRadius'] = 0;
+    data_map['fill'] = false;
+    if (count % 2 === 1) {
+        data_map['borderColor'] = '#880808';
+    }
+
+
 
     let canvasElem = document.createElement('canvas');
 
-    canvasElem.setAttribute('height', '280');
+    canvasElem.setAttribute('height', height.toString());
     canvasElem.setAttribute('width', '900');
     canvasElem.setAttribute('id', [name,'chart'].join(''));
 
@@ -64,9 +79,64 @@ function createChartElementFrom(json, id) {
                     type: 'line',
                     data: {
                         labels: json.time,
-                        datasets: [data_map]
+                        datasets: [data_map],
                     },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'timeseries'
+                            },
+                            xAxes: [{
+                                display: (count === total),
+                                gridLines: {
+                                    drawOnChartArea: false
+                                },
+                                ticks: {
+                                    maxTicksLimit: 2
+                                }
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    max: parseInt(json.amplitude),
+                                    min: -1 * parseInt(json.amplitude),
+                                    stepSize: parseInt(json.amplitude),
+                                    maxTicksLimit: 3
+                                },
+                                gridLines: {
+                                    drawOnChartArea: false
+                                }
+                            }]
+                        },
+                        legend: {
+                            display: true,
+                            position: 'left',
+                            align: 'center',
+                            usePointStyle: true,
+                            rotation: 90
+                        }
+                    }
                 });
+    charts.push(chart);
+
+    document.getElementById('body').addEventListener('keydown', function(event) {
+        const key = event.code;
+        let delta = 1;
+
+        if (key === "ArrowUp") { delta = 100; }
+        else if (key === "ArrowDown") { delta = -100; }
+        else {return;}
+
+        const query = '/amplitude?delta=' + delta.toString();
+        fetch(query).then(response => response.json()).then(json => {
+            const amplitude = parseInt(json.amplitude);
+            charts.forEach(chart => {
+                chart.options.scales.yAxes[0].ticks.max = amplitude;
+                chart.options.scales.yAxes[0].ticks.min = -1 * amplitude;
+                chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
+                chart.update()
+            });
+        });
+    } );
     return canvasElem;
 }
 
@@ -77,6 +147,14 @@ function createChartElementFrom(json, id) {
  */
 function openFileSelect() {
     const fileForm = document.getElementById('file_form');
+    fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
+}
+
+/*
+ Toggle duration select
+ */
+function openDurationSelect() {
+    const fileForm = document.getElementById('duration_form');
     fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
 }
 
@@ -92,15 +170,19 @@ function openElectrodeSelect() {
     fetch('/electrode_get')
             .then(response => response.json())
             .then(json => {
-                console.log(JSON.stringify(json))
-
+                //Delete all checkboxes except for label in form
+                while (electrodeForm.firstChild) {
+                    electrodeForm.removeChild(electrodeForm.firstChild);
+                }
                 Object.keys(json.values).forEach( id=> {
-                    electrodeForm.appendChild(getElectrodeSelectElement(id,json.values[id]))
+                    electrodeForm.appendChild(getElectrodeSelectElement(id,json.values[id].trim()))
                 });
                 const submit = document.createElement('input');
                 submit.setAttribute('type', 'submit');
                 submit.setAttribute('onClick', 'openElectrodeSelect();')
                 electrodeForm.appendChild(submit);
+                electrodeForm.appendChild(document.createElement('br'));
+                saveElectrodeSelect();
             });
 }
 
@@ -123,4 +205,22 @@ function getElectrodeSelectElement(id, value) {
     elem.appendChild(document.createElement('br'));
 
     return elem;
+}
+
+
+//save the state of the checkboxes
+function saveElectrodeSelect() {
+    fetch('/electrode_select')
+        .then(response => response.json())
+        .then(json=> {
+            var val;
+            console.log(json);
+
+            for (val in json.data) {
+                let str = json.data[val].toString().trim();
+                console.log(str);
+                document.getElementById(str).checked = true;
+                }
+        })
+
 }
