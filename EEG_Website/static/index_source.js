@@ -18,6 +18,9 @@ function loadIndexPage() {
          document.getElementById('title').appendChild(title);
 
     }
+    if (urlParams.has("annotations")) {
+        console.log("Annotations recieved ");
+    }
     document.getElementById('body').addEventListener('keydown', function(event) {
         const key = event.code;
         if (key === "ArrowLeft") {
@@ -55,6 +58,8 @@ function displayData(delta=0) {
             });
 
 }
+
+
 //Build single time series chart
 function createChartElementFrom(json, id, count, total, height) {
     const name = Object.keys(json.data)[id];
@@ -113,6 +118,26 @@ function createChartElementFrom(json, id, count, total, height) {
                             align: 'center',
                             usePointStyle: true,
                             rotation: 90
+                        },
+                        annotation:{
+                            annotations: [{
+                                id: 'a-box-1', // optional
+                                type: 'box',
+                                mode: 'vertical',
+                                xScaleID: 'x-axis-0',
+                                yScaleID: 'y-axis-0',
+                                scaleID: 'x-axis-0',
+                                // Left edge of the box. in units along the x axis
+                                xMin: '12:52:24',
+
+                                xMax: '12:52:25',
+
+                                yMax: 40,
+
+                                yMin:  0,
+                                borderColor: 'red',
+                                borderWidth: 2,
+                            }]
                         }
                     }
                 });
@@ -213,7 +238,6 @@ function saveElectrodeSelect() {
 /*
   Change amplitude by 100 up/down
  */
-
 function alterAmplitudes(delta) {
     const query = '/amplitude?delta=' + delta.toString();
         fetch(query).then(response => response.json()).then(json => {

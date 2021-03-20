@@ -1,2 +1,7 @@
 *.rec
 EEG_Website/__pycache__/
+<<<<<<< HEAD
+=======
+/.idea/
+*.csv
+>>>>>>> annotation_testing
