@@ -76,7 +76,8 @@ function toggleAnnotate() {
     fetch(query).then(response => response.json()).then(json => {
         const amplitude = parseInt(json.amplitude);
         console.log(json);
-        charts.forEach(chart => {
+        Object.keys(charts).forEach(key => {
+            let chart = charts[key];
             if (!('annotations' in chart.options.annotation)) {
                 console.log("displaying..." + json.amplitude);
 
@@ -100,11 +101,7 @@ function toggleAnnotate() {
                     }
                     anns.push(annotation_config);
                 }
-                console.log(anns);
-                chart.options.annotation =
-                    {
-                        annotations: anns
-                    }
+                chart.options.annotation = { annotations: anns };
             }
             else {
                 delete chart.options.annotation['annotations'];

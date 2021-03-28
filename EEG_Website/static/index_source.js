@@ -1,4 +1,4 @@
-charts = []
+charts = {}
 
 /*
     CONFIGURE PAGE ON LOAD
@@ -76,7 +76,7 @@ function createChartElementFrom(json, id, count, total, height) {
     canvasElem.setAttribute('width', '900');
     canvasElem.setAttribute('id', [name,'chart'].join(''));
 
-    let chart = new Chart(canvasElem.getContext('2d'), {
+    charts[name] = new Chart(canvasElem.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: json.time,
@@ -121,7 +121,6 @@ function createChartElementFrom(json, id, count, total, height) {
 
                     }
                 });
-    charts.push(chart);
 
     document.getElementById('body').addEventListener('keydown', function(event) {
         const key = event.code;
