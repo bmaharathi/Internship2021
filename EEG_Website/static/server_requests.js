@@ -155,8 +155,8 @@ function setSlider() {
             $('#time-select').attr('max', json.max);
             $('#time-select').attr('value', json.min);
             $('#time-select').mouseup(function () {
-                $.post('/select-offset', {new_value: this.value});
-                displayData();
+                $.post('/select-offset', {new_value: this.value},
+                        function (response) {displayData();});
             })
         });
 }
