@@ -142,3 +142,21 @@ function alterAmplitudes(delta) {
         });
     });
 }
+
+/*
+    Set up slider
+ */
+function setSlider() {
+    const query = '/slider';
+    fetch(query)
+        .then(response => response.json())
+        .then(json => {
+            $('#time-select').attr('min', json.min);
+            $('#time-select').attr('max', json.max);
+            $('#time-select').attr('value', json.min);
+            $('#time-select').mouseup(function () {
+                $.post('/select-offset', {new_value: this.value});
+                displayData();
+            })
+        });
+}
