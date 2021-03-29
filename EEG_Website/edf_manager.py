@@ -73,3 +73,10 @@ def get_electrode_date(session):
 def get_file_start(session):
     hdl = EDFreader(session['filename'])
     return hdl.getStartDateTime()
+
+
+def get_time_data(session):
+    hdl = EDFreader(session['filename'])
+    end = hdl.getFileDuration() / 1000
+    return jsonify(min=0,
+                   max=end)
