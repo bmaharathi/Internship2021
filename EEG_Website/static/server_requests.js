@@ -9,14 +9,16 @@ function displayData(delta=0) {
             .then(json => {
                 let id;
                 const graphs = document.getElementById('time_series');
-                while (graphs.firstChild) {
-                    graphs.removeChild(graphs.firstChild);
-                }
                 const graph_height = 560 / Object.keys(json.data).length;
                 let count = 1;
                 const total = Object.keys(json.data).length;
                 for (id in Object.keys(json.data)) {
-                    graphs.appendChild(createChartElementFrom(json, id, count, total, graph_height));
+                    if (!(Object.keys(json.data)[id] in charts)) {
+                        graphs.appendChild(createChartElementFrom(json, id, count, total, graph_height));
+                    }
+                    else {
+                        changeData(json, id, count);
+                    }
                     count++;
                 }
             });
@@ -49,7 +51,19 @@ function openElectrodeSelect() {
                 saveElectrodeSelect();
             });
 }
-
+//remove unselected charts
+function removeUnselected() {
+    fetch('/electrode_select')
+        .then(response => response.json())
+        .then(json=> {
+            Object.keys(charts).forEach(key => {
+                if (!json.data.includes(key)) {
+                    delete charts[key];
+                    document.getElementById(key).remove();
+                }
+            });
+        })
+}
 
 //save the state of the checkboxes
 function saveElectrodeSelect() {
@@ -119,7 +133,8 @@ function alterAmplitudes(delta) {
     const query = '/amplitude?delta=' + delta.toString();
     fetch(query).then(response => response.json()).then(json => {
         const amplitude = parseInt(json.amplitude);
-        charts.forEach(chart => {
+        Object.keys(charts).forEach(key => {
+            let chart = charts[key];
             chart.options.scales.yAxes[0].ticks.max = amplitude;
             chart.options.scales.yAxes[0].ticks.min = -1 * amplitude;
             chart.options.scales.yAxes[0].ticks.stepSize = amplitude;

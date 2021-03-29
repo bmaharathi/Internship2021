@@ -11,6 +11,7 @@ function loadIndexPage() {
     }
     if (urlParams.has("display")) {
         displayData(0);
+        removeUnselected();
     }
     if (urlParams.has("filename")) {
         const title = document.createElement('h3')
@@ -66,6 +67,7 @@ function createChartElementFrom(json, id, count, total, height) {
     data_map['data'] = json.data[name].map(Number);
     data_map['pointRadius'] = 0;
     data_map['fill'] = false;
+
     if (count % 2 === 1) {
         data_map['borderColor'] = '#880808';
     }
@@ -75,7 +77,8 @@ function createChartElementFrom(json, id, count, total, height) {
     canvasElem.setAttribute('height', height.toString());
     canvasElem.setAttribute('width', '900');
     canvasElem.setAttribute('id', [name,'chart'].join(''));
-
+    canvasElem.setAttribute('colours', "[ { fillColor: '#ffff00' }, { fillColor: '#0066ff' } ]");
+    canvasElem.style.zIndex = count;
     charts[name] = new Chart(canvasElem.getContext('2d'), {
                     type: 'line',
                     data: {
@@ -148,6 +151,27 @@ function getElectrodeSelectElement(id, value) {
     return elem;
 }
 
+/*
+    ALTER CHARTS
+ */
+function changeData(json, id, count) {
+    const name = Object.keys(json.data)[id];
+    let chart = charts[name];
+
+    let data_map = {};
+    data_map['label'] = name;
+    data_map['data'] = json.data[name].map(Number);
+    data_map['pointRadius'] = 0;
+    data_map['fill'] = false;
+    if (count % 2 === 1) {
+        data_map['borderColor'] = '#880808';
+    }
+    chart.data = {
+        labels: json.time,
+        datasets: [data_map]
+    }
+    chart.update();
+}
 
 
 
