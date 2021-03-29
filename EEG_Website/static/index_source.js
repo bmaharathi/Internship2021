@@ -6,6 +6,7 @@ charts = {}
 function loadIndexPage() {
     const queryString = window.location.search;
     let urlParams = new URLSearchParams(queryString);
+    setSlider();
     if (urlParams.has("electrodes")) {
         openElectrodeSelect();
     }
@@ -17,7 +18,6 @@ function loadIndexPage() {
         const title = document.createElement('h3')
         title.innerText = urlParams.get('filename');
         document.getElementById('title').appendChild(title);
-
     }
     if (urlParams.has("annotations")) {
         displayData(0);
