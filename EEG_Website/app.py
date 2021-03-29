@@ -26,6 +26,7 @@ def delete_session():
         session.popitem()
     return redirect(url_for('index'))
 
+
 # POST SELECTED DURATION
 @app.route('/upload_duration', methods=['POST'])
 def select_duration():
@@ -87,6 +88,7 @@ def selecting_electrodes():
 # GET SELECTED DATA
 @app.route('/data', methods=['GET'])
 def get_relevant_data():
+    print(session['offset'])
     # Calculate offset according to delta argumet, offset and current offset
     new_offset = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
     if new_offset > 0:
@@ -122,6 +124,19 @@ def upload_ann():
 @app.route('/ann_data', methods=["GET"])
 def ann_data():
     return annreader.get_annotations(session)
+
+
+@app.route('/slider', methods=['GET'])
+def get_time():
+    return edf_manager.get_time_data(session)
+
+
+@app.route('/select-offset', methods=['POST'])
+def set_time_data():
+    session['offset'] = request.form['new_value']
+    print(request.form['new_value'])
+    print(session['offset'])
+    return session['offset']
 
 
 if __name__ == '__main__':
