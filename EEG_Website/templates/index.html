@@ -13,8 +13,11 @@
 
     <!-- IBRAIN javascript source -->
     <script type="text/javascript" src="../static/index_source.js"></script>
+    <script type="text/javascript" src="../static/server_requests.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="../static/index_style.css" rel="stylesheet">
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <style>
@@ -46,8 +49,8 @@
         <!-- Tools (annotation, and time duration -->
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
-                <!-- Open annotation-->
-                <button type="button" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
+                <!-- Display annotation-->
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAnnotate();">Annotate</button>
                 <!-- Select time duration-->
                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Time</button>
                 <form method="POST" id="duration_form" action="/upload_duration" style=" display: none" enctype="multipart/form-data">
@@ -88,6 +91,18 @@
                             </form>
                         </li>
                         <li>
+                            <!-- SELECT ANNOTATION FILE -->
+                            <button type="button" onclick="openAnnotationSelect();" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
+                            <form method = "POST" id = "ann_file_form" name = "annotation" enctype = 'multipart/form-data' action="/upload_ann" style="display: none">
+                                <div class="form-group-ann">
+                                    <div class="custom-file-ann">
+                                        <input type="file" class="csv-file" id="ann_file" name="ann_file" accept=".csv"><br>
+                                    </div>
+                                </div>
+                                <input type="submit"/>
+                            </form>
+                        </li>
+                        <li>
                             <!-- Close EEG FILE -->
                             <form method = "POST" id="close_file" action="/delete" enctype="multipart/form-data">
                                 <input class="btn btn-sm btn-outline-secondary" type="submit" value="Close file">
@@ -101,6 +116,9 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <br>
                 <div id="time_series"></div>
+                <div class="slidecontainer">
+                    <input class="slidecontainer" id="time-select" type="range" class="slider" id="myRange" step="10000">
+                </div>
             </main>
         </div>
     </div>

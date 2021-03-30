@@ -33,13 +33,13 @@ def get_electrode_date(session):
     hdl = EDFreader(session['filename'])
     # Convert seconds to milliseconds
     offset = int(session['offset'])
-    N = int(session['duration']) * 1000
+    N = int(session['duration']) * 1000 + 1
 
     data = {}
 
     if len(session['selected_id']) == 0:
         session['selected_id'] = list(map(str, range(1, hdl.getNumSignals())))
-    print(hdl.getStartDateTime())
+
     # for each signal in edf file
     for s_id in session['selected_id']:
         signal = int(s_id)
@@ -53,13 +53,30 @@ def get_electrode_date(session):
         buf = buf * (-1)
         # Add data to list
         data[hdl.getSignalLabel(signal)] = list(buf)
-    startTime = hdl.getStartDateTime()
-    times = []
-    for i in range(offset, offset + N):
-        times.append(str((startTime + timedelta(milliseconds=i)).time())[:-3])
+
+    # Get time labels
+    start_time = hdl.getStartDateTime() + timedelta(milliseconds=offset)
+    times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
+    times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
+    times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
 
     # Increment offset by samples read
+    new_offset = offset + N - 1
+    amplitude = session['amplitude']
 
     return jsonify(time=times,
                    data=data,
-                   offset=(offset + N))
+                   offset=new_offset,
+                   amplitude=amplitude)
+
+
+def get_file_start(session):
+    hdl = EDFreader(session['filename'])
+    return hdl.getStartDateTime()
+
+
+def get_time_data(session):
+    hdl = EDFreader(session['filename'])
+    end = hdl.getFileDuration() / 1000
+    return jsonify(min=0,
+                   max=end)
