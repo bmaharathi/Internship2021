@@ -52,11 +52,7 @@ function loadIndexPage() {
 // Toggle select file form
 function openFileSelect() {
     $('#eeg_file').change(function () {
-        console.log(this.value);
-        $.post('/upload_eeg', {eeg_file: this.value},
-                        function (response) {
-                    console.log("recieved response");
-                });
+        $.post('/upload_eeg', {eeg_file: this.value});
     });
     $('#eeg_file').click();
 }
@@ -69,7 +65,10 @@ function openDurationSelect() {
 
 // Toggle select annotation form
 function openAnnotationSelect() {
-    $('#ann_file_form').slideToggle();
+    $('#ann_file').change(function () {
+        $.post('/upload_ann', {ann_file: this.value});
+    });
+    $('#ann_file').click();
 }
 
 /*
