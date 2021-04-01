@@ -41,7 +41,7 @@ def get_electrode_date(session):
         session['selected_id'] = list(map(str, range(1, hdl.getNumSignals())))
 
     # for each signal in edf file
-    for s_id in session['selected_id']:
+    for count, s_id in enumerate(session['selected_id']):
         signal = int(s_id)
         # buffer to hold samples for single signal
         buf = np.zeros(N)
@@ -51,8 +51,9 @@ def get_electrode_date(session):
         hdl.readSamples(signal, buf, N)
         # invert data
         buf = buf * (-1)
+        map_val = int(session['data_offset'])
         # Add data to list
-        data[hdl.getSignalLabel(signal)] = list(buf)
+        data[hdl.getSignalLabel(signal)] = list(map(lambda val: val + count * map_val, buf))
 
     # Get time labels
     start_time = hdl.getStartDateTime() + timedelta(milliseconds=offset)
@@ -63,11 +64,11 @@ def get_electrode_date(session):
     # Increment offset by samples read
     new_offset = offset + N - 1
     amplitude = session['amplitude']
-
+    map_val = int(session['data_offset'])
     return jsonify(time=times,
                    data=data,
                    offset=new_offset,
-                   amplitude=amplitude)
+                   dataOffset=map_val)
 
 
 def get_file_start(session):

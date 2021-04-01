@@ -10,17 +10,14 @@ function displayData(delta=0) {
             .then(json => {
                 let id;
                 const graphs = document.getElementById('time_series');
-                const graph_height = 560 / Object.keys(json.data).length;
-                let count = 1;
-                const total = Object.keys(json.data).length;
+                let data_maps = [];
                 for (id in Object.keys(json.data)) {
-                    if (!(Object.keys(json.data)[id] in charts)) {
-                        graphs.appendChild(createChartElementFrom(json, id, count, total, graph_height));
-                    }
-                    else {
-                        changeData(json, id, count);
-                    }
-                    count++;
+                        data_maps.push(createDataObject(json, id));
+                }
+                if (!graphs.hasChildNodes()) {
+                    $('#time_series').append(graphs.appendChild(createChartElementFrom(json.time, data_maps, parseInt(json.dataOffset))));
+                } else {
+                    changeData(data_maps, json.time)
                 }
             });
 }
@@ -88,39 +85,33 @@ function toggleAnnotate() {
     const query = '/ann_data';
     fetch(query).then(response => response.json()).then(json => {
         const amplitude = parseInt(json.amplitude);
-        console.log(json);
-        Object.keys(charts).forEach(key => {
-            let chart = charts[key];
-            if (!('annotations' in chart.options.annotation)) {
-                console.log("displaying..." + json.amplitude);
-
-                let index;
-                let anns = [];
-                for (index in json.annotations) {
-                    const annotation_config = {
-                        type: 'box',
-                        mode: 'vertical',
-                        xScaleID: 'x-axis-0',
-                        yScaleID: 'y-axis-0',
-                        scaleID: 'x-axis-0',
-                        // Left edge of the box. in units along the x axis
-                        xMin: json.annotations[index]['start'],
-                        xMax: json.annotations[index]['end'],
-                        yMax: amplitude,
-                        yMin: -1 * amplitude,
-                        content: "Test label",
-                        borderColor: 'grey',
-                        borderWidth: 0,
-                    }
-                    anns.push(annotation_config);
+        if (!('annotations' in chart.options.annotation)) {
+            let index;
+            let anns = [];
+            for (index in json.annotations) {
+                const annotation_config = {
+                    type: 'box',
+                    mode: 'vertical',
+                    xScaleID: 'x-axis-0',
+                    yScaleID: 'y-axis-0',
+                    scaleID: 'x-axis-0',
+                    // Left edge of the box. in units along the x axis
+                    xMin: json.annotations[index]['start'],
+                    xMax: json.annotations[index]['end'],
+                    yMax: parseInt(json.annotations['chart_max']),
+                    yMin: parseInt(json.annotations['chart_min']),
+                    content: "Test label",
+                    borderColor: 'grey',
+                    borderWidth: 0,
                 }
-                chart.options.annotation = { annotations: anns };
+                anns.push(annotation_config);
             }
-            else {
-                delete chart.options.annotation['annotations'];
-            }
-            chart.update();
-        });
+            chart.options.annotation = { annotations: anns };
+        }
+        else {
+            delete chart.options.annotation['annotations'];
+        }
+        chart.update();
     });
 }
 
@@ -132,13 +123,11 @@ function alterAmplitudes(delta) {
     const query = '/amplitude?delta=' + delta.toString();
     fetch(query).then(response => response.json()).then(json => {
         const amplitude = parseInt(json.amplitude);
-        Object.keys(charts).forEach(key => {
-            let chart = charts[key];
-            chart.options.scales.yAxes[0].ticks.max = amplitude;
-            chart.options.scales.yAxes[0].ticks.min = -1 * amplitude;
-            chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
-            chart.update()
-        });
+        const offset = parseInt(json.dataOffset);
+        chart.options.scales.yAxes[0].ticks.max = offset;
+        chart.options.scales.yAxes[0].ticks.min = -1 * offset;
+        chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
+        chart.update()
     });
 }
 
@@ -164,7 +153,7 @@ function setSlider() {
                     newTime.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
                     console.log(this.value);
                     console.log(typeof this.value);
-                    newTime.setMilliseconds( $('#time-select').val());
+                    newTime.setMilliseconds($('#time-select').val());
                      $('#sliderdisplay').text(newTime.toLocaleTimeString());
                 });
 

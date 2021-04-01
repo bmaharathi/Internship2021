@@ -1,4 +1,4 @@
-charts = {}
+let chart = null;
 
 /*
     CONFIGURE PAGE ON LOAD
@@ -12,7 +12,7 @@ function loadIndexPage() {
     }
     if (urlParams.has("display")) {
         displayData(0);
-        removeUnselected();
+        // removeUnselected();
     }
     if (urlParams.has("filename")) {
         const title = document.createElement('h3')
@@ -74,8 +74,7 @@ function openAnnotationSelect() {
 /*
     CREATE ELEMENTS
  */
-//Build single time series chart
-function createChartElementFrom(json, id, count, total, height) {
+function createDataObject(json, id) {
     const name = Object.keys(json.data)[id];
     let data_map = {};
     data_map['label'] = name.trimEnd();
@@ -83,21 +82,22 @@ function createChartElementFrom(json, id, count, total, height) {
     data_map['pointRadius'] = 0;
     data_map['fill'] = false;
 
-    if (count % 2 === 1) {
-        data_map['borderColor'] = '#880808';
-    }
+    return data_map;
+}
 
+//Build single time series chart
+function createChartElementFrom(time, data_map, dataOffset) {
     let canvasElem = document.createElement('canvas');
 
-    canvasElem.setAttribute('height', height.toString());
-    canvasElem.setAttribute('width', '800');
-    canvasElem.setAttribute('id', [name,'chart'].join(''));
+    canvasElem.setAttribute('height', '400');
+    canvasElem.setAttribute('width', '750');
+    canvasElem.setAttribute('id', 'main-chart');
     canvasElem.style.zIndex = -1;
-    charts[name] = new Chart(canvasElem.getContext('2d'), {
+    chart = new Chart(canvasElem.getContext('2d'), {
                     type: 'line',
                     data: {
-                        labels: json.time,
-                        datasets: [data_map],
+                        labels: time,
+                        datasets: data_map,
                     },
                     options: {
                         scales: {
@@ -105,7 +105,7 @@ function createChartElementFrom(json, id, count, total, height) {
                                 type: 'timeseries'
                             },
                             xAxes: [{
-                                display: (count === total),
+                                display: true,
                                 gridLines: {
                                     drawOnChartArea: false
                                 },
@@ -117,10 +117,9 @@ function createChartElementFrom(json, id, count, total, height) {
                             }],
                             yAxes: [{
                                 ticks: {
-                                    max: parseInt(json.amplitude),
-                                    min: -1 * parseInt(json.amplitude),
-                                    stepSize: parseInt(json.amplitude),
-                                    maxTicksLimit: 3
+                                    display : false,
+                                    max: data_map.length * dataOffset,
+                                    min: -1 * dataOffset
                                 },
                                 gridLines: {
                                     drawOnChartArea: false
@@ -128,16 +127,16 @@ function createChartElementFrom(json, id, count, total, height) {
                             }]
                         },
                         legend: {
-                            display: true,
-                            position: 'left',
-                            labels: {
-                                boxWidth : 0,
-                            }
+                            display: false,
                         },
                         annotation: {
 
+                        },
+                        layout: {
+                            padding: {
+                                left: 50
+                            }
                         }
-
                     }
                 });
 
@@ -170,23 +169,10 @@ function getElectrodeSelectElement(id, value) {
 /*
     ALTER CHARTS
  */
-function changeData(json, id, count) {
-    const name = Object.keys(json.data)[id];
-    let chart = charts[name];
-
-    let data_map = {};
-    data_map['label'] = name;
-    data_map['data'] = json.data[name].map(Number);
-    data_map['pointRadius'] = 0;
-    data_map['fill'] = false;
-    if (count % 2 === 1) {
-        data_map['borderColor'] = '#880808';
-    }
-    chart.data = {
-        labels: json.time,
-        datasets: [data_map]
-    }
-    chart.update();
+function changeData(data_maps, time) {
+    chart.data.labels = time;
+    chart.data.datasets = data_maps;
+    chart.update(0);
 }
 
 

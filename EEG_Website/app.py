@@ -8,6 +8,7 @@ app.config['SECRET_KEY'] = "CHANGE BEFORE DEPLOYMENT!!!!!"
 duration_default = '1'
 offset_default = '0'
 amplitude_default = '200'
+data_mapping_default = '300'
 
 
 # HOME PAGE: NO FILE TO DISPLAY
@@ -55,6 +56,7 @@ def upload_file():
     session['offset'] = offset_default
     session['amplitude'] = amplitude_default
     session['selected_id'] = []
+    session['data_offset'] = data_mapping_default
     # Redirect to electrode select
     return redirect(url_for('index', electrodes=True, filename=session['filename']))
 
@@ -75,8 +77,11 @@ def electrode_send():
 @app.route('/electrode_select', methods=['POST', 'GET'])
 def selecting_electrodes():
     if request.method == 'POST':
+        selected = list(request.form.values())
         # Save selected ids for session
-        session['selected_id'] = list(request.form.values())
+        session['selected_id'] = selected
+        # Save number of selected electrodes
+        session['selected_count'] = len(selected)
         # Redirect user to index page, with url parameter to trigger graph displays
         return redirect(url_for('index', display=True, filename=session['filename']))
     elif request.method == 'GET':

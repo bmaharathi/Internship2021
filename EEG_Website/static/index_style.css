@@ -1,3 +1,6 @@
+div.slidecontainer {
+    padding-left: 15%;
+}
 .slidecontainer {
     align-self: center;
     width: 1100px;
