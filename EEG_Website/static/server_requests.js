@@ -1,3 +1,4 @@
+let startTime = new Date();
 /*
  Fetch selected electrode data
  */
@@ -154,9 +155,21 @@ function setSlider() {
             $('#time-select').attr('min', json.min);
             $('#time-select').attr('max', json.max);
             $('#time-select').attr('value', json.min);
+            startTime.setHours(parseInt(json.start[0]), parseInt(json.start[1]), parseInt(json.start[2]));
+            $('#sliderdisplay').text(startTime.toLocaleTimeString());
+
             $('#time-select').mouseup(function () {
                 $.post('/select-offset', {new_value: this.value},
-                        function (response) {displayData();});
+                        function (response) {
+                    displayData();
+                    let newTime = new Date();
+                    newTime.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+                    console.log(this.value);
+                    console.log(typeof this.value);
+                    newTime.setMilliseconds( $('#time-select').val());
+                     $('#sliderdisplay').text(newTime.toLocaleTimeString());
+                });
+
             })
         });
 }
