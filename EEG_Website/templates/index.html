@@ -119,7 +119,8 @@
   <a href="#"><button class="btn btn-sm btn-outline-secondary" onclick="openElectrodeSelect();">Select Electrodes</button><br></a>
     <form method = "POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data">
                             </form>
-  <a href="#"> <form method = "POST" id="close_file" action="/delete" enctype="multipart/form-data">
+    <a href="#"><div id="title"></div></a>
+    <a href="#"> <form method = "POST" id="close_file" action="/delete" enctype="multipart/form-data">
                                 <input class="btn btn-sm btn-outline-secondary" type="submit" value="Close file">
                                 <br>
                             </form></a>
@@ -135,7 +136,7 @@
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <div id="title"></div>
+<!--                            <div id="title"></div>-->
                         </li>
                         <li class="nav-item">
                             <!-- SELECT EEG FILE -->
