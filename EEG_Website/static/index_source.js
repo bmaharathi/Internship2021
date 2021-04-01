@@ -96,7 +96,9 @@ function createChartElementFrom(json, id, count, total, height) {
                                     drawOnChartArea: false
                                 },
                                 ticks: {
-                                    maxTicksLimit: 2
+                                    maxTicksLimit: 2,
+                                    maxRotation: 0,
+                                    minRotation: 0
                                 }
                             }],
                             yAxes: [{
