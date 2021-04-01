@@ -45,13 +45,11 @@ def select_duration():
 @app.route('/upload_eeg', methods=['POST'])
 def upload_file():
     # Save file to server directory
-    eeg_file = request.files['eeg_file']
-    if eeg_file.filename != '':
-        eeg_file.save(eeg_file.filename)
-    else:
+    eeg_file = request.form['eeg_file']
+    if eeg_file == '':
         return redirect(url_for('index'))
     # Save file path for session
-    session['filename'] = eeg_file.filename
+    session['filename'] = eeg_file.split('\\')[-1]
     # Set up session defaults for file
     session['duration'] = duration_default
     session['offset'] = offset_default
@@ -88,7 +86,6 @@ def selecting_electrodes():
 # GET SELECTED DATA
 @app.route('/data', methods=['GET'])
 def get_relevant_data():
-    print(session['offset'])
     # Calculate offset according to delta argumet, offset and current offset
     new_offset = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
     if new_offset > 0:
@@ -134,8 +131,6 @@ def get_time():
 @app.route('/select-offset', methods=['POST'])
 def set_time_data():
     session['offset'] = request.form['new_value']
-    print(request.form['new_value'])
-    print(session['offset'])
     return session['offset']
 
 
