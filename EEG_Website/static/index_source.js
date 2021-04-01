@@ -31,6 +31,17 @@ function loadIndexPage() {
             displayData(1);
         }
     } );
+    $('#sidebarItems').hide();
+    $('#sidebarMenu').css('width', '3%');
+    $('#sidebarMenu').mouseenter(function () {
+        $('#sidebarMenu').css('width', '15%');
+        $('#sidebarItems').show();
+
+    });
+    $('#sidebarMenu').mouseleave(function () {
+        $('#sidebarItems').hide();
+        $('#sidebarMenu').css('width', '3%');
+    })
 
 }
 
@@ -63,7 +74,7 @@ function openAnnotationSelect() {
 function createChartElementFrom(json, id, count, total, height) {
     const name = Object.keys(json.data)[id];
     let data_map = {};
-    data_map['label'] = name;
+    data_map['label'] = name.trimEnd();
     data_map['data'] = json.data[name].map(Number);
     data_map['pointRadius'] = 0;
     data_map['fill'] = false;
@@ -75,10 +86,9 @@ function createChartElementFrom(json, id, count, total, height) {
     let canvasElem = document.createElement('canvas');
 
     canvasElem.setAttribute('height', height.toString());
-    canvasElem.setAttribute('width', '900');
+    canvasElem.setAttribute('width', '800');
     canvasElem.setAttribute('id', [name,'chart'].join(''));
-    canvasElem.setAttribute('colours', "[ { fillColor: '#ffff00' }, { fillColor: '#0066ff' } ]");
-    canvasElem.style.zIndex = count;
+    canvasElem.style.zIndex = -1;
     charts[name] = new Chart(canvasElem.getContext('2d'), {
                     type: 'line',
                     data: {
@@ -116,9 +126,9 @@ function createChartElementFrom(json, id, count, total, height) {
                         legend: {
                             display: true,
                             position: 'left',
-                            align: 'center',
-                            usePointStyle: true,
-                            rotation: 90
+                            labels: {
+                                boxWidth : 0,
+                            }
                         },
                         annotation: {
 
