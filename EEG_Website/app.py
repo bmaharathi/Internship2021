@@ -106,13 +106,11 @@ def change_amplitude():
 # UPLOAD ANNOTATION FILE
 @app.route('/upload_ann', methods=['POST'])
 def upload_ann():
-    ann_file = request.files['ann_file']  # update view in static
-    if ann_file.filename != '':
-        ann_file.save(ann_file.filename)
-    else:
+    ann_file = request.form['ann_file']  # update view in static
+    if ann_file == '':
         return redirect(url_for('index'))
     # save annotation filename to session
-    session['annotation_file'] = ann_file.filename
+    session['annotation_file'] = ann_file.split('\\')[-1]
 
     # fix to add if else statements for display, electrodes, filename
     return redirect(url_for('index', annotations=True))

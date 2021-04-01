@@ -32,23 +32,21 @@ function displayData(delta=0) {
  Dynamically add check inputs to electrode form for each electrode
  */
 function openElectrodeSelect() {
-    const electrodeForm = document.getElementById('electrode_form');
-    electrodeForm.style.display = (electrodeForm.style.display === 'none') ? 'block' : 'none';
+    $('#electrode_form').slideToggle();
     fetch('/electrode_get')
             .then(response => response.json())
             .then(json => {
                 //Delete all checkboxes except for label in form
-                while (electrodeForm.firstChild) {
-                    electrodeForm.removeChild(electrodeForm.firstChild);
-                }
+                $('#electrode_form').empty();
+
                 Object.keys(json.values).forEach( id=> {
-                    electrodeForm.appendChild(getElectrodeSelectElement(id,json.values[id].trim()))
+                    $('#electrode_form').append(getElectrodeSelectElement(id,json.values[id].trim()))
                 });
                 const submit = document.createElement('input');
                 submit.setAttribute('type', 'submit');
                 submit.setAttribute('onClick', 'openElectrodeSelect();')
-                electrodeForm.appendChild(submit);
-                electrodeForm.appendChild(document.createElement('br'));
+                $('#electrode_form').append(submit);
+                $('#electrode_form').append(document.createElement('br'));
                 saveElectrodeSelect();
             });
 }

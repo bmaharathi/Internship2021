@@ -31,16 +31,16 @@ function loadIndexPage() {
             displayData(1);
         }
     } );
-    $('#sidebarItems').hide();
-    $('#sidebarMenu').css('width', '3%');
+    $('#sidebarItems').fadeOut();
+    $('#sidebarMenu').animate({'width' : '3%'});
     $('#sidebarMenu').mouseenter(function () {
-        $('#sidebarMenu').css('width', '15%');
-        $('#sidebarItems').show();
+        $('#sidebarMenu').animate({'width' : '13%'});
+        $('#sidebarItems').fadeIn();
 
     });
     $('#sidebarMenu').mouseleave(function () {
-        $('#sidebarItems').hide();
-        $('#sidebarMenu').css('width', '3%');
+        $('#sidebarItems').fadeOut();
+        $('#sidebarMenu').animate({'width' : '3%'});
     })
 
 }
@@ -51,8 +51,14 @@ function loadIndexPage() {
  */
 // Toggle select file form
 function openFileSelect() {
-    const fileForm = document.getElementById('file_form');
-    fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
+    $('#eeg_file').change(function () {
+        console.log(this.value);
+        $.post('/upload_eeg', {eeg_file: this.value},
+                        function (response) {
+                    console.log("recieved response");
+                });
+    });
+    $('#eeg_file').click();
 }
 
 // Toggle duration select
@@ -63,8 +69,7 @@ function openDurationSelect() {
 
 // Toggle select annotation form
 function openAnnotationSelect() {
-    const annotationForm = document.getElementById('ann_file_form');
-    annotationForm.style.display = (annotationForm.style.display === 'none') ? 'block' : 'none';
+    $('#ann_file_form').slideToggle();
 }
 
 /*
