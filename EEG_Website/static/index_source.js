@@ -52,7 +52,9 @@ function loadIndexPage() {
 // Toggle select file form
 function openFileSelect() {
     $('#eeg_file').change(function () {
-        $.post('/upload_eeg', {eeg_file: this.value});
+        $.post('/upload_eeg', {eeg_file: this.value}, function() {
+            displayData(0);
+        });
     });
     $('#eeg_file').click();
 }
@@ -88,6 +90,7 @@ function createDataObject(json, id) {
 //Build single time series chart
 function createChartElementFrom(time, data_map, dataOffset) {
     let canvasElem = document.createElement('canvas');
+    console.log(dataOffset);
 
     canvasElem.setAttribute('height', '400');
     canvasElem.setAttribute('width', '750');

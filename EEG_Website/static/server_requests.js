@@ -121,13 +121,15 @@ function toggleAnnotate() {
  */
 function alterAmplitudes(delta) {
     const query = '/amplitude?delta=' + delta.toString();
-    fetch(query).then(response => response.json()).then(json => {
+    fetch(query).then(response => response.json()).then( json => {
         const amplitude = parseInt(json.amplitude);
-        const offset = parseInt(json.dataOffset);
-        chart.options.scales.yAxes[0].ticks.max = offset;
-        chart.options.scales.yAxes[0].ticks.min = -1 * offset;
+        const newMax = parseInt(json.newMax);
+        const newMin = parseInt(json.newMin);
+        chart.options.scales.yAxes[0].ticks.max = newMax;
+        chart.options.scales.yAxes[0].ticks.min = newMin;
         chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
-        chart.update()
+        chart.update(0)
+        displayData(0);
     });
 }
 

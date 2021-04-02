@@ -105,7 +105,9 @@ def get_relevant_data():
 def change_amplitude():
     new_amplitude = int(session['amplitude']) + int(request.args.get('delta'))
     session['amplitude'] = new_amplitude if new_amplitude > 0 else amplitude_default
-    return jsonify(amplitude=session['amplitude'])
+    new_data_offset = int(session['data_offset']) + int(request.args.get('delta'))
+    session['data_offset'] = new_data_offset if new_data_offset > 100 else data_mapping_default
+    return edf_manager.get_amplitude(session)
 
 
 # UPLOAD ANNOTATION FILE
