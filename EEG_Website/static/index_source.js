@@ -106,6 +106,8 @@ function createChartElementFrom(time, data_map, dataOffset) {
                     },
                     options: {
                         scales: {
+                            max: data_map.length * dataOffset,
+                            min: -1 * dataOffset,
                             x: {
                                 type: 'timeseries'
                             },
@@ -122,9 +124,8 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             }],
                             yAxes: [{
                                 ticks: {
-                                    display : false,
-                                    max: data_map.length * dataOffset,
-                                    min: -1 * dataOffset
+                                    stepSize: dataOffset,
+                                    display: false,
                                 },
                                 gridLines: {
                                     drawOnChartArea: false

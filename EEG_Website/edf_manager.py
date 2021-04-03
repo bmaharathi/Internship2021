@@ -90,6 +90,6 @@ def get_time_data(session):
 def get_amplitude(session):
     new_max = len(list(session['selected_id'])) * int(session['data_offset'])
     new_min = -1 * int(session['data_offset'])
-    return jsonify(amplitude=session['amplitude'],
+    return jsonify(amplitude=session['data_offset'],
                    newMax=new_max,
                    newMin=new_min)

@@ -127,8 +127,8 @@ function alterAmplitudes(delta) {
         const amplitude = parseInt(json.amplitude);
         const newMax = parseInt(json.newMax);
         const newMin = parseInt(json.newMin);
-        chart.options.scales.yAxes[0].ticks.max = newMax;
-        chart.options.scales.yAxes[0].ticks.min = newMin;
+        chart.options.scales.max = newMax;
+        chart.options.scales.min = newMin;
         chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
         chart.update(0)
         displayData(0);
