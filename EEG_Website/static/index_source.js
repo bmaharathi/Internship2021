@@ -23,6 +23,7 @@ function loadIndexPage() {
         displayData(0);
     }
     document.getElementById('body').addEventListener('keydown', function(event) {
+        event.preventDefault();
         const key = event.code;
         if (key === "ArrowLeft") {
             displayData(-1);
@@ -30,7 +31,7 @@ function loadIndexPage() {
         else if (key === "ArrowRight") {
             displayData(1);
         }
-    } );
+    });
     $('#sidebarItems').fadeOut();
     $('#sidebarMenu').animate({'width' : '3%'});
     $('#sidebarMenu').mouseenter(function () {
@@ -92,8 +93,8 @@ function createChartElementFrom(time, data_map, dataOffset) {
     let canvasElem = document.createElement('canvas');
     console.log(dataOffset);
 
-    canvasElem.setAttribute('height', '400');
-    canvasElem.setAttribute('width', '750');
+    canvasElem.setAttribute('height', '40%');
+    canvasElem.setAttribute('width', '80%');
     canvasElem.setAttribute('id', 'main-chart');
     canvasElem.style.zIndex = -1;
     chart = new Chart(canvasElem.getContext('2d'), {
