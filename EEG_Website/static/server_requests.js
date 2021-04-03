@@ -144,8 +144,9 @@ function setSlider() {
             $('#time-select').attr('min', json.min);
             $('#time-select').attr('max', json.max);
             $('#time-select').attr('value', json.min);
-            startTime.setHours(parseInt(json.start[0]), parseInt(json.start[1]), parseInt(json.start[2]));
+            startTime.setHours(parseInt(json.start[0]), parseInt(json.start[1]), parseInt(json.start[2]), parseInt(json.start[3]));
             $('#sliderdisplay').text(startTime.toLocaleTimeString());
+            $('#time-select').val(parseInt(json.start[3]));
 
             $('#time-select').mouseup(function () {
                 $.post('/select-offset', {new_value: this.value},

@@ -1,4 +1,4 @@
-div.slidecontainer {
+footer.slidecontainer {
     padding-left: 15%;
 }
 .slidecontainer {
@@ -22,4 +22,12 @@ div.slidecontainer {
 #display-area {
     position: relative;
     padding-left: 1%;
+}
+
+#sliderdisplay {
+    display: inline;
+}
+
+#time-select {
+    display: inline-flex;
 }

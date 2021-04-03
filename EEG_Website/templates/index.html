@@ -68,7 +68,7 @@
     <nav >
         <div id="sidebarItems">
             <ul class="nav flex-column">
-                <li class="nav-item">
+                <li>
                     <div id="title"></div>
                 </li>
                 <li class="nav-item">
@@ -114,12 +114,10 @@
     <!-- Graph area -->
     <div id="display-area">
         <div id="time_series"></div>
-        <div class="slidecontainer">
-            <span>
-                <p id="sliderdisplay"></p>
-                <input class="slidecontainer" id="time-select" type="range" class="slider" id="myRange" step="1000">
-            </span>
-        </div>
+        <footer class="slidecontainer">
+            <p class="slidecontainer" id="sliderdisplay"></p>
+            <input class="slidecontainer" id="time-select" type="range" class="slider" id="myRange" step="1000">
+        </footer>
     </div>
 </body>
 </html>

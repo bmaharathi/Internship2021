@@ -80,6 +80,7 @@ def get_time_data(session):
     hdl = EDFreader(session['filename'])
     end = hdl.getFileDuration() / 10000
     start_time = str(hdl.getStartDateTime().time()).split(':')
+    start_time.append(session['offset'])
     return jsonify(min=0,
                    max=end,
                    start=start_time)
