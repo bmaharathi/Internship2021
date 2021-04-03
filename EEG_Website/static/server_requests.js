@@ -8,11 +8,10 @@ function displayData(delta=0) {
     fetch(query)
             .then(response => response.json())
             .then(json => {
-                let id;
                 const graphs = document.getElementById('time_series');
                 let data_maps = [];
-                for (id in Object.keys(json.data)) {
-                        data_maps.push(createDataObject(json, id));
+                for (let id in json.data) {
+                    data_maps.push(createDataObject(json.data[id][1], json.data[id][0]));
                 }
                 if (!graphs.hasChildNodes()) {
                     $('#time_series').append(graphs.appendChild(createChartElementFrom(json.time, data_maps, parseInt(json.dataOffset))));
@@ -127,8 +126,8 @@ function alterAmplitudes(delta) {
         const amplitude = parseInt(json.amplitude);
         const newMax = parseInt(json.newMax);
         const newMin = parseInt(json.newMin);
-        chart.options.scales.yAxes[0].ticks.max = newMax;
-        chart.options.scales.yAxes[0].ticks.min = newMin;
+        chart.options.scales.max = newMax;
+        chart.options.scales.min = newMin;
         chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
         chart.update(0)
         displayData(0);

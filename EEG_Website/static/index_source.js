@@ -1,4 +1,5 @@
 let chart = null;
+let dataSet = null;
 
 /*
     CONFIGURE PAGE ON LOAD
@@ -78,14 +79,13 @@ function openAnnotationSelect() {
 /*
     CREATE ELEMENTS
  */
-function createDataObject(json, id) {
-    const name = Object.keys(json.data)[id];
+function createDataObject(data, id) {
+    const name = id;
     let data_map = {};
     data_map['label'] = name.trimEnd();
-    data_map['data'] = json.data[name].map(Number);
+    data_map['data'] = data.map(Number);
     data_map['pointRadius'] = 0;
     data_map['fill'] = false;
-
     return data_map;
 }
 
@@ -98,6 +98,7 @@ function createChartElementFrom(time, data_map, dataOffset) {
     canvasElem.setAttribute('width', '80%');
     canvasElem.setAttribute('id', 'main-chart');
     canvasElem.style.zIndex = -1;
+    dataSet = data_map;
     chart = new Chart(canvasElem.getContext('2d'), {
                     type: 'line',
                     data: {
@@ -106,6 +107,8 @@ function createChartElementFrom(time, data_map, dataOffset) {
                     },
                     options: {
                         scales: {
+                            max: data_map.length * dataOffset,
+                            min: -1 * dataOffset,
                             x: {
                                 type: 'timeseries'
                             },
@@ -122,9 +125,15 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             }],
                             yAxes: [{
                                 ticks: {
-                                    display : false,
-                                    max: data_map.length * dataOffset,
-                                    min: -1 * dataOffset
+                                    stepSize: dataOffset,
+                                    callback: function (value, index, values) {
+                                        const dataIndex = dataSet.length - index;
+                                        if (dataIndex >= 0 && index > 0) {
+                                            return dataSet[dataIndex].label;
+                                        } else {
+                                            return '';
+                                        }
+                                    }
                                 },
                                 gridLines: {
                                     drawOnChartArea: false
@@ -134,14 +143,13 @@ function createChartElementFrom(time, data_map, dataOffset) {
                         legend: {
                             display: false,
                         },
-                        annotation: {
-
-                        },
+                        annotation: {},
                         layout: {
                             padding: {
                                 left: 50
                             }
-                        }
+                        },
+                        events: []
                     }
                 });
 

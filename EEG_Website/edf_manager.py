@@ -35,7 +35,7 @@ def get_electrode_date(session):
     offset = int(session['offset'])
     N = int(session['duration']) * 1000 + 1
 
-    data = {}
+    data = []
 
     if len(session['selected_id']) == 0:
         session['selected_id'] = list(map(str, range(1, hdl.getNumSignals())))
@@ -53,7 +53,7 @@ def get_electrode_date(session):
         buf = buf * (-1)
         map_val = int(session['data_offset'])
         # Add data to list
-        data[hdl.getSignalLabel(signal)] = list(map(lambda val: val + count * map_val, buf))
+        data.append([hdl.getSignalLabel(signal), list(map(lambda val: val + count * map_val, buf))])
 
     # Get time labels
     start_time = hdl.getStartDateTime() + timedelta(milliseconds=offset)
@@ -90,6 +90,6 @@ def get_time_data(session):
 def get_amplitude(session):
     new_max = len(list(session['selected_id'])) * int(session['data_offset'])
     new_min = -1 * int(session['data_offset'])
-    return jsonify(amplitude=session['amplitude'],
+    return jsonify(amplitude=session['data_offset'],
                    newMax=new_max,
                    newMin=new_min)
