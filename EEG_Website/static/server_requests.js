@@ -8,11 +8,10 @@ function displayData(delta=0) {
     fetch(query)
             .then(response => response.json())
             .then(json => {
-                let id;
                 const graphs = document.getElementById('time_series');
                 let data_maps = [];
-                for (id in Object.keys(json.data)) {
-                        data_maps.push(createDataObject(json, id));
+                for (let id in json.data) {
+                    data_maps.push(createDataObject(json.data[id][1], json.data[id][0]));
                 }
                 if (!graphs.hasChildNodes()) {
                     $('#time_series').append(graphs.appendChild(createChartElementFrom(json.time, data_maps, parseInt(json.dataOffset))));
