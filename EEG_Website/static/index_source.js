@@ -126,12 +126,11 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             yAxes: [{
                                 ticks: {
                                     stepSize: dataOffset,
-                                    callback: function(value, index, values) {
+                                    callback: function (value, index, values) {
                                         const dataIndex = dataSet.length - index;
                                         if (dataIndex >= 0 && index > 0) {
                                             return dataSet[dataIndex].label;
-                                        }
-                                        else {
+                                        } else {
                                             return '';
                                         }
                                     }
@@ -144,14 +143,13 @@ function createChartElementFrom(time, data_map, dataOffset) {
                         legend: {
                             display: false,
                         },
-                        annotation: {
-
-                        },
+                        annotation: {},
                         layout: {
                             padding: {
                                 left: 50
                             }
-                        }
+                        },
+                        events: []
                     }
                 });
 
