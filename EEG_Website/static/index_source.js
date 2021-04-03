@@ -1,4 +1,4 @@
-charts = {}
+let chart = null;
 
 /*
     CONFIGURE PAGE ON LOAD
@@ -12,7 +12,7 @@ function loadIndexPage() {
     }
     if (urlParams.has("display")) {
         displayData(0);
-        removeUnselected();
+        // removeUnselected();
     }
     if (urlParams.has("filename")) {
         const title = document.createElement('h3')
@@ -23,6 +23,7 @@ function loadIndexPage() {
         displayData(0);
     }
     document.getElementById('body').addEventListener('keydown', function(event) {
+        event.preventDefault();
         const key = event.code;
         if (key === "ArrowLeft") {
             displayData(-1);
@@ -30,7 +31,18 @@ function loadIndexPage() {
         else if (key === "ArrowRight") {
             displayData(1);
         }
-    } );
+    });
+    $('#sidebarItems').fadeOut();
+    $('#sidebarMenu').animate({'width' : '3%'});
+    $('#sidebarMenu').mouseenter(function () {
+        $('#sidebarMenu').animate({'width' : '13%'});
+        $('#sidebarItems').fadeIn();
+
+    });
+    $('#sidebarMenu').mouseleave(function () {
+        $('#sidebarItems').fadeOut();
+        $('#sidebarMenu').animate({'width' : '3%'});
+    })
 
 }
 
@@ -40,50 +52,57 @@ function loadIndexPage() {
  */
 // Toggle select file form
 function openFileSelect() {
-    const fileForm = document.getElementById('file_form');
-    fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
+    $('#eeg_file').change(function () {
+        $.post('/upload_eeg', {eeg_file: this.value}, function() {
+            displayData(0);
+        });
+    });
+    $('#eeg_file').click();
 }
 
 // Toggle duration select
 function openDurationSelect() {
-    const fileForm = document.getElementById('duration_form');
-    fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
+    $('#duration_form').slideToggle();
+    // const fileForm = document.getElementById('duration_form');
+    // fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
 }
 
 // Toggle select annotation form
 function openAnnotationSelect() {
-    const annotationForm = document.getElementById('ann_file_form');
-    annotationForm.style.display = (annotationForm.style.display === 'none') ? 'block' : 'none';
+    $('#ann_file').change(function () {
+        $.post('/upload_ann', {ann_file: this.value});
+    });
+    $('#ann_file').click();
 }
 
 /*
     CREATE ELEMENTS
  */
-//Build single time series chart
-function createChartElementFrom(json, id, count, total, height) {
+function createDataObject(json, id) {
     const name = Object.keys(json.data)[id];
     let data_map = {};
-    data_map['label'] = name;
+    data_map['label'] = name.trimEnd();
     data_map['data'] = json.data[name].map(Number);
     data_map['pointRadius'] = 0;
     data_map['fill'] = false;
 
-    if (count % 2 === 1) {
-        data_map['borderColor'] = '#880808';
-    }
+    return data_map;
+}
 
+//Build single time series chart
+function createChartElementFrom(time, data_map, dataOffset) {
     let canvasElem = document.createElement('canvas');
+    console.log(dataOffset);
 
-    canvasElem.setAttribute('height', height.toString());
-    canvasElem.setAttribute('width', '900');
-    canvasElem.setAttribute('id', [name,'chart'].join(''));
-    canvasElem.setAttribute('colours', "[ { fillColor: '#ffff00' }, { fillColor: '#0066ff' } ]");
-    canvasElem.style.zIndex = count;
-    charts[name] = new Chart(canvasElem.getContext('2d'), {
+    canvasElem.setAttribute('height', '40%');
+    canvasElem.setAttribute('width', '80%');
+    canvasElem.setAttribute('id', 'main-chart');
+    canvasElem.style.zIndex = -1;
+    chart = new Chart(canvasElem.getContext('2d'), {
                     type: 'line',
                     data: {
-                        labels: json.time,
-                        datasets: [data_map],
+                        labels: time,
+                        datasets: data_map,
                     },
                     options: {
                         scales: {
@@ -91,20 +110,21 @@ function createChartElementFrom(json, id, count, total, height) {
                                 type: 'timeseries'
                             },
                             xAxes: [{
-                                display: (count === total),
+                                display: true,
                                 gridLines: {
                                     drawOnChartArea: false
                                 },
                                 ticks: {
-                                    maxTicksLimit: 2
+                                    maxTicksLimit: 2,
+                                    maxRotation: 0,
+                                    minRotation: 0
                                 }
                             }],
                             yAxes: [{
                                 ticks: {
-                                    max: parseInt(json.amplitude),
-                                    min: -1 * parseInt(json.amplitude),
-                                    stepSize: parseInt(json.amplitude),
-                                    maxTicksLimit: 3
+                                    display : false,
+                                    max: data_map.length * dataOffset,
+                                    min: -1 * dataOffset
                                 },
                                 gridLines: {
                                     drawOnChartArea: false
@@ -112,16 +132,16 @@ function createChartElementFrom(json, id, count, total, height) {
                             }]
                         },
                         legend: {
-                            display: true,
-                            position: 'left',
-                            align: 'center',
-                            usePointStyle: true,
-                            rotation: 90
+                            display: false,
                         },
                         annotation: {
 
+                        },
+                        layout: {
+                            padding: {
+                                left: 50
+                            }
                         }
-
                     }
                 });
 
@@ -154,23 +174,10 @@ function getElectrodeSelectElement(id, value) {
 /*
     ALTER CHARTS
  */
-function changeData(json, id, count) {
-    const name = Object.keys(json.data)[id];
-    let chart = charts[name];
-
-    let data_map = {};
-    data_map['label'] = name;
-    data_map['data'] = json.data[name].map(Number);
-    data_map['pointRadius'] = 0;
-    data_map['fill'] = false;
-    if (count % 2 === 1) {
-        data_map['borderColor'] = '#880808';
-    }
-    chart.data = {
-        labels: json.time,
-        datasets: [data_map]
-    }
-    chart.update();
+function changeData(data_maps, time) {
+    chart.data.labels = time;
+    chart.data.datasets = data_maps;
+    chart.update(0);
 }
 
 
