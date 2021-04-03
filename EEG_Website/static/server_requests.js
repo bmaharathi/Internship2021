@@ -19,6 +19,8 @@ function displayData(delta=0) {
                 } else {
                     changeData(data_maps, json.time)
                 }
+                setSlider();
+                $('#duration').val(parseInt(json.duration));
             });
 }
 

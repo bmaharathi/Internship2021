@@ -68,7 +68,8 @@ def get_electrode_date(session):
     return jsonify(time=times,
                    data=data,
                    offset=new_offset,
-                   dataOffset=map_val)
+                   dataOffset=map_val,
+                   duration=session['duration'])
 
 
 def get_file_start(session):

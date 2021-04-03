@@ -52,11 +52,13 @@
                 <!-- Display annotation-->
                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAnnotate();">Annotate</button>
                 <!-- Select time duration-->
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Time</button>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Duration</button>
                 <form method="POST" id="duration_form" action="/upload_duration" style=" display: none" enctype="multipart/form-data">
                     <input type="number" id="duration" name="duration" min="1" max="60">
                     <input onclick="openDurationSelect();" type="submit"/>
                 </form>
+                </div>
             </div>
         </div>
     </header>

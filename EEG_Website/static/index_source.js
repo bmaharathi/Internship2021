@@ -62,8 +62,9 @@ function openFileSelect() {
 
 // Toggle duration select
 function openDurationSelect() {
-    const fileForm = document.getElementById('duration_form');
-    fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
+    $('#duration_form').slideToggle();
+    // const fileForm = document.getElementById('duration_form');
+    // fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
 }
 
 // Toggle select annotation form
