@@ -7,7 +7,9 @@ from datetime import datetime, timedelta
 def get_annotations(session):
     start_time = get_file_start(session)
     parsed = parse_annotation_file(session)
-    return map_annotations_to_time(parsed, start_time, session['amplitude'])
+    chart_max = int(session['data_offset']) * int(session['selected_count'])
+    chart_min = int(session['data_offset']) * -1
+    return map_annotations_to_time(parsed, start_time, chart_max, chart_min)
 
 
 # parse csv file into list of annoations
@@ -22,7 +24,7 @@ def parse_annotation_file(session):
     return lst
 
 
-def map_annotations_to_time(annotations, start_time, amplitude):
+def map_annotations_to_time(annotations, start_time, chart_max, chart_min):
     mapping = []
     for annotation in annotations:
         info = {}
@@ -35,4 +37,5 @@ def map_annotations_to_time(annotations, start_time, amplitude):
         mapping.append(info)
 
     return jsonify(annotations=mapping,
-                   amplitude=amplitude)
+                   chart_max=chart_max,
+                   chart_min=chart_min)
