@@ -119,6 +119,17 @@
   <a href="#"><button class="btn btn-sm btn-outline-secondary" onclick="openElectrodeSelect();">Select Electrodes</button><br></a>
     <form method = "POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data">
                             </form>
+
+  <a href="#">  <!-- SELECT ANNOTATION FILE -->
+                    <button type="button" onclick="openAnnotationSelect();" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
+                    <form method = "POST" id = "ann_file_form" name = "annotation" enctype = 'multipart/form-data' action="/upload_ann" style="display: none">
+                        <div class="form-group-ann">
+                            <div class="custom-file-ann">
+                                <input type="file" class="csv-file" id="ann_file" name="ann_file" accept=".csv"><br>
+                            </div>
+                        </div>
+                        <input type="submit"/>
+                    </form></a>
     <a href="#"><div id="title"></div></a>
     <a href="#"> <form method = "POST" id="close_file" action="/delete" enctype="multipart/form-data">
                                 <input class="btn btn-sm btn-outline-secondary" type="submit" value="Close file">
@@ -163,6 +174,8 @@
 <!--                                <br>-->
 <!--                            </form>-->
 <!--                        </li>-->
+
+
                     </ul>
                 </div>
 
@@ -177,10 +190,18 @@ function closeNav() {
 </script>
             </nav>
             <!-- Graph area -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <br>
-                <div id="time_series"></div>
-            </main>
+
+                <div id="display-area">
+        <div id="time_series"></div>
+        <footer class="slidecontainer">
+            <p class="slidecontainer" id="sliderdisplay"></p>
+            <input class="slidecontainer" id="time-select" type="range" class="slider" id="myRange" step="1000">
+        </footer>
+    </div>
+<!--            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">-->
+<!--                <br>-->
+<!--                <div id="time_series"></div>-->
+<!--            </main>-->
         </div>
     </div>
 </body>
