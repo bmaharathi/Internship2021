@@ -74,8 +74,35 @@ function openAnnotationSelect() {
         $.post('/upload_ann', {ann_file: this.value});
     });
     $('#ann_file').click();
+    //labelsList();
+
 }
 
+function labelsList() {
+    console.log("Got called");
+        fetch('/ann_data')
+            .then(response => response.json())
+            .then(json => {
+                /*List all the names of labels */
+                const elem = document.getElementById('ann_list');
+                var val;
+                for (i in json.annotations) {
+                    let label = json.annotations[i]["label"];
+                    let li = document.createElement("li");
+                    let link = document.createElement("a");
+                    let text = document.createTextNode(label);
+                    link.appendChild(text);
+                    link.style.cursor = "pointer";
+                    link.onclick = function () {
+                        console.log(label + "selected"); //do something with this onclick function
+                    };
+                    li.appendChild(link);
+                    elem.appendChild(li);
+
+                }
+            });
+
+}
 /*
     CREATE ELEMENTS
  */
