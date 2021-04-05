@@ -13,8 +13,11 @@
 
     <!-- IBRAIN javascript source -->
     <script type="text/javascript" src="../static/index_source.js"></script>
+    <script type="text/javascript" src="../static/server_requests.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="../static/index_style.css" rel="stylesheet">
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <style>
@@ -32,7 +35,7 @@
             }
         }
 
-        .sidepanel  {
+              .sidepanel  {
   width: 0;
   position: fixed;
   z-index: 1;
@@ -83,7 +86,7 @@
     <!-- TOP HEADER BAR -->
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
         <!-- Title -->
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">IBRAIN</a>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">IBRAIN · EEG Reviewer</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon">
                 <a>Menu</a>
@@ -92,20 +95,23 @@
         <!-- Tools (annotation, and time duration -->
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
-                <!-- Open annotation-->
-                <button type="button" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
+                <!-- Display annotation-->
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAnnotate();">Annotate</button>
                 <!-- Select time duration-->
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Time</button>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Duration</button>
                 <form method="POST" id="duration_form" action="/upload_duration" style=" display: none" enctype="multipart/form-data">
                     <input type="number" id="duration" name="duration" min="1" max="60">
                     <input onclick="openDurationSelect();" type="submit"/>
                 </form>
+                </div>
             </div>
         </div>
     </header>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 
-<div id="mySidepanel" class="sidepanel">
+
+    <div id="mySidepanel" class="sidepanel">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
   <a href="#"><button class="btn btn-sm btn-outline-secondary" onclick="openFileSelect();">Select File</button><br></a>
      <form method="POST" id="file_form" action="/upload_eeg" style=" display: none" enctype="multipart/form-data">

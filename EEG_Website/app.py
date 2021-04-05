@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify, after_this_request, session
 import edf_manager
+import annreader
 
 filename = ''  # reusable filename variable
 app = Flask(__name__)
@@ -7,6 +8,7 @@ app.config['SECRET_KEY'] = "CHANGE BEFORE DEPLOYMENT!!!!!"
 duration_default = '1'
 offset_default = '0'
 amplitude_default = '200'
+data_mapping_default = '300'
 
 
 # HOME PAGE: NO FILE TO DISPLAY
@@ -40,21 +42,21 @@ def select_duration():
         return redirect(url_for('index', display=True, filename=session['filename']))
 
 
-# POST EEG FILE (AND SET SESSION DEFAULTS
+# POST EEG FILE
 @app.route('/upload_eeg', methods=['POST'])
 def upload_file():
     # Save file to server directory
-    eeg_file = request.files['eeg_file']
-    if eeg_file.filename != '':
-        eeg_file.save(eeg_file.filename)
-    else:
+    eeg_file = request.form['eeg_file']
+    if eeg_file == '':
         return redirect(url_for('index'))
     # Save file path for session
-    session['filename'] = eeg_file.filename
+    session['filename'] = eeg_file.split('\\')[-1]
     # Set up session defaults for file
     session['duration'] = duration_default
     session['offset'] = offset_default
     session['amplitude'] = amplitude_default
+    session['selected_id'] = []
+    session['data_offset'] = data_mapping_default
     # Redirect to electrode select
     return redirect(url_for('index', electrodes=True, filename=session['filename']))
 
@@ -75,8 +77,11 @@ def electrode_send():
 @app.route('/electrode_select', methods=['POST', 'GET'])
 def selecting_electrodes():
     if request.method == 'POST':
+        selected = list(request.form.values())
         # Save selected ids for session
-        session['selected_id'] = list(request.form.values())
+        session['selected_id'] = selected
+        # Save number of selected electrodes
+        session['selected_count'] = len(selected)
         # Redirect user to index page, with url parameter to trigger graph displays
         return redirect(url_for('index', display=True, filename=session['filename']))
     elif request.method == 'GET':
@@ -100,7 +105,38 @@ def get_relevant_data():
 def change_amplitude():
     new_amplitude = int(session['amplitude']) + int(request.args.get('delta'))
     session['amplitude'] = new_amplitude if new_amplitude > 0 else amplitude_default
-    return jsonify(amplitude=session['amplitude'])
+    new_data_offset = int(session['data_offset']) + int(request.args.get('delta'))
+    session['data_offset'] = new_data_offset if new_data_offset > 100 else data_mapping_default
+    return edf_manager.get_amplitude(session)
+
+
+# UPLOAD ANNOTATION FILE
+@app.route('/upload_ann', methods=['POST'])
+def upload_ann():
+    ann_file = request.form['ann_file']  # update view in static
+    if ann_file == '':
+        return redirect(url_for('index'))
+    # save annotation filename to session
+    session['annotation_file'] = ann_file.split('\\')[-1]
+
+    # fix to add if else statements for display, electrodes, filename
+    return redirect(url_for('index', annotations=True))
+
+
+@app.route('/ann_data', methods=["GET"])
+def ann_data():
+    return annreader.get_annotations(session)
+
+
+@app.route('/slider', methods=['GET'])
+def get_time():
+    return edf_manager.get_time_data(session)
+
+
+@app.route('/select-offset', methods=['POST'])
+def set_time_data():
+    session['offset'] = request.form['new_value']
+    return session['offset']
 
 
 if __name__ == '__main__':
