@@ -24,6 +24,7 @@ function displayData(delta=0) {
 }
 
 
+
 /*
  Toggle select electrode form
  Fetch electrode labels
@@ -61,6 +62,10 @@ function removeUnselected() {
             });
         })
 }
+/*
+    Fetches list of labels from /ann_data and displays them in a list of clickable label names (regular text)
+ */
+
 
 //save the state of the checkboxes
 function saveElectrodeSelect() {
@@ -85,7 +90,7 @@ function saveElectrodeSelect() {
 function toggleAnnotate() {
     const query = '/ann_data';
     fetch(query).then(response => response.json()).then(json => {
-        const amplitude = parseInt(json.amplitude);
+        const amplitude = parseInt(json.amplitude); // ??
         if (!('annotations' in chart.options.annotation)) {
             let index;
             let anns = [];
@@ -116,6 +121,12 @@ function toggleAnnotate() {
     });
 }
 
+/*
+    Display Labels
+ */
+function highlightAnn() {
+    return 0; //grab label info from /ann_data; Finish displaying labels in a list
+}
 
 /*
   Change amplitude by 100 up/down
