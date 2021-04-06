@@ -84,36 +84,59 @@ function saveElectrodeSelect() {
  */
 function toggleAnnotate() {
     const query = '/ann_data';
-    fetch(query).then(response => response.json()).then(json => {
-        const amplitude = parseInt(json.amplitude);
-        if (!('annotations' in chart.options.annotation)) {
-            let index;
-            let anns = [];
-            for (index in json.annotations) {
-                const annotation_config = {
-                    type: 'box',
-                    mode: 'vertical',
-                    xScaleID: 'x-axis-0',
-                    yScaleID: 'y-axis-0',
-                    scaleID: 'x-axis-0',
-                    // Left edge of the box. in units along the x axis
-                    xMin: json.annotations[index]['start'],
-                    xMax: json.annotations[index]['end'],
-                    yMax: parseInt(json.annotations['chart_max']),
-                    yMin: parseInt(json.annotations['chart_min']),
-                    content: "Test label",
-                    borderColor: 'grey',
-                    borderWidth: 0,
+        fetch(query).then(response => response.json()).then(json => {
+            const amplitude = parseInt(json.amplitude);
+            if (!('annotations' in chart.options.annotation)) {
+                let anns = [];
+                for (let index in json.annotations) {
+                    const start = json.annotations[index]['start'];
+                    const end = json.annotations[index]['end'];
+                    const max = parseInt(json.annotations['chart_max']);
+                    const min = parseInt(json.annotations['chart_min']);
+                    const label = json.annotations[index]['label'];
+                    const annotation_config = {
+                        type: 'box',
+                        mode: 'vertical',
+                        xScaleID: 'x-axis-0',
+                        yScaleID: 'y-axis-0',
+                        scaleID: 'x-axis-0',
+                        // Left edge of the box. in units along the x axis
+                        xMin: start,
+                        xMax: end,
+                        yMax: max,
+                        yMin: min,
+                        content: "Test label",
+                        borderColor: 'grey',
+                        borderWidth: 0,
+                    }
+                    anns.push(annotation_config);
+                    $('ul.annotation-menu').append(createAnnotationElementFrom(label, start, end, max, min));
                 }
-                anns.push(annotation_config);
+                chart.options.annotation = {annotations: anns};
+            } else {
+                delete chart.options.annotation['annotations'];
             }
-            chart.options.annotation = { annotations: anns };
-        }
-        else {
-            delete chart.options.annotation['annotations'];
-        }
-        chart.update();
-    });
+            chart.update();
+            $('.annotation-item').fadeIn();
+            $('.annotation-menu').fadeIn();
+            $('.annotation-menu').animate({'width': '50%'});
+
+        });
+}
+function toggleAnnotate2() {
+    const query = '/ann_data2';
+        fetch(query).then(response => response.json()).then(json => {
+            const amplitude = parseInt(json.amplitude);
+            if (!('annotations' in chart.options.annotation)) {
+                let anns = [];
+                for (let index in json.annotations) {
+                    const start = json.annotations[index]['start'];
+                    const end = json.annotations[index]['Duration'];
+                    anns.push(annotation_config);
+                    $('ul.annotation-menu').append(createAnnotationElementFrom(label, start, end));
+                }
+            }
+        });
 }
 
 

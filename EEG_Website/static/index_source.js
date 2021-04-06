@@ -44,7 +44,8 @@ function loadIndexPage() {
         $('#sidebarItems').fadeOut();
         $('#sidebarMenu').animate({'width' : '3%'});
     })
-
+    $('.annotation-item').fadeOut();
+    $('.annotation-menu').fadeOut();
 }
 
 
@@ -179,6 +180,22 @@ function getElectrodeSelectElement(id, value) {
     return elem;
 }
 
+//Create annotation element
+function createAnnotationElementFrom(label, start, end, max, min) {
+    let annotation = $('<a>', {class:'annotation-item', id:label});
+    annotation.text(label);
+    annotation.val(start)
+    annotation.click( function () {
+        const annotation_offset  = this.value;
+        console.log(annotation_offset);
+        $.post('/select-offset', {new_value: annotation_offset},
+            function () {
+            displayData(0);
+        });
+    });
+
+    return annotation;
+}
 /*
     ALTER CHARTS
  */

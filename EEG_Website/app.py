@@ -129,6 +129,11 @@ def ann_data():
     return annreader.get_annotations(session)
 
 
+@app.route('/ann_data2', methods=["GET"])
+def ann_data2():
+    return annreader.get_annotations(session)
+
+
 @app.route('/slider', methods=['GET'])
 def get_time():
     return edf_manager.get_time_data(session)

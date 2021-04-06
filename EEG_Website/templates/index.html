@@ -50,7 +50,7 @@
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
                 <!-- Display annotation-->
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAnnotate();">Annotate</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="toggleAnnButton" onclick="toggleAnnotate();">Annotate</button>
                 <!-- Select time duration-->
                 <div>
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Duration</button>
@@ -67,7 +67,7 @@
 
     <!-- SIDE BAR-->
     <div id="sidebarMenu">
-    <nav >
+    <nav>
         <div id="sidebarItems">
             <ul class="nav flex-column">
                 <li>
@@ -112,6 +112,12 @@
             </ul>
         </div>
     </nav>
+    </div>
+    <div class="annotation-menu">
+        <nav class="annotation-menu">
+            <ul class="annotation-menu" id="annotation-items"></ul>
+            <a>h</a>
+        </nav>
     </div>
     <!-- Graph area -->
     <div id="display-area">
