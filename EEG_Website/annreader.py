@@ -39,3 +39,9 @@ def map_annotations_to_time(annotations, start_time, chart_max, chart_min):
     return jsonify(annotations=mapping,
                    chart_max=chart_max,
                    chart_min=chart_min)
+
+
+def get_annotation_by_offset(session):
+    parsed = parse_annotation_file(session)
+    return jsonify(annotations=parsed)
+

@@ -1,6 +1,7 @@
 footer.slidecontainer {
     padding-left: 15%;
 }
+
 .slidecontainer {
     align-self: center;
     width: 1100px;
@@ -17,6 +18,24 @@ footer.slidecontainer {
     padding-left: 2%;
     padding-top: 5%;
 
+}
+
+.annotation-menu {
+    width: 0%;
+    height: 100%;
+    background-color: gainsboro;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    left: 85%;
+    position: fixed;
+    padding-right: 2%;
+    padding-top: 5%;
+}
+
+.annotation-item {
+    padding-right: 2%;
+    display: block;
 }
 
 #display-area {
