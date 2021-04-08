@@ -79,35 +79,31 @@ function openAnnotationSelect() {
 
 }
 
-function labelsList() {
-    console.log("Got called");
-        fetch('/ann_data?byTime=false')
-            .then(response => response.json())
-            .then(json => {
-                /*List all the names of labels */
-                const elem = document.getElementById('ann_list');
-                var val;
-                for (i in json.annotations) {
-                    const label = json.annotations[i]["Annotation"];
-                    const offset = json.annotations[i]["Onset"];
-                    let li = document.createElement("li");
-                    let link = document.createElement("a");
-                    link.value = offset;
-                    let text = document.createTextNode(label);
-                    link.appendChild(text);
-                    link.style.cursor = "pointer";
-                    link.onclick = function () {
-                        $.post('/select-offset', {new_value: this.value},
-                        function (response) {
-                            displayData(0);
-                        });
-                    };
-                    li.appendChild(link);
-                    elem.appendChild(li);
+function listAnnotations() {
+    const query = '/ann_data?byTime=false';
+    fetch(query).then(response => response.json()).then(json => {
+        const amplitude = parseInt(json.amplitude);
+        if (!('annotations' in chart.options.annotation)) {
+            let anns = [];
+            for (let index in json.annotations) {
+                const onset = parseInt(json.annotations[index]['Onset']);
+                const duration = parseInt(json.duration) * 1000;
+                let start = onset - Math.floor(.3 * duration)
+                start = (start > 0) ? start : 0;
 
-                }
-            });
+                const label = json.annotations[index]['Annotation'];
+                $('#annotation-items').append(createAnnotationElementFrom(label, start));
+            }
+            chart.options.annotation = {annotations: anns};
+        } else {
+            delete chart.options.annotation['annotations'];
+        }
+        chart.update();
+        $('.annotation-item').show();
+        $('.annotation-menu').show();
+        $('.annotation-menu').animate({'width': '50%'});
 
+    });
 }
 /*
     CREATE ELEMENTS
@@ -213,20 +209,24 @@ function getElectrodeSelectElement(id, value) {
 }
 
 //Create annotation element
-function createAnnotationElementFrom(label, start, end, max, min) {
-    let annotation = $('<a>', {class:'annotation-item', id:label});
-    annotation.text(label);
-    annotation.val(start)
-    annotation.click( function () {
-        const annotation_offset  = this.value;
-        console.log(annotation_offset);
-        $.post('/select-offset', {new_value: annotation_offset},
-            function () {
+function createAnnotationElementFrom(label, start, end) {
+    let li = document.createElement("li");
+    let link = document.createElement("a");
+    link.value = start;
+    let text = document.createTextNode(label);
+    link.appendChild(text);
+    link.style.cursor = "pointer";
+    link.onclick = function () {
+        const argument = "&chosen=" + this.firstChild.textContent;
+        $.post('/select-offset', {new_value: this.value},
+        function (response) {
             displayData(0);
+            toggleAnnotate(argument);
+            console.log(argument);
         });
-    });
-
-    return annotation;
+    };
+    li.appendChild(link);
+    return li;
 }
 /*
     ALTER CHARTS
