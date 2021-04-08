@@ -56,6 +56,7 @@ def upload_file():
     session['offset'] = offset_default
     session['amplitude'] = amplitude_default
     session['selected_id'] = []
+    session['selected_annotation']
     session['selected_count'] = '0'
     session['data_offset'] = data_mapping_default
     # Redirect to electrode select
@@ -126,12 +127,13 @@ def upload_ann():
 
 @app.route('/ann_data', methods=["GET"])
 def ann_data():
-    return annreader.get_annotations(session)
-
-
-@app.route('/ann_data2', methods=["GET"])
-def ann_data2():
-    return annreader.get_annotations(session)
+    if request.args['byTime'] == 'true':
+        if request.args['chosen'] is not None:
+            print(request.args['chosen'])
+            session['selected_annotation'] = [request.args['chosen']]
+        return annreader.get_annotations(session)
+    else:
+        return annreader.annotations_by_offset(session)
 
 
 @app.route('/slider', methods=['GET'])

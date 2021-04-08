@@ -87,11 +87,10 @@ function saveElectrodeSelect() {
 /*
   Display annotations
  */
-function toggleAnnotate() {
-    const query = '/ann_data';
+function toggleAnnotate(selectArg="", chosenName="") {
+    const query = '/ann_data?byTime=true' + selectArg;
         fetch(query).then(response => response.json()).then(json => {
-            const amplitude = parseInt(json.amplitude);
-            if (!('annotations' in chart.options.annotation)) {
+            // if (!('annotations' in chart.options.annotation)) {
                 let anns = [];
                 for (let index in json.annotations) {
                     const start = json.annotations[index]['start'];
@@ -99,6 +98,8 @@ function toggleAnnotate() {
                     const max = parseInt(json.annotations['chart_max']);
                     const min = parseInt(json.annotations['chart_min']);
                     const label = json.annotations[index]['label'];
+
+                    const color = (label === chosenName) ? 'yellow' : 'grey'
                     const annotation_config = {
                         type: 'box',
                         mode: 'vertical',
@@ -111,36 +112,17 @@ function toggleAnnotate() {
                         yMax: max,
                         yMin: min,
                         content: "Test label",
-                        borderColor: 'grey',
-                        borderWidth: 0,
+                        borderColor: color,
+                        borderWidth: 1,
                     }
                     anns.push(annotation_config);
                     $('ul.annotation-menu').append(createAnnotationElementFrom(label, start, end, max, min));
                 }
                 chart.options.annotation = {annotations: anns};
-            } else {
-                delete chart.options.annotation['annotations'];
-            }
+            // } else {
+            //     delete chart.options.annotation['annotations'];
+            // }
             chart.update();
-            $('.annotation-item').fadeIn();
-            $('.annotation-menu').fadeIn();
-            $('.annotation-menu').animate({'width': '50%'});
-
-        });
-}
-function toggleAnnotate2() {
-    const query = '/ann_data2';
-        fetch(query).then(response => response.json()).then(json => {
-            const amplitude = parseInt(json.amplitude);
-            if (!('annotations' in chart.options.annotation)) {
-                let anns = [];
-                for (let index in json.annotations) {
-                    const start = json.annotations[index]['start'];
-                    const end = json.annotations[index]['Duration'];
-                    anns.push(annotation_config);
-                    $('ul.annotation-menu').append(createAnnotationElementFrom(label, start, end));
-                }
-            }
         });
 }
 
@@ -186,7 +168,7 @@ function setSlider() {
             $('#time-select').mouseup(function () {
                 $.post('/select-offset', {new_value: this.value},
                         function (response) {
-                    displayData();
+                    displayData(0);
                     let newTime = new Date();
                     newTime.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
                     console.log(this.value);

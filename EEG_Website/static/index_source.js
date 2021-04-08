@@ -81,21 +81,26 @@ function openAnnotationSelect() {
 
 function labelsList() {
     console.log("Got called");
-        fetch('/ann_data')
+        fetch('/ann_data?byTime=false')
             .then(response => response.json())
             .then(json => {
                 /*List all the names of labels */
                 const elem = document.getElementById('ann_list');
                 var val;
                 for (i in json.annotations) {
-                    let label = json.annotations[i]["label"];
+                    const label = json.annotations[i]["Annotation"];
+                    const offset = json.annotations[i]["Onset"];
                     let li = document.createElement("li");
                     let link = document.createElement("a");
+                    link.value = offset;
                     let text = document.createTextNode(label);
                     link.appendChild(text);
                     link.style.cursor = "pointer";
                     link.onclick = function () {
-                        console.log(label + "selected"); //do something with this onclick function
+                        $.post('/select-offset', {new_value: this.value},
+                        function (response) {
+                            displayData(0);
+                        });
                     };
                     li.appendChild(link);
                     elem.appendChild(li);

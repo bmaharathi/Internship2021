@@ -9,7 +9,8 @@ def get_annotations(session):
     parsed = parse_annotation_file(session)
     chart_max = int(session['data_offset']) * int(session['selected_count'])
     chart_min = int(session['data_offset']) * -1
-    return map_annotations_to_time(parsed, start_time, chart_max, chart_min)
+    selected = list(session['selected_annotation'])
+    return map_annotations_to_time(parsed, start_time, chart_max, chart_min, selected)
 
 
 # parse csv file into list of annoations
@@ -24,9 +25,11 @@ def parse_annotation_file(session):
     return lst
 
 
-def map_annotations_to_time(annotations, start_time, chart_max, chart_min):
+def map_annotations_to_time(annotations, start_time, chart_max, chart_min, selected):
     mapping = []
     for annotation in annotations:
+        if len(selected) > 0 and annotation['Annotation'] not in selected:
+            continue
         info = {}
         start = start_time + timedelta(milliseconds=int(annotation['Onset']))
         end = start + timedelta(milliseconds=int(annotation['Duration']))
@@ -41,7 +44,8 @@ def map_annotations_to_time(annotations, start_time, chart_max, chart_min):
                    chart_min=chart_min)
 
 
-def get_annotation_by_offset(session):
+def annotations_by_offset(session):
     parsed = parse_annotation_file(session)
-    return jsonify(annotations=parsed)
-
+    duration = session['duration']
+    return jsonify(annotations=parsed,
+                   duration=duration)
