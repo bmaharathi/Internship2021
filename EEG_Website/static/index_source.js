@@ -5,24 +5,30 @@ let dataSet = null;
     CONFIGURE PAGE ON LOAD
  */
 function loadIndexPage() {
+    // Create url object to check status of current workflow
     const queryString = window.location.search;
     let urlParams = new URLSearchParams(queryString);
+    // Set up slider to change current data
     setSlider();
+    // Select electrodes
     if (urlParams.has("electrodes")) {
         openElectrodeSelect();
     }
+    // Display time series graph
     if (urlParams.has("display")) {
         displayData(0);
-        // removeUnselected();
     }
+    // Display current file name
     if (urlParams.has("filename")) {
         const title = document.createElement('h3')
         title.innerText = urlParams.get('filename');
         document.getElementById('title').appendChild(title);
     }
+    // ???????
     if (urlParams.has("annotations")) {
         displayData(0);
     }
+    // Set up event listeners to step through data using arrow keys
     document.getElementById('body').addEventListener('keydown', function(event) {
         event.preventDefault();
         const key = event.code;
@@ -33,6 +39,8 @@ function loadIndexPage() {
             displayData(1);
         }
     });
+    // Set up left side bar
+    // TODO: FIX HOVER TO AVOID CLOSING EARLY
     $('#sidebarItems').fadeOut();
     $('#sidebarMenu').animate({'width' : '3%'});
     $('#sidebarMenu').mouseenter(function () {
@@ -44,6 +52,8 @@ function loadIndexPage() {
         $('#sidebarItems').fadeOut();
         $('#sidebarMenu').animate({'width' : '3%'});
     })
+    // Hide annotation menu
+    // TODO: FIX STYLING
     $('.annotation-item').fadeOut();
     $('.annotation-menu').fadeOut();
 }
@@ -54,19 +64,19 @@ function loadIndexPage() {
  */
 // Toggle select file form
 function openFileSelect() {
+    // add event listener to post name of file then display data
     $('#eeg_file').change(function () {
         $.post('/upload_eeg', {eeg_file: this.value}, function() {
             displayData(0);
         });
     });
+    // Opens up select file prompt
     $('#eeg_file').click();
 }
 
 // Toggle duration select
 function openDurationSelect() {
     $('#duration_form').slideToggle();
-    // const fileForm = document.getElementById('duration_form');
-    // fileForm.style.display = (fileForm.style.display === 'none') ? 'block' : 'none';
 }
 
 // Toggle select annotation form
@@ -75,39 +85,22 @@ function openAnnotationSelect() {
         $.post('/upload_ann', {ann_file: this.value});
     });
     $('#ann_file').click();
-    //labelsList();
-
 }
 
+
+// open annotations menu and get annotations to list
 function listAnnotations() {
-    const query = '/ann_data?byTime=false';
-    fetch(query).then(response => response.json()).then(json => {
-        const amplitude = parseInt(json.amplitude);
-        if (!('annotations' in chart.options.annotation)) {
-            let anns = [];
-            for (let index in json.annotations) {
-                const onset = parseInt(json.annotations[index]['Onset']);
-                const duration = parseInt(json.duration) * 1000;
-                let start = onset - Math.floor(.3 * duration)
-                start = (start > 0) ? start : 0;
-
-                const label = json.annotations[index]['Annotation'];
-                $('#annotation-items').append(createAnnotationElementFrom(label, start));
-            }
-            chart.options.annotation = {annotations: anns};
-        } else {
-            delete chart.options.annotation['annotations'];
-        }
-        chart.update();
-        $('.annotation-item').show();
-        $('.annotation-menu').show();
-        $('.annotation-menu').animate({'width': '50%'});
-
-    });
+    getAnnotationsToList();
+    // TODO: FIX ANIMATION
+    $('.annotation-item').show();
+    $('.annotation-menu').show();
+    $('.annotation-menu').animate({'width': '50%'});
 }
+
 /*
     CREATE ELEMENTS
  */
+// Create single channel configuration for chart js
 function createDataObject(data, id) {
     const name = id;
     let data_map = {};
@@ -120,14 +113,15 @@ function createDataObject(data, id) {
 
 //Build single time series chart
 function createChartElementFrom(time, data_map, dataOffset) {
+    // HTML Canvas element
     let canvasElem = document.createElement('canvas');
-    console.log(dataOffset);
-
+    canvasElem.setAttribute('id', 'main-chart');
+    // TODO: MOVE STYLING TO CSS FILE
     canvasElem.setAttribute('height', '40%');
     canvasElem.setAttribute('width', '80%');
-    canvasElem.setAttribute('id', 'main-chart');
     canvasElem.style.zIndex = -1;
     dataSet = data_map;
+    //Display actual chart
     chart = new Chart(canvasElem.getContext('2d'), {
                     type: 'line',
                     data: {
@@ -136,11 +130,15 @@ function createChartElementFrom(time, data_map, dataOffset) {
                     },
                     options: {
                         scales: {
+                            // Data limits (change to maintain orderly display of channels)
                             max: data_map.length * dataOffset,
                             min: -1 * dataOffset,
+                            // Label type (hours)
                             x: {
                                 type: 'timeseries'
                             },
+                            // X axes label (display only beginning and end time of current view)
+                            // TODO: CHANGE FONTS
                             xAxes: [{
                                 display: true,
                                 gridLines: {
@@ -152,9 +150,13 @@ function createChartElementFrom(time, data_map, dataOffset) {
                                     minRotation: 0
                                 }
                             }],
+                            // Y axis labels (used to display channel names
                             yAxes: [{
+                                //TODO: FIX ALIGNMENT WHICH BREAKS ON AMPLITUDE CHANGES
                                 ticks: {
+                                    // Step size used to align channel name with graph
                                     stepSize: dataOffset,
+                                    // Change label from numerical value to the name of the channel at tick offset
                                     callback: function (value, index, values) {
                                         const dataIndex = dataSet.length - index;
                                         if (dataIndex >= 0 && index > 0) {
@@ -164,29 +166,37 @@ function createChartElementFrom(time, data_map, dataOffset) {
                                         }
                                     }
                                 },
+                                // TODO: DISPLAY DASHED GRIDLINES DEPENDENDT ON DURATION VIEWED
                                 gridLines: {
                                     drawOnChartArea: false
                                 }
                             }]
                         },
+                        // Prevent legend display because it doesn't optimize space or align with channels
                         legend: {
                             display: false,
                         },
+                        // Annotation section (filled in when displaying annotations
                         annotation: {},
+                        // Padding of graph
                         layout: {
                             padding: {
                                 left: 50
                             }
                         },
+                        // Erases default events
+                        //TODO: ADD CALLBACK TO CHANGE CHANNEL COLOR
                         events: []
                     }
                 });
 
+    // Adds event listener to change amplitude based on up/down arrow keys
     document.getElementById('body').addEventListener('keydown', function(event) {
         const key = event.code;
         if (key === "ArrowUp") { alterAmplitudes(100);}
         else if (key === "ArrowDown") { alterAmplitudes(-100); }
     });
+
     return canvasElem;
 }
 
@@ -210,24 +220,31 @@ function getElectrodeSelectElement(id, value) {
 
 //Create annotation element
 function createAnnotationElementFrom(label, start, end) {
+    //create html elements
     let li = document.createElement("li");
     let link = document.createElement("a");
+    // set value of link to starr offset
     link.value = start;
+    // Adds annotation label to element
     let text = document.createTextNode(label);
     link.appendChild(text);
+    // ????
     link.style.cursor = "pointer";
+    // Go to annotation when clicked then display annotation
     link.onclick = function () {
         const argument = "&chosen=" + this.firstChild.textContent;
         $.post('/select-offset', {new_value: this.value},
         function (response) {
             displayData(0);
             toggleAnnotate(argument);
-            console.log(argument);
         });
     };
+
     li.appendChild(link);
     return li;
 }
+
+
 /*
     ALTER CHARTS
  */
