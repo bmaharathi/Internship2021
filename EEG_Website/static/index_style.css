@@ -29,12 +29,10 @@ footer.slidecontainer {
     right: 0;
     left: 85%;
     position: fixed;
-    padding-right: 2%;
     padding-top: 5%;
 }
 
 .annotation-item {
-    padding-right: 2%;
     display: block;
 }
 
