@@ -55,6 +55,7 @@ function loadIndexPage() {
     // TODO: FIX STYLING
     $('#annotation-items').hide();
     $('.annotation-menu').animate({'width': '0%', 'left': '100%'});
+    setSlider();
 }
 
 
@@ -141,14 +142,31 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             xAxes: [{
                                 display: true,
                                 gridLines: {
-                                    drawOnChartArea: false
+                                    drawOnChartArea: false,
+                                    drawOnChartArea: true,
+                                    drawTicks: false
                                 },
                                 ticks: {
-                                    maxTicksLimit: 2,
+                                    padding: 15,
+                                    maxTicksLimit: time.length / 1000,
+                                    stepSize: 1000,
                                     maxRotation: 0,
                                     minRotation: 0,
                                     fontWeight: 'bold',
-                                    fontSize: 15
+                                    fontSize: 15,
+                                    callback: function (value, index, values) {
+                                        const timevalues = value.split(':')
+                                        let timelabel = new Date();
+                                        timelabel.setHours(parseInt(timevalues[0]), parseInt(timevalues[1]), parseInt(timevalues[2]));
+                                        if (index == 0 || index == time.length - 1) {
+                                            if (index == 0) {
+                                                $('#sliderdisplay').text(timelabel.toLocaleTimeString());
+                                            }
+                                            return timelabel.toLocaleTimeString();
+                                        } else {
+                                            return '';
+                                        }
+                                    }
                                 }
                             }],
                             // Y axis labels (used to display channel names

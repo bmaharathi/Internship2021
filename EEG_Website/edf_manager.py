@@ -68,6 +68,7 @@ def get_electrode_date(session):
     map_val = int(session['data_offset'])
     return jsonify(time=times,
                    data=data,
+                   sliderval=offset,
                    offset=new_offset,
                    dataOffset=map_val,
                    duration=session['duration'])

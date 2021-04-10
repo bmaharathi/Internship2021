@@ -24,11 +24,15 @@ function displayData(delta=0) {
                 else {
                     changeData(data_maps, json.time)
                 }
-                // update slider
-                setSlider();
                 // Update duration display
                 $('#duration').val(parseInt(json.duration));
-            });
+                return parseInt(json.sliderval);
+            })
+        .then(function (start) {
+            $('#time-select').val(start);
+            $('#sliderdisplay').show();
+            $('.slidecontainer').show();
+        });
 }
 
 
@@ -167,6 +171,17 @@ function alterAmplitudes(delta) {
     Set up slider
  */
 function setSlider() {
+    $('#time-select').mouseup(function () {
+        $.post('/select-offset', {new_value: this.value},
+            function (response) {
+                displayData(0);
+                // let newTime = new Date();
+                // newTime.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+                // newTime.setMilliseconds($('#time-select').val());
+                //  $('#sliderdisplay').text(newTime.toLocaleTimeString());
+        });
+
+    });
     const query = '/slider';
     fetch(query)
         .then(response => response.json())
@@ -175,11 +190,7 @@ function setSlider() {
             $('#time-select').attr('min', json.min);
             $('#time-select').attr('max', json.max);
             $('#time-select').attr('value', json.min);
-            //display current time
-            startTime.setHours(parseInt(json.start[0]), parseInt(json.start[1]), parseInt(json.start[2]), parseInt(json.start[3]));
-            $('#sliderdisplay').text(startTime.toLocaleTimeString());
-            //set slider circle to current time
-            $('#time-select').val(parseInt(json.start[3]));
+
             //set up function to change display on change of slider
             $('#time-select').mouseup(function () {
                 $.post('/select-offset', {new_value: this.value},
@@ -191,10 +202,6 @@ function setSlider() {
                      $('#sliderdisplay').text(newTime.toLocaleTimeString());
                 });
 
-            })
+            });
         })
-        .then(function () {
-            $('#sliderdisplay').show();
-            $('.slidecontainer').show();
-        });
 }
