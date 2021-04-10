@@ -146,7 +146,9 @@ function createChartElementFrom(time, data_map, dataOffset) {
                                 ticks: {
                                     maxTicksLimit: 2,
                                     maxRotation: 0,
-                                    minRotation: 0
+                                    minRotation: 0,
+                                    fontWeight: 'bold',
+                                    fontSize: 15
                                 }
                             }],
                             // Y axis labels (used to display channel names
@@ -163,7 +165,9 @@ function createChartElementFrom(time, data_map, dataOffset) {
                                         } else {
                                             return '';
                                         }
-                                    }
+                                    },
+                                    fontWeight: 'bold',
+                                    fontSize: 14
                                 },
                                 // TODO: DISPLAY DASHED GRIDLINES DEPENDENDT ON DURATION VIEWED
                                 gridLines: {
@@ -174,6 +178,12 @@ function createChartElementFrom(time, data_map, dataOffset) {
                         // Prevent legend display because it doesn't optimize space or align with channels
                         legend: {
                             display: false,
+                            label: {
+                                font: {
+                                    weight: 'bold',
+                                    size: 50
+                                }
+                            }
                         },
                         // Annotation section (filled in when displaying annotations
                         annotation: {},
