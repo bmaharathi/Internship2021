@@ -7,9 +7,8 @@ let dataSet = null;
 function loadIndexPage() {
     // Create url object to check status of current workflow
     const queryString = window.location.search;
+    $('.slidecontainer').hide();
     let urlParams = new URLSearchParams(queryString);
-    // Set up slider to change current data
-    setSlider();
     // Select electrodes
     if (urlParams.has("electrodes")) {
         openElectrodeSelect();
@@ -54,8 +53,8 @@ function loadIndexPage() {
     })
     // Hide annotation menu
     // TODO: FIX STYLING
-    $('.annotation-item').fadeOut();
-    $('.annotation-menu').fadeOut();
+    $('#annotation-items').hide();
+    $('.annotation-menu').animate({'width': '0%', 'left': '100%'});
 }
 
 
@@ -90,11 +89,11 @@ function openAnnotationSelect() {
 
 // open annotations menu and get annotations to list
 function listAnnotations() {
+    $('#annotation-items').empty();
     getAnnotationsToList();
     // TODO: FIX ANIMATION
-    $('.annotation-item').show();
-    $('.annotation-menu').show();
-    $('.annotation-menu').animate({'width': '50%'});
+    $('#annotation-items').show();
+    $('.annotation-menu').animate({'width': '50%', 'left': '85%'});
 }
 
 /*
@@ -232,11 +231,13 @@ function createAnnotationElementFrom(label, start, end) {
     link.style.cursor = "pointer";
     // Go to annotation when clicked then display annotation
     link.onclick = function () {
-        const argument = "&chosen=" + this.firstChild.textContent;
+        const argument = "&chosen=" + label;
         $.post('/select-offset', {new_value: this.value},
         function (response) {
             displayData(0);
-            toggleAnnotate(argument);
+            toggleAnnotate(argument, label);
+            $('#annotation-items').hide();
+            $('.annotation-menu').animate({'width': '0%', 'left': '100%'});
         });
     };
 
