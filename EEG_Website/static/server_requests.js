@@ -192,5 +192,9 @@ function setSlider() {
                 });
 
             })
+        })
+        .then(function () {
+            $('#sliderdisplay').show();
+            $('.slidecontainer').show();
         });
 }
