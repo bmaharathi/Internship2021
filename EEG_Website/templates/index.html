@@ -52,8 +52,6 @@
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
                 <!--Toggle display of buttons when annotations are uploaded is TODO -->
-                <!-- Display annotation-->
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAnnotate();">Annotate</button>
                 <button class="btn btn-sm btn-outline-secondary" onclick="listAnnotations();" type="button" id = "ann_pop" aria-expanded="false">Annotations</button>
                 <!-- Select time duration-->
                 <div>
@@ -120,7 +118,7 @@
     </nav>
     </div>
     <div class="annotation-menu">
-        <nav class="annotation-menu" id="annotation-items"></nav>
+        <nav id="annotation-items"></nav>
     </div>
     <!-- Graph area -->
     <div id="display-area">
