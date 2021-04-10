@@ -108,6 +108,8 @@ function createDataObject(data, id) {
     data_map['data'] = data.map(Number);
     data_map['pointRadius'] = 0;
     data_map['fill'] = false;
+    data_map['borderColor'] = '#51A1E8';
+    data_map['borderWidth'] = 2;
     return data_map;
 }
 
