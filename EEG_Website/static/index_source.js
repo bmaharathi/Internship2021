@@ -55,7 +55,6 @@ function loadIndexPage() {
     // TODO: FIX STYLING
     $('#annotation-items').hide();
     $('.annotation-menu').animate({'width': '0%', 'left': '100%'});
-    setSlider();
 }
 
 

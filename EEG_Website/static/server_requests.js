@@ -29,6 +29,7 @@ function displayData(delta=0) {
                 return parseInt(json.sliderval);
             })
         .then(function (start) {
+            setSlider();
             $('#time-select').val(start);
             $('#sliderdisplay').show();
             $('.slidecontainer').show();
