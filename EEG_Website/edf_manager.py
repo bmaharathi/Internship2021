@@ -19,8 +19,8 @@ def get_electrodes(session):
 def get_selected_electrodes(session):
     hdl = EDFreader(session['filename'])
     selected = []
-    if len(session['selected_id']) == 0:
-        session['selected_id'] = list(map(str, range(1, hdl.getNumSignals())))
+    if session['selected_count'] == '0':
+        session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
     # for each signal in edf file
     for s_id in session['selected_id']:
         signal = int(s_id)
@@ -37,8 +37,9 @@ def get_electrode_date(session):
 
     data = []
 
-    if len(session['selected_id']) == 0:
-        session['selected_id'] = list(map(str, range(1, hdl.getNumSignals())))
+    if session['selected_count'] == '0':
+        session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
+        session['selected_count'] = hdl.getNumSignals()
 
     # for each signal in edf file
     for count, s_id in enumerate(session['selected_id']):
@@ -67,6 +68,7 @@ def get_electrode_date(session):
     map_val = int(session['data_offset'])
     return jsonify(time=times,
                    data=data,
+                   sliderval=offset,
                    offset=new_offset,
                    dataOffset=map_val,
                    duration=session['duration'])

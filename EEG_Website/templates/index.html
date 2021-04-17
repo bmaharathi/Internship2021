@@ -70,9 +70,22 @@
                         <!-- Populate with labels -->
                       </ul>
                 </div>
-                <!-- Select time duration-->
 
-            </div>
+<!--                Interface Setup for Annotations-->
+<form action="/action_page.php" class="btn btn-sm btn-outline-secondary">
+<div>
+     <label for="city">Annotate:</label>
+    <select name="city" id="city" onload = "listAnnotations();">
+        <option value = "Annotation file information">Annotation Interface</option>
+        <option value="sydney">Onset</option>
+        <option value="melbourne">Duration</option>
+        <option value="cromwell">Annotation</option>
+    </select>
+
+  <input type="text" id="fname" name="fname"><br><br>
+  <input onClick = "createAnnotationElementFrom;"type="submit" value="Submit">
+
+
         </div>
     </header>
 
