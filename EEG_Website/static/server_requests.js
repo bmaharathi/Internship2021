@@ -176,6 +176,9 @@ function setSlider() {
     fetch(query)
         .then(response => response.json())
         .then(json => {
+            startTime.setHours(parseInt(json.start[0]));
+            startTime.setMinutes(parseInt(json.start[1]));
+            startTime.setSeconds(parseInt(json.start[2]));
             // Set up attributes of slider
             $('#time-select').attr('min', json.min);
             $('#time-select').attr('max', json.max);

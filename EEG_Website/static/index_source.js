@@ -63,6 +63,12 @@ function loadIndexPage() {
         });
     });
     $('#color-select').hide();
+    document.getElementById('time-select').oninput = function () {
+        let timelabel = new Date();
+        timelabel.setTime(startTime.getTime());
+        timelabel.setMilliseconds(this.value);
+        $('#sliderdisplay').text(timelabel.toLocaleTimeString());
+    }
 }
 
 
@@ -169,9 +175,6 @@ function createChartElementFrom(time, data_map, dataOffset) {
                                         let timelabel = new Date();
                                         timelabel.setHours(parseInt(timevalues[0]), parseInt(timevalues[1]), parseInt(timevalues[2]));
                                         if (index == 0 || index == time.length - 1) {
-                                            if (index == 0) {
-                                                $('#sliderdisplay').text(timelabel.toLocaleTimeString());
-                                            }
                                             return timelabel.toLocaleTimeString();
                                         } else {
                                             return '';
