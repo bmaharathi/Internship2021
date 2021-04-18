@@ -57,7 +57,7 @@ def get_electrode_date(session):
         data.append([hdl.getSignalLabel(signal), list(map(lambda val: val + count * map_val, buf))])
 
     # Get time labels
-    start_time = hdl.getStartDateTime() + timedelta(milliseconds=offset)
+    start_time = hdl.getStartDateTime()
     times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
     times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
     times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
