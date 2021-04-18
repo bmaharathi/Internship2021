@@ -163,6 +163,7 @@ function createChartElementFrom(time, data_map, dataOffset) {
                                     minRotation: 0,
                                     fontWeight: 'bold',
                                     fontSize: 15,
+                                    fontColor: 'black',
                                     callback: function (value, index, values) {
                                         const timevalues = value.split(':')
                                         let timelabel = new Date();
@@ -194,7 +195,8 @@ function createChartElementFrom(time, data_map, dataOffset) {
                                         }
                                     },
                                     fontWeight: 'bold',
-                                    fontSize: 14
+                                    fontSize: 15,
+                                    fontColor: 'black'
                                 },
                                 // TODO: DISPLAY DASHED GRIDLINES DEPENDENDT ON DURATION VIEWED
                                 gridLines: {
@@ -204,14 +206,7 @@ function createChartElementFrom(time, data_map, dataOffset) {
                         },
                         // Prevent legend display because it doesn't optimize space or align with channels
                         legend: {
-                            display: false,
-                            label: {
-                                font: {
-                                    weight: 'bolder',
-                                    size: 50,
-                                    color: 'black'
-                                }
-                            }
+                            display: false
                         },
                         // Annotation section (filled in when displaying annotations
                         annotation: {},
