@@ -19,8 +19,8 @@ def get_electrodes(session):
 def get_selected_electrodes(session):
     hdl = EDFreader(session['filename'])
     selected = []
-    if len(session['selected_id']) == 0:
-        session['selected_id'] = list(map(str, range(1, hdl.getNumSignals())))
+    if session['selected_count'] == '0':
+        session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
     # for each signal in edf file
     for s_id in session['selected_id']:
         signal = int(s_id)
@@ -37,8 +37,9 @@ def get_electrode_date(session):
 
     data = []
 
-    if len(session['selected_id']) == 0:
-        session['selected_id'] = list(map(str, range(1, hdl.getNumSignals())))
+    if session['selected_count'] == '0':
+        session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
+        session['selected_count'] = hdl.getNumSignals()
 
     # for each signal in edf file
     for count, s_id in enumerate(session['selected_id']):
@@ -56,7 +57,7 @@ def get_electrode_date(session):
         data.append([hdl.getSignalLabel(signal), list(map(lambda val: val + count * map_val, buf))])
 
     # Get time labels
-    start_time = hdl.getStartDateTime() + timedelta(milliseconds=offset)
+    start_time = hdl.getStartDateTime()
     times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
     times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
     times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
@@ -67,6 +68,7 @@ def get_electrode_date(session):
     map_val = int(session['data_offset'])
     return jsonify(time=times,
                    data=data,
+                   sliderval=offset,
                    offset=new_offset,
                    dataOffset=map_val,
                    duration=session['duration'])

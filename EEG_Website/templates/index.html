@@ -52,17 +52,7 @@
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
                 <!--Toggle display of buttons when annotations are uploaded is TODO -->
-                <!-- Display annotation-->
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAnnotate();labelsList();">Annotate</button>
-                <div>
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id = "ann_pop" data-bs-toggle="dropdown" aria-expanded="false">
-                        Annotations List
-                      </button>
-
-                      <ul class="dropdown-menu" id="ann_list">
-                        <!-- Populate with labels -->
-                      </ul>
-                </div>
+                <button class="btn btn-sm btn-outline-secondary" onclick="listAnnotations();" type="button" id = "ann_pop" aria-expanded="false">Annotations</button>
                 <!-- Select time duration-->
                 <div>
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Duration</button>
@@ -80,7 +70,7 @@
 
     <!-- SIDE BAR-->
     <div id="sidebarMenu">
-    <nav >
+    <nav>
         <div id="sidebarItems">
             <ul class="nav flex-column">
                 <li>
@@ -126,6 +116,9 @@
             </ul>
         </div>
     </nav>
+    </div>
+    <div class="annotation-menu">
+        <nav id="annotation-items"></nav>
     </div>
     <!-- Graph area -->
     <div id="display-area">
