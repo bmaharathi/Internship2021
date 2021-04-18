@@ -61,8 +61,8 @@ function loadIndexPage() {
             function (response) {
                 displayData(0);
         });
-
     });
+    $('#color-select').hide();
 }
 
 
@@ -207,8 +207,9 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             display: false,
                             label: {
                                 font: {
-                                    weight: 'bold',
-                                    size: 50
+                                    weight: 'bolder',
+                                    size: 50,
+                                    color: 'black'
                                 }
                             }
                         },
@@ -221,8 +222,29 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             }
                         },
                         // Erases default events
-                        //TODO: ADD CALLBACK TO CHANGE CHANNEL COLOR
-                        events: []
+                        events: ['click'],
+                        tooltips: {
+                            intersect: false,
+                            mode: 'nearest',
+                            callbacks: {
+                                title: function (toolTipItem, data) {
+                                    const ds_index = toolTipItem[0].datasetIndex;
+                                    const channelLabel = data.datasets[ds_index].label;
+                                    const curColor = data.datasets[ds_index].borderColor;
+                                    $('#color-select').val(curColor);
+                                    $('#color-select').show();
+                                    $('#color-select').change(function (event) {
+                                        $('#color-select').hide();
+                                        data.datasets[ds_index].borderColor = $('#color-select').val();
+                                        chart.update(0);
+                                    });
+                                    return "";
+                                },
+                                label: function (toolTipItem, data) {
+                                    return "";
+                                }
+                            }
+                        }
                     }
                 });
 
