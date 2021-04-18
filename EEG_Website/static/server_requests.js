@@ -172,17 +172,6 @@ function alterAmplitudes(delta) {
     Set up slider
  */
 function setSlider() {
-    $('#time-select').mouseup(function () {
-        $.post('/select-offset', {new_value: this.value},
-            function (response) {
-                displayData(0);
-                // let newTime = new Date();
-                // newTime.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
-                // newTime.setMilliseconds($('#time-select').val());
-                //  $('#sliderdisplay').text(newTime.toLocaleTimeString());
-        });
-
-    });
     const query = '/slider';
     fetch(query)
         .then(response => response.json())
@@ -191,18 +180,5 @@ function setSlider() {
             $('#time-select').attr('min', json.min);
             $('#time-select').attr('max', json.max);
             $('#time-select').attr('value', json.min);
-
-            //set up function to change display on change of slider
-            $('#time-select').mouseup(function () {
-                $.post('/select-offset', {new_value: this.value},
-                        function (response) {
-                    displayData(0);
-                    let newTime = new Date();
-                    newTime.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
-                    newTime.setMilliseconds($('#time-select').val());
-                     $('#sliderdisplay').text(newTime.toLocaleTimeString());
-                });
-
-            });
-        })
+        });
 }

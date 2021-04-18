@@ -55,6 +55,14 @@ function loadIndexPage() {
     // TODO: FIX STYLING
     $('#annotation-items').hide();
     $('.annotation-menu').animate({'width': '0%', 'left': '100%'});
+    //Set up time select event handler
+    $('#time-select').mouseup(function () {
+        $.post('/select-offset', {new_value: this.value},
+            function (response) {
+                displayData(0);
+        });
+
+    });
 }
 
 
