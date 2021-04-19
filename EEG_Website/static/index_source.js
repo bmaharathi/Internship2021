@@ -186,6 +186,7 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             yAxes: [{
                                 //TODO: FIX ALIGNMENT WHICH BREAKS ON AMPLITUDE CHANGES
                                 ticks: {
+                                    maxTicksLimit: data_map.length,
                                     // Step size used to align channel name with graph
                                     stepSize: dataOffset,
                                     // Change label from numerical value to the name of the channel at tick offset
