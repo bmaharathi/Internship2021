@@ -81,6 +81,10 @@ function openFileSelect() {
     $('#eeg_file').change(function () {
         $.post('/upload_eeg', {eeg_file: this.value}, function() {
             displayData(0);
+            fetch('/upload_eeg').then(response =>response.text()).then(text => {
+                console.log("buffer data finished");
+                console.log(text);
+            })
         });
     });
     // Opens up select file prompt

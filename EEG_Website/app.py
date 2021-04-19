@@ -1,6 +1,8 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify, after_this_request, session
 import edf_manager
 import annreader
+import threading
+import logging
 
 filename = ''  # reusable filename variable
 app = Flask(__name__)
@@ -9,6 +11,11 @@ duration_default = '1'
 offset_default = '0'
 amplitude_default = '200'
 data_mapping_default = '300'
+data_handler = edf_manager.DataHandler()
+
+
+def run_background_buffering():
+    data_handler.start(session)
 
 
 # HOME PAGE: NO FILE TO DISPLAY
@@ -43,24 +50,28 @@ def select_duration():
 
 
 # POST EEG FILE
-@app.route('/upload_eeg', methods=['POST'])
+@app.route('/upload_eeg', methods=['POST', 'GET'])
 def upload_file():
-    # Save file to server directory
-    eeg_file = request.form['eeg_file']
-    if eeg_file == '':
-        return redirect(url_for('index'))
-    # Save file path for session
-    session['filename'] = eeg_file.split('\\')[-1]
-    # Set up session defaults for file
-    session['duration'] = duration_default
-    session['offset'] = offset_default
-    session['amplitude'] = amplitude_default
-    session['selected_id'] = []
-    session['selected_annotation'] = []
-    session['selected_count'] = '0'
-    session['data_offset'] = data_mapping_default
-    # Redirect to electrode select
-    return redirect(url_for('index', electrodes=True, filename=session['filename']))
+    if request.method == 'POST':
+        # Save file to server directory
+        eeg_file = request.form['eeg_file']
+        if eeg_file == '':
+            return redirect(url_for('index'))
+        # Save file path for session
+        session['filename'] = eeg_file.split('\\')[-1]
+        # Set up session defaults for file
+        session['duration'] = duration_default
+        session['offset'] = offset_default
+        session['amplitude'] = amplitude_default
+        session['selected_id'] = []
+        session['selected_annotation'] = []
+        session['selected_count'] = '0'
+        session['data_offset'] = data_mapping_default
+        # Redirect to electrode select
+        return redirect(url_for('index', electrodes=True, filename=session['filename']))
+    else:
+        data_handler.start(session)
+        return str(data_handler.records_loaded)
 
 
 # GET ELECTRODES TO CHOOSE FROM
@@ -99,7 +110,19 @@ def get_relevant_data():
         session['offset'] = new_offset
     else:
         session['offset'] = offset_default
-    return edf_manager.get_electrode_date(session)
+    return edf_manager.get_data(session, data_handler)
+
+
+# GET SELECTED DATA
+@app.route('/data2', methods=['GET'])
+def get_relevant_data2():
+    # # Calculate offset according to delta argumet, offset and current offset
+    # new_offset = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
+    # if new_offset > 0:
+    #     session['offset'] = new_offset
+    # else:
+    #     session['offset'] = offset_default
+    return edf_manager.get_data(session, data_handler)
 
 
 # CHANGE AMPLITUDE
