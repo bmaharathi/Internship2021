@@ -19,8 +19,10 @@ def get_data(session, data_handler):
             session['selected_id'] = list(map(str, range(0, data_handler.num_channels)))
             session['selected_count'] = data_handler.num_channels()
 
+        channels = session['selected_id']
+        channels.reverse()
         # for each signal in edf file
-        for count, s_id in enumerate(session['selected_id']):
+        for count, s_id in enumerate(channels):
             s_id = int(s_id)
             buf = data_handler.data[s_id, offset: offset + N]
             map_val = int(session['data_offset'])
@@ -129,8 +131,10 @@ def get_electrode_data(session):
         session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
         session['selected_count'] = hdl.getNumSignals()
 
+    channels = session['selected_id']
+    channels.reverse()
     # for each signal in edf file
-    for count, s_id in enumerate(session['selected_id']):
+    for count, s_id in enumerate(channels):
         signal = int(s_id)
         # set off set for sample
         hdl.fseek(signal, offset, EDFreader.EDFSEEK_SET)
