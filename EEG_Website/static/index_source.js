@@ -106,12 +106,24 @@ function openAnnotationSelect() {
 
 
 // open annotations menu and get annotations to list
-function listAnnotations() {
-    $('#annotation-items').empty();
-    getAnnotationsToList();
-    // TODO: FIX ANIMATION
-    $('#annotation-items').show();
-    $('.annotation-menu').animate({'width': '50%', 'left': '85%'});
+function listAnnotations(isClosed=true) {
+    if (isClosed) {
+        $('#annotation-items').empty();
+        getAnnotationsToList();
+        // TODO: FIX ANIMATION
+        $('#annotation-items').show();
+        $('.annotation-menu').animate({'width': '50%', 'left': '85%'});
+        document.getElementById('ann_pop').onclick = function () {
+            listAnnotations(false)
+        };
+    } else {
+        // TODO: FIX ANIMATION
+        $('#annotation-items').hide();
+        $('.annotation-menu').animate({'width': '0%', 'left': '100%'});
+        document.getElementById('ann_pop').onclick = function () {
+            listAnnotations(true)
+        };
+    }
 }
 
 /*
@@ -298,8 +310,6 @@ function createAnnotationElementFrom(label, start, end) {
         function (response) {
             displayData(0);
             toggleAnnotate(argument, label);
-            $('#annotation-items').hide();
-            $('.annotation-menu').animate({'width': '0%', 'left': '100%'});
         });
     };
 
