@@ -257,7 +257,7 @@ function createAnnotationElementFrom(label, start, end) {
     // Adds annotation label to element
     let text = document.createTextNode(label);
     link.appendChild(text);
-    // ????
+    // Changes cursor to the pointer when hovering over annotation
     link.style.cursor = "pointer";
     // Go to annotation when clicked then display annotation
     link.onclick = function () {

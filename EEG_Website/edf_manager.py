@@ -4,6 +4,16 @@ import numpy as np
 from datetime import datetime, timedelta
 
 
+# session dict keys :-
+# filename
+# selected_count
+# selected_id
+# offset
+# duration
+# data_offset
+# amplitude
+
+
 # PARSE AVAILABLE ELECTRODES AND RETURN DICTIONARY => INDEX : ELECTRODE NAME
 def get_electrodes(session):
     hdl = EDFreader(session['filename'])
@@ -95,3 +105,5 @@ def get_amplitude(session):
     return jsonify(amplitude=session['data_offset'],
                    newMax=new_max,
                    newMin=new_min)
+
+

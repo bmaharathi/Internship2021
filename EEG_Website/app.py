@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify, after_this_request, session
 import edf_manager
 import annreader
+import numpy as np
 
 filename = ''  # reusable filename variable
 app = Flask(__name__)
@@ -94,7 +95,8 @@ def selecting_electrodes():
 @app.route('/data', methods=['GET'])
 def get_relevant_data():
     # Calculate offset according to delta argumet, offset and current offset
-    new_offset = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
+    new_offset = int(session['offset']) + (
+                int(request.args.get('delta')) * int(session['duration']) * 1000)  # '/data?delta=int'
     if new_offset > 0:
         session['offset'] = new_offset
     else:
@@ -145,6 +147,30 @@ def get_time():
 def set_time_data():
     session['offset'] = request.form['new_value']
     return session['offset']
+
+
+# CALCULATE AND STORE AVERAGE SETTINGS//DEFAULT IS COMMON SETTINGS
+@app.route('/average_settings', methods=['GET'])
+def get_avg_references():
+    curr = edf_manager.get_electrode_date(session).json  # current screen data
+    data = curr['data']  # label and channel data for current screen
+    # avgRef = np.zeros(4) # change this based on number of references
+    labels = []
+    # store labels
+    for keys in data:
+        labels.append(keys[0])
+        labels = list(map(str.strip, labels))
+    print(int(session['duration']) * 1000 + 1)
+    # array stores the mean value for each datapoint, for each reference
+    means = np.empty([int(labels[-1][-1]),
+                     int(session['duration']) * 1000 + 1])  # x-> the number of references, y-> the number of data points
+    # store data based on refs
+    for i in range(int(session['duration']) * 1000 + 1):
+        for j in range(int(labels[-1][-1])):
+            m = np.mean([x if int(y[-1]) == j else 0 for y in labels for x in data[int(y[-1])][1]])  # scuffed, please change
+            means[j][i] = m
+
+    return jsonify(meanVal=means.tolist())
 
 
 if __name__ == '__main__':
