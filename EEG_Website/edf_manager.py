@@ -19,7 +19,7 @@ def get_data(session, data_handler):
             session['selected_id'] = list(map(str, range(0, data_handler.num_channels)))
             session['selected_count'] = data_handler.num_channels()
 
-        channels = session['selected_id']
+        channels = session['selected_id'].copy()
         channels.reverse()
         # for each signal in edf file
         for count, s_id in enumerate(channels):
@@ -39,6 +39,7 @@ def get_data(session, data_handler):
         new_offset = offset + N - 1
         amplitude = session['amplitude']
         map_val = int(session['data_offset'])
+        print(enumerate(channels))
         return jsonify(time=times,
                        data=data,
                        sliderval=offset,
@@ -131,7 +132,7 @@ def get_electrode_data(session):
         session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
         session['selected_count'] = hdl.getNumSignals()
 
-    channels = session['selected_id']
+    channels = session['selected_id'].copy()
     channels.reverse()
     # for each signal in edf file
     for count, s_id in enumerate(channels):

@@ -131,14 +131,27 @@ function listAnnotations(isClosed=true) {
  */
 // Create single channel configuration for chart js
 function createDataObject(data, id) {
-    const name = id;
+    const name = id.trimEnd();
     let data_map = {};
-    data_map['label'] = name.trimEnd();
+    data_map['label'] = name;
     data_map['data'] = data.map(Number);
     data_map['pointRadius'] = 0;
     data_map['fill'] = false;
-    data_map['borderColor'] = '#51A1E8';
     data_map['borderWidth'] = 2;
+    if (chart != null) {
+        console.log(chart.data.datasets);
+        for (let index in chart.data.datasets) {
+            const old_data = chart.data.datasets[index];
+            console.log(old_data.label, name);
+            if (old_data.label === name) {
+                data_map['borderColor'] = old_data.borderColor;
+                console.log(data_map.borderColor, old_data.borderColor);
+                return data_map;
+            }
+        }
+    }
+    data_map['borderColor'] = '#51A1E8';
+    console.log(data_map.borderColor);
     return data_map;
 }
 
@@ -252,6 +265,7 @@ function createChartElementFrom(time, data_map, dataOffset) {
                                         $('#color-select').hide();
                                         data.datasets[ds_index].borderColor = $('#color-select').val();
                                         chart.update(0);
+                                        $('#color-select').unbind('change');
                                     });
                                     return "";
                                 },
