@@ -316,29 +316,29 @@ function getElectrodeSelectElement(id, value) {
 
 //Create annotation element
 function createAnnotationElementFrom(label, start, end) {
-    //create html elements
-    let li = document.createElement("li");
+    let card = $('<div>', {class: 'card'});
+    let cardHeader = $('<h5>', {class: 'card-header'});
+    let cardBody = $('<div>', {class: 'card-body'});
+    card.text(label);
     let link = document.createElement("a");
-    // set value of link to starr offset
-    link.value = start;
-    // Adds annotation label to element
-    let text = document.createTextNode(label);
-    link.appendChild(text);
+    link.appendChild(document.createTextNode("Onset: " + start.toString()));
+    link.appendChild(document.createElement('br'));
+    link.appendChild(document.createTextNode("Duration: " + end.toString() + " seconds"));
     // ????
     link.style.cursor = "pointer";
     // Go to annotation when clicked then display annotation
-    link.onclick = function () {
+    card.click(function () {
         const argument = "&chosen=" + label;
-        const offset = parseInt(this.value) * 1000;
+        const offset = start * 1000;
         $.post('/select-offset', {new_value: offset},
         function (response) {
             displayData(0);
             toggleAnnotate(argument, label);
         });
-    };
-
-    li.appendChild(link);
-    return li;
+    });
+    cardBody.append(link);
+    card.append(cardBody);
+    return card;
 }
 
 

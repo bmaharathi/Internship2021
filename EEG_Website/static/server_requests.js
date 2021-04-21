@@ -158,9 +158,14 @@ function getAnnotationsToList() {
 
             const label = json.annotations[index]['Annotation'];
             // create and append annotation item to right sider bar
-            $('#annotation-items').append(createAnnotationElementFrom(label, start));
+            $('#annotation-items').append(createAnnotationElementFrom(label, start, duration));
         }
-        chart.update();
+        $('div.card').mouseenter( function () {
+            $(this).addClass("card bg-dark text-white");
+        }).mouseleave( function () {
+            $(this).removeClass("card bg-dark text-white");
+            $(this).addClass("card");
+        })
     });
 }
 
