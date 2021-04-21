@@ -8,46 +8,65 @@ import sys
 
 # GET DATA
 def get_data(session, data_handler):
-    if int(session['offset']) < data_handler.records_loaded:
-        print("using data_handler")
-        offset = int(session['offset'])
-        N = int(session['duration']) * 1000 + 1
+    # Check if data is buffered by seeing if records asked for is within records loaded
+    data_is_buffered = (int(session['offset']) + int(session['duration']) * 1000) < data_handler.records_loaded
+    # Configure EDFReader for either style of data retrieval
+    if not data_is_buffered:
+        hdl = EDFreader(session['filename'])
+    else:
+        hdl = data_handler.edf_reader
+    # Declare the area of data the user is requesting
+    offset = int(session['offset'])
+    N = int(session['duration']) * 1000 + 1
 
-        data = []
+    # Ask for all channels if user hasn't specificed which channels to look for
+    if session['selected_count'] == '0':
+        session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
+        session['selected_count'] = hdl.getNumSignals()
 
-        if session['selected_count'] == '0':
-            session['selected_id'] = list(map(str, range(0, data_handler.num_channels)))
-            session['selected_count'] = data_handler.num_channels()
+    # Reverse list of channels to appear in ascending order in chart later
+    channels = session['selected_id'].copy()
+    channels.reverse()
 
-        channels = session['selected_id'].copy()
-        channels.reverse()
-        # for each signal in edf file
-        for count, s_id in enumerate(channels):
-            s_id = int(s_id)
+    data = []
+    # for each chosen channel
+    for count, s_id in enumerate(channels):
+        # get signal id
+        s_id = int(s_id)
+        # If data requested is buffered
+        if data_is_buffered:
+            # Utilize Data_Handler
+            # Load specified data (where rows are channels and columns are recorded
             buf = data_handler.data[s_id, offset: offset + N]
             map_val = int(session['data_offset'])
+            # Add data to list, while also flipping data and mapping it to owns area for chart js
+            data.append([hdl.getSignalLabel(s_id), list(map(lambda val: val * -1 + count * map_val, buf))])
+        else:
+            # Utilize edf_reader
+            # set off set for sample
+            hdl.fseek(s_id, offset, EDFreader.EDFSEEK_SET)
+            # Get chart mping
+            map_val = count * int(session['data_offset'])
+            # read N samples for signal
+            data_read = hdl.readSamples_IBRAIN(s_id, N, map_val)
             # Add data to list
-            data.append([data_handler.edf_reader.getSignalLabel(s_id), list(map(lambda val: val * -1 + count * map_val, buf))])
+            data.append([hdl.getSignalLabel(s_id), data_read])
 
-        # Get time labels
-        start_time = data_handler.record_start
-        times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
-        times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
-        times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
+    # Get time labels
+    start_time = hdl.getStartDateTime()
+    times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
+    times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
+    times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
 
-        # Increment offset by samples read
-        new_offset = offset + N - 1
-        amplitude = session['amplitude']
-        map_val = int(session['data_offset'])
-        print(enumerate(channels))
-        return jsonify(time=times,
-                       data=data,
-                       sliderval=offset,
-                       offset=new_offset,
-                       dataOffset=map_val,
-                       duration=session['duration'])
-    else:
-        return get_electrode_data(session)
+    # Increment offset by samples read
+    new_offset = offset + N - 1
+    map_val = int(session['data_offset'])
+    return jsonify(time=times,
+                   data=data,
+                   sliderval=offset,
+                   offset=new_offset,
+                   dataOffset=map_val,
+                   duration=session['duration'])
 
 
 # PARSE AVAILABLE ELECTRODES AND RETURN DICTIONARY => INDEX : ELECTRODE NAME
@@ -73,95 +92,6 @@ def get_selected_electrodes(session):
         selected.append(hdl.getSignalLabel(signal))
 
     return jsonify(data=selected)
-
-
-def get_electrode_date(session):
-    hdl = EDFreader(session['filename'])
-    # Convert seconds to milliseconds
-    offset = int(session['offset'])
-    N = int(session['duration']) * 1000 + 1
-
-    data = []
-
-    if session['selected_count'] == '0':
-        session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
-        session['selected_count'] = hdl.getNumSignals()
-
-    # for each signal in edf file
-    for count, s_id in enumerate(session['selected_id']):
-        signal = int(s_id)
-        # buffer to hold samples for single signal
-        buf = np.zeros(N)
-        # set off set for sample
-        hdl.fseek(signal, offset, EDFreader.EDFSEEK_SET)
-        # read N samples for signal
-        hdl.readSamples(signal, buf, N)
-        # invert data
-        buf = buf * (-1)
-        map_val = int(session['data_offset'])
-        # Add data to list
-        data.append([hdl.getSignalLabel(signal), list(map(lambda val: val + count * map_val, buf))])
-
-    # Get time labels
-    start_time = hdl.getStartDateTime()
-    times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
-    times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
-    times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
-
-    # Increment offset by samples read
-    new_offset = offset + N - 1
-    amplitude = session['amplitude']
-    map_val = int(session['data_offset'])
-    return jsonify(time=times,
-                   data=data,
-                   sliderval=offset,
-                   offset=new_offset,
-                   dataOffset=map_val,
-                   duration=session['duration'])
-
-
-def get_electrode_data(session):
-    hdl = EDFreader(session['filename'])
-    # Convert seconds to milliseconds
-    offset = int(session['offset'])
-    N = int(session['duration']) * 1000 + 1
-
-    data = []
-
-    if session['selected_count'] == '0':
-        session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
-        session['selected_count'] = hdl.getNumSignals()
-
-    channels = session['selected_id'].copy()
-    channels.reverse()
-    # for each signal in edf file
-    for count, s_id in enumerate(channels):
-        signal = int(s_id)
-        # set off set for sample
-        hdl.fseek(signal, offset, EDFreader.EDFSEEK_SET)
-        # Get chart mping
-        map_val = count * int(session['data_offset'])
-        # read N samples for signal
-        data_read = hdl.readSamples_IBRAIN(signal, N, map_val)
-        # Add data to list
-        data.append([hdl.getSignalLabel(signal), data_read])
-
-    # Get time labels
-    start_time = hdl.getStartDateTime()
-    times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
-    times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
-    times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
-
-    # Increment offset by samples read
-    new_offset = offset + N - 1
-    amplitude = session['amplitude']
-    map_val = int(session['data_offset'])
-    return jsonify(time=times,
-                   data=data,
-                   sliderval=offset,
-                   offset=new_offset,
-                   dataOffset=map_val,
-                   duration=session['duration'])
 
 
 def get_file_start(session):
@@ -196,6 +126,7 @@ class DataHandler:
         self.num_channels = 0
         self.data = None
         self.record_start = None
+        self.status = False
 
     def start(self, session):
         self.f_name = session['filename']
@@ -205,6 +136,7 @@ class DataHandler:
         self.data = None
         self.record_start = self.edf_reader.getStartDateTime()
         self.regulate_buffering()
+        self.status = True
 
     def regulate_buffering(self):
         num_records = int(self.edf_reader.getFileDuration() / 10000)
