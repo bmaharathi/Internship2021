@@ -10,7 +10,7 @@ def get_annotations(session):
     chart_max = int(session['data_offset']) * int(session['selected_count'])
     chart_min = int(session['data_offset']) * -1
     selected = list(session['selected_annotation'])
-    return map_annotations_to_time(parsed, start_time, chart_max, chart_min, selected)
+    return map_annotations_to_time(parsed, start_time, chart_max, chart_min, selected, session)
 
 
 # parse csv file into list of annoations
@@ -25,19 +25,21 @@ def parse_annotation_file(session):
     return lst
 
 
-def map_annotations_to_time(annotations, start_time, chart_max, chart_min, selected):
+def map_annotations_to_time(annotations, start_time, chart_max, chart_min, selected, session):
+    user_duration = int(session['duration'])
     mapping = []
     for annotation in annotations:
         if len(selected) > 0 and annotation['Annotation'] not in selected:
             continue
-        info = {}
-        start = start_time + timedelta(milliseconds=int(annotation['Onset']))
-        end = start + timedelta(milliseconds=int(annotation['Duration']))
+        onset = int(annotation['Onset'])
+        ann_duration = int(annotation['Duration'])
 
-        info['start'] = str(start.time())
-        info['end'] = str(end.time())
-        info['label'] = annotation['Annotation']
+        start = start_time + timedelta(seconds=onset)
+        end = start + timedelta(seconds=ann_duration)
+
+        info = {'start': str(start.time()), 'end': str(end.time()), 'label': annotation['Annotation']}
         mapping.append(info)
+
 
     return jsonify(annotations=mapping,
                    chart_max=chart_max,
