@@ -36,8 +36,11 @@ def delete_session():
 # POST SELECTED DURATION
 @app.route('/upload_duration', methods=['POST'])
 def select_duration():
+    print("servicing upload duration")
+    print(session['duration'])
     # Set selected graph duration for session
-    session['duration'] = request.form['duration']
+    session['duration'] = request.args['new-value']
+    print(session['duration'])
     # Redirect user to current stage in flow: empty index; electrode select; or display graph
     if session.get('filename') is None:
         return redirect(url_for('index'))

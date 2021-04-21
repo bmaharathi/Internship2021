@@ -78,6 +78,15 @@ function loadIndexPage() {
             displayData(0);
         })
     });
+    $('#duration-input').change(function (event) {
+        console.log("Handling duration change");
+        const val = $('#duration-input').val().toString();
+        const query = '/upload_duration?new-value=' + val;
+        $.post(query, function () {
+            console.log("Recieved /duration response");
+            displayData(0);
+        })
+    });
 }
 
 
