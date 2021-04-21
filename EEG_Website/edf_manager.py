@@ -30,7 +30,7 @@ def get_data(session, data_handler):
     channels = session['selected_id'].copy()
     channels.reverse()
     # Get filter rate
-    filter_rate = int(N / int(session['filter']))
+    filter_rate = int(1000 / int(session['filter']))
     print("filter_rate:", filter_rate)
 
     data = []
