@@ -119,6 +119,7 @@ def get_amplitude(session):
 
 class DataHandler:
 
+    # Constructor feel free to add attributes as needed
     def __init__(self):
         self.f_name = ""
         self.edf_reader = None
@@ -128,6 +129,7 @@ class DataHandler:
         self.record_start = None
         self.status = False
 
+    # Initialize attributes based on session
     def start(self, session):
         self.f_name = session['filename']
         self.edf_reader = EDFreader(self.f_name)
@@ -135,25 +137,36 @@ class DataHandler:
         self.num_channels = self.edf_reader.getNumSignals()
         self.data = None
         self.record_start = self.edf_reader.getStartDateTime()
-        self.regulate_buffering()
         self.status = True
+        self.regulate_buffering()
 
+    # Sorry for all the functions, easier to keep straight but this one just gets more information, and monitors the
+    # buffering process
     def regulate_buffering(self):
+        # Maximum number of records available in the file
         num_records = int(self.edf_reader.getFileDuration() / 10000)
+        # Number of channels
         num_channels = self.num_channels
+        # NP array (channels x records)
         self.data = np.zeros((num_channels, num_records))
 
+        # How many records to load before update handler
         data_per_epoch = 10000
 
         for record_start in range(0, num_records, data_per_epoch):
+            # Update records loaded
             self.records_loaded += self.load_data(record_start, data_per_epoch)
+
             if self.records_loaded % (data_per_epoch * 100) == 0:
                 print("Loaded %d records" % self.records_loaded, flush=True)
                 print("==>", self.data[:, record_start], flush=True)
-                sys.stdout.flush()
 
+    # Utilize edf reader to load data
     def load_data(self, record_start, N):
         for signal in range(0, self.edf_reader.getNumSignals()):
+            # get buffer for current epoch
             buf = self.data[signal, record_start: record_start + N]
+            # Load data
             self.edf_reader.readSamples(signal, buf, N)
+        # Return values loaded
         return N
