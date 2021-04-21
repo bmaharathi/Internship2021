@@ -49,6 +49,7 @@ function displayData(delta=0) {
             $('#time-select').val(start);
             $('#sliderdisplay').show();
             $('.slidecontainer').show();
+            renderAnnotations();
         });
 }
 
@@ -86,12 +87,8 @@ function saveElectrodeSelect() {
     fetch('/electrode_select')
         .then(response => response.json())
         .then(json=> {
-            var val;
-            console.log(json);
-
-            for (val in json.data) {
+            for (let val in json.data) {
                 let str = json.data[val].toString().trim();
-                console.log(str);
                 document.getElementById(str).checked = true;
                 }
         })
@@ -124,6 +121,8 @@ function toggleAnnotate(selectArg="", chosenName="") {
                     xScaleID: 'x-axis-0',
                     yScaleID: 'y-axis-0',
                     scaleID: 'x-axis-0',
+                    start:start,
+                    end:end,
                     // Left edge of the box. in units along the x axis
                     xMin: start,
                     xMax: end,
@@ -141,7 +140,8 @@ function toggleAnnotate(selectArg="", chosenName="") {
         // } else {
         //     delete chart.options.annotation['annotations'];
         // }
-        chart.update();
+        chart.update(0);
+        renderAnnotations();
     });
 }
 
@@ -152,9 +152,8 @@ function getAnnotationsToList() {
         for (let index in json.annotations) {
             // Calculate offset to jump to when selected (currently .3 of selected duration ahead of annotation onset to the nearest second)
             const onset = parseInt(json.annotations[index]['Onset']);
-            const duration = parseInt(json.duration) * 1000;
+            const duration = parseInt(json.duration);
             let start = onset - Math.floor(.3 * duration)
-            start = start - start % 1000;
             start = (start > 0) ? start : 0;
 
             const label = json.annotations[index]['Annotation'];
@@ -179,7 +178,7 @@ function alterAmplitudes(delta) {
         chart.options.scales.max = newMax;
         chart.options.scales.min = newMin;
         chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
-        chart.update(0)
+        chart.update()
         displayData(0);
     });
 }
