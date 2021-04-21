@@ -1,5 +1,21 @@
 // Global object which will indicate the start of data recording for use with timeslider
 let startTime = new Date();
+/*
+    Handle ml model
+*/
+
+function startModel() {
+    const query = '/model?'; //TODO: Add args
+    const source = new EventSource(query);
+    source.addEventListener('update', function (event) {
+        console.log(event);
+    });
+    source.addEventListener('close', function (event) {
+        console.log("closing event listener");
+        source.close();
+        alert("Model Successful: Ready for prediction");
+    });
+}
 
 /*
  Fetch selected electrode data

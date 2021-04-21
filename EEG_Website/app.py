@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, url_for, request, jsonify, after_this_request, session
+from flask import Flask, render_template, redirect, url_for, request, Response, after_this_request, session
+
 import edf_manager
 import annreader
 import threading
@@ -154,6 +155,17 @@ def get_time():
 def set_time_data():
     session['offset'] = request.form['new_value']
     return session['offset']
+
+
+@app.route('/model', methods=['GET', 'POST'])
+def handle_model():
+    def test():
+        for i in range(10):
+            yield 'event: update\ndata: value of testing:' + str(i) + '\n\n'
+        yield 'event: close\ndata:this is over\n\n'
+    return Response(test(), mimetype="text/event-stream")
+
+
 
 
 if __name__ == '__main__':
