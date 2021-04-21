@@ -70,20 +70,16 @@ function loadIndexPage() {
         $('#sliderdisplay').text(timelabel.toLocaleTimeString());
     }
     $('#filter-input').change(function (event) {
-        console.log("Handling filter change");
         const val = $('#filter-input').val().toString();
         const query = '/filter?new-value=' + val;
         $.post(query, function () {
-            console.log("Recieved /filter response");
             displayData(0);
         })
     });
     $('#duration-input').change(function (event) {
-        console.log("Handling duration change");
         const val = $('#duration-input').val().toString();
         const query = '/upload_duration?new-value=' + val;
         $.post(query, function () {
-            console.log("Recieved /duration response");
             displayData(0);
         })
     });
@@ -101,7 +97,6 @@ function openFileSelect() {
             displayData(0);
             fetch('/upload_eeg').then(response =>response.text()).then(text => {
                 console.log("buffer data finished");
-                console.log(text);
             })
         });
     });
@@ -157,19 +152,15 @@ function createDataObject(data, id) {
     data_map['fill'] = false;
     data_map['borderWidth'] = 2;
     if (chart != null) {
-        console.log(chart.data.datasets);
         for (let index in chart.data.datasets) {
             const old_data = chart.data.datasets[index];
-            console.log(old_data.label, name);
             if (old_data.label === name) {
                 data_map['borderColor'] = old_data.borderColor;
-                console.log(data_map.borderColor, old_data.borderColor);
                 return data_map;
             }
         }
     }
     data_map['borderColor'] = '#51A1E8';
-    console.log(data_map.borderColor);
     return data_map;
 }
 
@@ -338,7 +329,8 @@ function createAnnotationElementFrom(label, start, end) {
     // Go to annotation when clicked then display annotation
     link.onclick = function () {
         const argument = "&chosen=" + label;
-        $.post('/select-offset', {new_value: this.value},
+        const offset = parseInt(this.value) * 1000;
+        $.post('/select-offset', {new_value: offset},
         function (response) {
             displayData(0);
             toggleAnnotate(argument, label);
@@ -356,6 +348,30 @@ function createAnnotationElementFrom(label, start, end) {
 function changeData(data_maps, time) {
     chart.data.labels = time;
     chart.data.datasets = data_maps;
+    chart.update(0);
+}
+
+function renderAnnotations() {
+    const labels = chart.data.labels;
+    for (let index in chart.options.annotation.annotations) {
+        let ann = chart.options.annotation.annotations[index]
+        console.log(ann);
+        const start = ann.start;
+        const end = ann.end;
+        console.log(start, end);
+        const found = labels.find(label => label===start || label ===end);
+        if (found === start && labels.lastIndexOf(end) === -1) {
+            console.log(start);
+            chart.options.annotation.annotations[index].xMin = start;
+            chart.options.annotation.annotations[index].xMax = labels[labels.length - 1]
+            console.log(chart.options.annotation.annotations[index].xMax);
+        }
+        else if(found === end) {
+            chart.options.annotation.annotations[index].xMin = labels[0];
+            chart.options.annotation.annotations[index].xMax = end;
+            console.log("End in current display");
+        }
+    }
     chart.update(0);
 }
 
