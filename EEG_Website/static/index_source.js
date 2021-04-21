@@ -69,6 +69,15 @@ function loadIndexPage() {
         timelabel.setMilliseconds(this.value);
         $('#sliderdisplay').text(timelabel.toLocaleTimeString());
     }
+    $('#filter-input').change(function (event) {
+        console.log("Handling filter change");
+        const val = $('#filter-input').val().toString();
+        const query = '/filter?new-value=' + val;
+        $.post(query, function () {
+            console.log("Recieved /filter response");
+            displayData(0);
+        })
+    });
 }
 
 

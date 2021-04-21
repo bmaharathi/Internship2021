@@ -23,10 +23,15 @@ def get_data(session, data_handler):
     if session['selected_count'] == '0':
         session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
         session['selected_count'] = hdl.getNumSignals()
+    if session['filter'] == '':
+        session['filter'] = hdl.getSampleFrequency(0)
 
     # Reverse list of channels to appear in ascending order in chart later
     channels = session['selected_id'].copy()
     channels.reverse()
+    # Get filter rate
+    filter_rate = int(N / int(session['filter']))
+    print("filter_rate:", filter_rate)
 
     data = []
     # for each chosen channel
@@ -37,7 +42,7 @@ def get_data(session, data_handler):
         if data_is_buffered:
             # Utilize Data_Handler
             # Load specified data (where rows are channels and columns are recorded
-            buf = data_handler.data[s_id, offset: offset + N]
+            buf = data_handler.data[s_id, offset: offset + N: filter_rate]
             map_val = int(session['data_offset'])
             # Add data to list, while also flipping data and mapping it to owns area for chart js
             data.append([hdl.getSignalLabel(s_id), list(map(lambda val: val * -1 + count * map_val, buf))])
@@ -48,13 +53,13 @@ def get_data(session, data_handler):
             # Get chart mping
             map_val = count * int(session['data_offset'])
             # read N samples for signal
-            data_read = hdl.readSamples_IBRAIN(s_id, N, map_val)
+            data_read = hdl.readSamples_IBRAIN(s_id, N, map_val, filter_rate)
             # Add data to list
             data.append([hdl.getSignalLabel(s_id), data_read])
 
     # Get time labels
     start_time = hdl.getStartDateTime()
-    times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
+    times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1, filter_rate)]
     times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
     times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
 

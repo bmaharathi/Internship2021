@@ -57,11 +57,23 @@
                 <button class="btn btn-sm btn-outline-secondary" onclick="listAnnotations();" type="button" id = "ann_pop" aria-expanded="false">Annotations</button>
                 <!-- Select time duration-->
                 <div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Duration</button>
-                <form method="POST" id="duration_form" action="/upload_duration" style=" display: none" enctype="multipart/form-data">
-                    <input type="number" id="duration" name="duration" min="1" max="60">
-                    <input onclick="openDurationSelect();" type="submit"/>
-                </form>
+                    <h2 class="btn btn-sm btn-outline-secondary">Duration</h2>
+                    <select class="form-select form-select-sm" type="number" id="duration" name="duration">
+                        <option value="1">1 second</option>
+                        <option value="5">5 seconds</option>
+                        <option value="10">10 seconds</option>
+                        <option value="30">30 seconds</option>
+                        <option value="60">60 seconds</option>
+                    </select>
+               </div>
+                <div>
+                    <h2 class="btn btn-sm btn-outline-secondary">Filter</h2>
+                    <select class="form-select form-select-sm" type="number" id="filter-input" name="filter-input">
+                        <option value="1000">1000 HZ</option>
+                        <option value="500">500 HZ</option>
+                        <option value="250">250 HZ</option>
+                        <option value="100">100 HZ</option>
+                    </select>
                 </div>
             </div>
         </div>

@@ -836,7 +836,7 @@ class EDFreader:
 
         return n
 
-    def readSamples_IBRAIN(self, s: int, n: int, chart_mapping: int) -> int:
+    def readSamples_IBRAIN(self, s: int, n: int, chart_mapping: int, step: int) -> int:
         """Read samples.
 
     Fills buf with n samples from edfsignal s, starting from the current sample position indicator.
@@ -894,7 +894,7 @@ class EDFreader:
         values = []
 
         # Read data
-        for i in range(0, n):
+        for i in range(0, n, step):
             if (sample_pntr % smp_per_record) == 0:
                 if i != 0:
                     self.__file_in.seek(jump, io.SEEK_CUR)
@@ -909,7 +909,7 @@ class EDFreader:
             # Turn value to string then add to list to make it easier for jsonify
             values.append(str(val))
             # increment sample ptr
-            sample_pntr += 1
+            sample_pntr += step
 
         self.__param_sample_pntr[channel] = sample_pntr
 

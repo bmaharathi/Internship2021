@@ -12,6 +12,7 @@ duration_default = '1'
 offset_default = '0'
 amplitude_default = '200'
 data_mapping_default = '300'
+filter_default = ''
 data_handler = edf_manager.DataHandler()
 
 
@@ -64,6 +65,7 @@ def upload_file():
         session['selected_annotation'] = []
         session['selected_count'] = '0'
         session['data_offset'] = data_mapping_default
+        session['filter'] = filter_default
         # Redirect to electrode select
         return redirect(url_for('index', electrodes=True, filename=session['filename']))
     else:
@@ -166,6 +168,10 @@ def handle_model():
     return Response(test(), mimetype="text/event-stream")
 
 
+@app.route('/filter', methods=['POST'])
+def set_filter():
+    session['filter'] = request.args['new-value']
+    return session['filter']
 
 
 if __name__ == '__main__':
