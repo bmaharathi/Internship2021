@@ -14,10 +14,6 @@ data_mapping_default = '300'
 data_handler = edf_manager.DataHandler()
 
 
-def run_background_buffering():
-    data_handler.start(session)
-
-
 # HOME PAGE: NO FILE TO DISPLAY
 @app.route('/')
 def index():
@@ -70,7 +66,9 @@ def upload_file():
         # Redirect to electrode select
         return redirect(url_for('index', electrodes=True, filename=session['filename']))
     else:
-        data_handler.start(session)
+        if not data_handler.status:
+            print("buffering data")
+            data_handler.start(session)
         return str(data_handler.records_loaded)
 
 
@@ -110,18 +108,7 @@ def get_relevant_data():
         session['offset'] = new_offset
     else:
         session['offset'] = offset_default
-    return edf_manager.get_data(session, data_handler)
 
-
-# GET SELECTED DATA
-@app.route('/data2', methods=['GET'])
-def get_relevant_data2():
-    # # Calculate offset according to delta argumet, offset and current offset
-    # new_offset = int(session['offset']) + (int(request.args.get('delta')) * int(session['duration']) * 1000)
-    # if new_offset > 0:
-    #     session['offset'] = new_offset
-    # else:
-    #     session['offset'] = offset_default
     return edf_manager.get_data(session, data_handler)
 
 
@@ -152,7 +139,6 @@ def upload_ann():
 def ann_data():
     if request.args['byTime'] == 'true':
         if request.args['chosen'] is not None:
-            print(request.args['chosen'])
             session['selected_annotation'] = [request.args['chosen']]
         return annreader.get_annotations(session)
     else:
@@ -172,3 +158,6 @@ def set_time_data():
 
 if __name__ == '__main__':
     app.run()
+    while len(session):
+        session.popitem()
+
