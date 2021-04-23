@@ -123,6 +123,13 @@ def get_amplitude(session):
                    newMax=new_max,
                    newMin=new_min)
 
+def get_references(session):
+    hdl = EDFreader(session['filename'])
+    references = [{'label': hdl.getSignalLabel(i).strip()[-4:], 'id':i} for i in range(0, hdl.getNumSignals(), 6)]
+    print(references)
+    return jsonify(references=references)
+
+
 
 class DataHandler:
 

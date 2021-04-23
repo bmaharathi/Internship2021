@@ -163,8 +163,14 @@ def set_time_data():
     return session['offset']
 
 
-@app.route('/model', methods=['GET', 'POST'])
+@app.route('/subject')
+def get_references():
+    return edf_manager.get_references(session)
+
+
+@app.route('/model', methods=['GET'])
 def handle_model():
+
     print('Servicing model request')
     hdl = data_handler.edf_reader
     ref_index = int(request.args['ref-index'])
