@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, Response, after_this_request, session
-
+import edfreader
 import edf_manager
 import annreader
 import threading
@@ -170,16 +170,16 @@ def get_references():
 
 @app.route('/model', methods=['GET'])
 def handle_model():
-
+    fname = session['filename']
     print('Servicing model request')
-    hdl = data_handler.edf_reader
+    hdl = edfreader.EDFreader(fname)
     ref_index = int(request.args['ref-index'])
 
     # def test():
     #     for i in range(10):
     #         yield 'event: update\ndata: value of testing:' + str(i) + '\n\n'
     #     yield 'event: close\ndata:this is over\n\n'
-    return Response(mlpipe.detect_seizure(edg_hdl=hdl, index_signal=ref_index), mimetype="text/event-stream")
+    return Response(mlpipe.detect_seizure(filename=fname, edg_hdl=hdl, index_signal=ref_index), mimetype="text/event-stream")
 
 
 @app.route('/filter', methods=['POST'])

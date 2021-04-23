@@ -30,6 +30,8 @@ footer.slidecontainer {
     left: 85%;
     position: fixed;
     padding-top: 5%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .annotation-item {
