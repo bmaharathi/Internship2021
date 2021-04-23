@@ -5,15 +5,20 @@ let startTime = new Date();
 */
 
 function startModel() {
-    const query = '/model?ref-index=0'; //TODO: Add args
-    const source = new EventSource(query);
-    source.addEventListener('update', function (event) {
-        console.log(event);
-    });
-    source.addEventListener('close', function (event) {
-        console.log("closing event listener");
-        source.close();
-        alert("Model Successful: Ready for prediction");
+    $('#reference-input').show();
+    $('#reference-input').change(function () {
+        const val = $('#reference-input').val().toString();
+        const query = '/model?ref-index=' + val; //TODO: Add args
+        const source = new EventSource(query);
+        $('#reference-input').hide();
+        source.addEventListener('update', function (event) {
+            console.log(event);
+        });
+        source.addEventListener('close', function (event) {
+            console.log("closing event listener");
+            source.close();
+            alert("Model Successful: Ready for prediction");
+        });
     });
 }
 
@@ -55,6 +60,16 @@ function displayData(delta=0) {
             $(filter_qry).prop('selected', true);
             renderAnnotations();
         });
+        fetch("/subject")
+        .then(response=>response.json())
+        .then(json => {
+            for (let index in json.references) {
+                const ref = json.references[index];
+                const option = $('<option></option>', {val:ref.id});
+                option.text(ref.label);
+                $('#reference-input').append(option);
+            }
+        })
 }
 
 

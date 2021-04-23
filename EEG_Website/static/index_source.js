@@ -85,6 +85,7 @@ function loadIndexPage() {
             displayData(0);
         })
     });
+    $('#reference-input').hide();
 }
 
 
