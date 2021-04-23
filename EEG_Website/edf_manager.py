@@ -66,9 +66,11 @@ def get_data(session, data_handler):
     # Increment offset by samples read
     new_offset = offset + N - 1
     map_val = int(session['data_offset'])
+
+    update_vals = {'sliderval': offset, 'duration': session['duration'], 'filter': session['filter']}
     return jsonify(time=times,
                    data=data,
-                   sliderval=offset,
+                   update=update_vals,
                    offset=new_offset,
                    dataOffset=map_val,
                    duration=session['duration'])
