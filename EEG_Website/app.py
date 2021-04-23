@@ -169,7 +169,8 @@ def get_avg_references():
         for j in range(int(labels[-1][-1])):
             m = np.mean([x if int(y[-1]) == j else 0 for y in labels for x in data[int(y[-1])][1]])  # scuffed, please change
             means[j][i] = m
-
+            print(m)
+            # avg = data - means
     return jsonify(meanVal=means.tolist())
 
 
