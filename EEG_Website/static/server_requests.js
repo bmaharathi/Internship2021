@@ -5,7 +5,7 @@ let startTime = new Date();
 */
 
 function startModel() {
-    const query = '/model?'; //TODO: Add args
+    const query = '/model?ref-index=0'; //TODO: Add args
     const source = new EventSource(query);
     source.addEventListener('update', function (event) {
         console.log(event);

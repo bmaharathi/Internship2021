@@ -4,6 +4,7 @@ import edf_manager
 import annreader
 import threading
 import logging
+import pipeline as mlpipe
 
 filename = ''  # reusable filename variable
 app = Flask(__name__)
@@ -164,11 +165,15 @@ def set_time_data():
 
 @app.route('/model', methods=['GET', 'POST'])
 def handle_model():
-    def test():
-        for i in range(10):
-            yield 'event: update\ndata: value of testing:' + str(i) + '\n\n'
-        yield 'event: close\ndata:this is over\n\n'
-    return Response(test(), mimetype="text/event-stream")
+    print('Servicing model request')
+    hdl = data_handler.edf_reader
+    ref_index = int(request.args['ref-index'])
+
+    # def test():
+    #     for i in range(10):
+    #         yield 'event: update\ndata: value of testing:' + str(i) + '\n\n'
+    #     yield 'event: close\ndata:this is over\n\n'
+    return Response(mlpipe.detect_seizure(edg_hdl=hdl, index_signal=ref_index), mimetype="text/event-stream")
 
 
 @app.route('/filter', methods=['POST'])
