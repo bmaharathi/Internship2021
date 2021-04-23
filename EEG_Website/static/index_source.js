@@ -73,6 +73,7 @@ function loadIndexPage() {
         const val = $('#filter-input').val().toString();
         const query = '/filter?new-value=' + val;
         $.post(query, function () {
+            $('#time_series').empty();
             displayData(0);
         })
     });
@@ -80,6 +81,7 @@ function loadIndexPage() {
         const val = $('#duration-input').val().toString();
         const query = '/upload_duration?new-value=' + val;
         $.post(query, function () {
+            $('#time_series').empty();
             displayData(0);
         })
     });
@@ -165,7 +167,9 @@ function createDataObject(data, id) {
 }
 
 //Build single time series chart
-function createChartElementFrom(time, data_map, dataOffset) {
+function createChartElementFrom(time, data_map, dataOffset, update) {
+    const duration = parseInt(update.duration);
+    const filter = parseInt(update.filter);
     // HTML Canvas element
     let canvasElem = document.createElement('canvas');
     canvasElem.setAttribute('id', 'main-chart');
@@ -183,9 +187,7 @@ function createChartElementFrom(time, data_map, dataOffset) {
                     },
                     options: {
                         scales: {
-                            // Data limits (change to maintain orderly display of channels)
-                            max: data_map.length * dataOffset,
-                            min: -1 * dataOffset,
+
                             // Label type (hours)
                             x: {
                                 type: 'timeseries'
@@ -195,14 +197,13 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             xAxes: [{
                                 display: true,
                                 gridLines: {
-                                    drawOnChartArea: false,
                                     drawOnChartArea: true,
-                                    drawTicks: false
+                                    drawTicks: true
                                 },
                                 ticks: {
                                     padding: 15,
-                                    maxTicksLimit: time.length / 1000,
-                                    stepSize: 1000,
+                                    maxTicksLimit: duration,
+                                    stepSize: filter,
                                     maxRotation: 0,
                                     minRotation: 0,
                                     fontWeight: 'bold',
@@ -222,8 +223,12 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             }],
                             // Y axis labels (used to display channel names
                             yAxes: [{
+                                // Data limits (change to maintain orderly display of channels)
+
                                 //TODO: FIX ALIGNMENT WHICH BREAKS ON AMPLITUDE CHANGES
                                 ticks: {
+                                    max: (data_map.length ) * dataOffset,
+                                    min: -1 * dataOffset,
                                     maxTicksLimit: data_map.length,
                                     // Step size used to align channel name with graph
                                     stepSize: dataOffset,
@@ -345,10 +350,18 @@ function createAnnotationElementFrom(label, start, end) {
 /*
     ALTER CHARTS
  */
-function changeData(data_maps, time) {
+function changeData(data_maps, time, dataOffset,update) {
+    console.log("updating", update);
     chart.data.labels = time;
     chart.data.datasets = data_maps;
-    chart.update(0);
+    chart.chart.options.scales.xAxes[0].ticks.maxTicksLimit = parseInt(update.duration) + 1;
+    chart.chart.options.scales.xAxes[0].ticks.stepSize = parseInt(update.filter);
+    chart.chart.options.scales.yAxes[0].ticks.stepSize = dataOffset;
+    chart.chart.options.scales.yAxes[0].ticks.maxTicksLimit = data_maps.length;
+    chart.chart.options.scales.yAxes[0].ticks.max = (data_maps.length ) * dataOffset;
+    chart.chart.options.scales.yAxes[0].ticks.min = -1 * dataOffset;
+    chart.chart.update();
+    console.log(chart.chart.options.scales.xAxes[0]);
 }
 
 function renderAnnotations() {

@@ -34,21 +34,25 @@ function displayData(delta=0) {
                 // If no existing chart create new chart
                 const graphs = document.getElementById('time_series');
                 if (!graphs.hasChildNodes()) {
-                    $('#time_series').append(createChartElementFrom(json.time, data_maps, parseInt(json.dataOffset)));
+                    $('#time_series').append(createChartElementFrom(json.time, data_maps, parseInt(json.dataOffset), json.update));
                 }
                 // else update current chart with new configurations and time labels
                 else {
-                    changeData(data_maps, json.time)
+                    changeData(data_maps, json.time, parseInt(json.dataOffset),json.update)
                 }
                 // Update duration display
                 $('#duration').val(parseInt(json.duration));
-                return parseInt(json.sliderval);
+                return json.update;
             })
-        .then(function (start) {
+        .then(function (update) {
             setSlider();
-            $('#time-select').val(start);
+            $('#time-select').val(update.sliderval);
             $('#sliderdisplay').show();
             $('.slidecontainer').show();
+            const duration_qry = '#duration-input option[value=\''+ update.duration+ '\']';
+            $(duration_qry).prop('selected', true);
+            const filter_qry = '#filter-input option[value=\''+ update.filter + '\']';
+            $(filter_qry).prop('selected', true);
             renderAnnotations();
         });
 }
