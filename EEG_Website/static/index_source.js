@@ -179,6 +179,11 @@ function createChartElementFrom(time, data_map, dataOffset, update) {
     canvasElem.setAttribute('width', '80%');
     canvasElem.style.zIndex = -1;
     dataSet = data_map;
+    //transfer annotations
+    let annotations = {};
+    if (chart != null) {
+        annotations = chart.options.annotation;
+    }
     //Display actual chart
     chart = new Chart(canvasElem.getContext('2d'), {
                     type: 'line',
@@ -257,7 +262,7 @@ function createChartElementFrom(time, data_map, dataOffset, update) {
                             display: false
                         },
                         // Annotation section (filled in when displaying annotations
-                        annotation: {},
+                        annotation: annotations,
                         // Padding of graph
                         layout: {
                             padding: {
