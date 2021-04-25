@@ -171,8 +171,9 @@ function getAnnotationsToList() {
         for (let index in json.annotations) {
             // Calculate offset to jump to when selected (currently .3 of selected duration ahead of annotation onset to the nearest second)
             const onset = parseInt(json.annotations[index]['Onset']);
-            const duration = parseInt(json.duration);
-            let start = onset - Math.floor(.3 * duration)
+            const duration = parseInt(json.annotations[index]['Duration']);
+            const display_duration = parseInt(json.duration)
+            let start = onset - Math.floor(.3 * display_duration)
             start = (start > 0) ? start : 0;
 
             const label = json.annotations[index]['Annotation'];
