@@ -55,6 +55,37 @@ function loadIndexPage() {
     // TODO: FIX STYLING
     $('#annotation-items').hide();
     $('.annotation-menu').animate({'width': '0%', 'left': '100%'});
+    //Set up time select event handler
+    $('#time-select').mouseup(function () {
+        $.post('/select-offset', {new_value: this.value},
+            function (response) {
+                displayData(0);
+        });
+    });
+    $('#color-select').hide();
+    document.getElementById('time-select').oninput = function () {
+        let timelabel = new Date();
+        timelabel.setTime(startTime.getTime());
+        timelabel.setMilliseconds(this.value);
+        $('#sliderdisplay').text(timelabel.toLocaleTimeString());
+    }
+    $('#filter-input').change(function (event) {
+        const val = $('#filter-input').val().toString();
+        const query = '/filter?new-value=' + val;
+        $.post(query, function () {
+            $('#time_series').empty();
+            displayData(0);
+        })
+    });
+    $('#duration-input').change(function (event) {
+        const val = $('#duration-input').val().toString();
+        const query = '/upload_duration?new-value=' + val;
+        $.post(query, function () {
+            $('#time_series').empty();
+            displayData(0);
+        })
+    });
+    $('#reference-input').hide();
 }
 
 
@@ -67,6 +98,9 @@ function openFileSelect() {
     $('#eeg_file').change(function () {
         $.post('/upload_eeg', {eeg_file: this.value}, function() {
             displayData(0);
+            fetch('/upload_eeg').then(response =>response.text()).then(text => {
+                console.log("buffer data finished");
+            })
         });
     });
     // Opens up select file prompt
@@ -88,12 +122,24 @@ function openAnnotationSelect() {
 
 
 // open annotations menu and get annotations to list
-function listAnnotations() {
-    $('#annotation-items').empty();
-    getAnnotationsToList();
-    // TODO: FIX ANIMATION
-    $('#annotation-items').show();
-    $('.annotation-menu').animate({'width': '50%', 'left': '85%'});
+function listAnnotations(isClosed=true) {
+    if (isClosed) {
+        $('#annotation-items').empty();
+        getAnnotationsToList();
+        // TODO: FIX ANIMATION
+        $('#annotation-items').show();
+        $('.annotation-menu').animate({'width': '50%', 'left': '85%'});
+        document.getElementById('ann_pop').onclick = function () {
+            listAnnotations(false)
+        };
+    } else {
+        // TODO: FIX ANIMATION
+        $('#annotation-items').hide();
+        $('.annotation-menu').animate({'width': '0%', 'left': '100%'});
+        document.getElementById('ann_pop').onclick = function () {
+            listAnnotations(true)
+        };
+    }
 }
 
 /*
@@ -101,19 +147,30 @@ function listAnnotations() {
  */
 // Create single channel configuration for chart js
 function createDataObject(data, id) {
-    const name = id;
+    const name = id.trimEnd();
     let data_map = {};
-    data_map['label'] = name.trimEnd();
+    data_map['label'] = name;
     data_map['data'] = data.map(Number);
     data_map['pointRadius'] = 0;
     data_map['fill'] = false;
-    data_map['borderColor'] = '#51A1E8';
     data_map['borderWidth'] = 2;
+    if (chart != null) {
+        for (let index in chart.data.datasets) {
+            const old_data = chart.data.datasets[index];
+            if (old_data.label === name) {
+                data_map['borderColor'] = old_data.borderColor;
+                return data_map;
+            }
+        }
+    }
+    data_map['borderColor'] = '#51A1E8';
     return data_map;
 }
 
 //Build single time series chart
-function createChartElementFrom(time, data_map, dataOffset) {
+function createChartElementFrom(time, data_map, dataOffset, update) {
+    const duration = parseInt(update.duration);
+    const filter = parseInt(update.filter);
     // HTML Canvas element
     let canvasElem = document.createElement('canvas');
     canvasElem.setAttribute('id', 'main-chart');
@@ -131,9 +188,7 @@ function createChartElementFrom(time, data_map, dataOffset) {
                     },
                     options: {
                         scales: {
-                            // Data limits (change to maintain orderly display of channels)
-                            max: data_map.length * dataOffset,
-                            min: -1 * dataOffset,
+
                             // Label type (hours)
                             x: {
                                 type: 'timeseries'
@@ -143,26 +198,23 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             xAxes: [{
                                 display: true,
                                 gridLines: {
-                                    drawOnChartArea: false,
                                     drawOnChartArea: true,
-                                    drawTicks: false
+                                    drawTicks: true
                                 },
                                 ticks: {
                                     padding: 15,
-                                    maxTicksLimit: time.length / 1000,
-                                    stepSize: 1000,
+                                    maxTicksLimit: duration,
+                                    stepSize: filter,
                                     maxRotation: 0,
                                     minRotation: 0,
                                     fontWeight: 'bold',
                                     fontSize: 15,
+                                    fontColor: 'black',
                                     callback: function (value, index, values) {
                                         const timevalues = value.split(':')
                                         let timelabel = new Date();
                                         timelabel.setHours(parseInt(timevalues[0]), parseInt(timevalues[1]), parseInt(timevalues[2]));
                                         if (index == 0 || index == time.length - 1) {
-                                            if (index == 0) {
-                                                $('#sliderdisplay').text(timelabel.toLocaleTimeString());
-                                            }
                                             return timelabel.toLocaleTimeString();
                                         } else {
                                             return '';
@@ -172,8 +224,13 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             }],
                             // Y axis labels (used to display channel names
                             yAxes: [{
+                                // Data limits (change to maintain orderly display of channels)
+
                                 //TODO: FIX ALIGNMENT WHICH BREAKS ON AMPLITUDE CHANGES
                                 ticks: {
+                                    max: (data_map.length ) * dataOffset,
+                                    min: -1 * dataOffset,
+                                    maxTicksLimit: data_map.length,
                                     // Step size used to align channel name with graph
                                     stepSize: dataOffset,
                                     // Change label from numerical value to the name of the channel at tick offset
@@ -186,7 +243,8 @@ function createChartElementFrom(time, data_map, dataOffset) {
                                         }
                                     },
                                     fontWeight: 'bold',
-                                    fontSize: 14
+                                    fontSize: 15,
+                                    fontColor: 'black'
                                 },
                                 // TODO: DISPLAY DASHED GRIDLINES DEPENDENDT ON DURATION VIEWED
                                 gridLines: {
@@ -196,13 +254,7 @@ function createChartElementFrom(time, data_map, dataOffset) {
                         },
                         // Prevent legend display because it doesn't optimize space or align with channels
                         legend: {
-                            display: false,
-                            label: {
-                                font: {
-                                    weight: 'bold',
-                                    size: 50
-                                }
-                            }
+                            display: false
                         },
                         // Annotation section (filled in when displaying annotations
                         annotation: {},
@@ -213,8 +265,30 @@ function createChartElementFrom(time, data_map, dataOffset) {
                             }
                         },
                         // Erases default events
-                        //TODO: ADD CALLBACK TO CHANGE CHANNEL COLOR
-                        events: []
+                        events: ['click'],
+                        tooltips: {
+                            intersect: false,
+                            mode: 'nearest',
+                            callbacks: {
+                                title: function (toolTipItem, data) {
+                                    const ds_index = toolTipItem[0].datasetIndex;
+                                    const channelLabel = data.datasets[ds_index].label;
+                                    const curColor = data.datasets[ds_index].borderColor;
+                                    $('#color-select').val(curColor);
+                                    $('#color-select').show();
+                                    $('#color-select').change(function (event) {
+                                        $('#color-select').hide();
+                                        data.datasets[ds_index].borderColor = $('#color-select').val();
+                                        chart.update(0);
+                                        $('#color-select').unbind('change');
+                                    });
+                                    return "";
+                                },
+                                label: function (toolTipItem, data) {
+                                    return "";
+                                }
+                            }
+                        }
                     }
                 });
 
@@ -248,44 +322,70 @@ function getElectrodeSelectElement(id, value) {
 
 //Create annotation element
 function createAnnotationElementFrom(label, start, end) {
-    //create html elements
-    let li = document.createElement("li");
+    let card = $('<div>', {class: 'card'});
+    let cardHeader = $('<h5>', {class: 'card-header'});
+    let cardBody = $('<div>', {class: 'card-body'});
+    card.text(label);
     let link = document.createElement("a");
-    // set value of link to starr offset
-    link.value = start;
-    // Adds annotation label to element
-    let text = document.createTextNode(label);
-    link.appendChild(text);
+    link.appendChild(document.createTextNode("Onset: " + start.toString()));
+    link.appendChild(document.createElement('br'));
+    link.appendChild(document.createTextNode("Duration: " + end.toString() + " seconds"));
     // ????
     link.style.cursor = "pointer";
     // Go to annotation when clicked then display annotation
-    link.onclick = function () {
+    card.click(function () {
         const argument = "&chosen=" + label;
-        $.post('/select-offset', {new_value: this.value},
+        const offset = start * 1000;
+        $.post('/select-offset', {new_value: offset},
         function (response) {
             displayData(0);
             toggleAnnotate(argument, label);
-            $('#annotation-items').hide();
-            $('.annotation-menu').animate({'width': '0%', 'left': '100%'});
         });
-    };
-
-    li.appendChild(link);
-    return li;
+    });
+    cardBody.append(link);
+    card.append(cardBody);
+    return card;
 }
 
 
 /*
     ALTER CHARTS
  */
-function changeData(data_maps, time) {
+function changeData(data_maps, time, dataOffset,update) {
+    console.log("updating", update);
     chart.data.labels = time;
     chart.data.datasets = data_maps;
-    chart.update(0);
+    chart.chart.options.scales.xAxes[0].ticks.maxTicksLimit = parseInt(update.duration) + 1;
+    chart.chart.options.scales.xAxes[0].ticks.stepSize = parseInt(update.filter);
+    chart.chart.options.scales.yAxes[0].ticks.stepSize = dataOffset;
+    chart.chart.options.scales.yAxes[0].ticks.maxTicksLimit = data_maps.length;
+    chart.chart.options.scales.yAxes[0].ticks.max = (data_maps.length ) * dataOffset;
+    chart.chart.options.scales.yAxes[0].ticks.min = -1 * dataOffset;
+    chart.chart.update();
+    console.log(chart.chart.options.scales.xAxes[0]);
 }
 
-
-
-
-
+function renderAnnotations() {
+    const labels = chart.data.labels;
+    for (let index in chart.options.annotation.annotations) {
+        let ann = chart.options.annotation.annotations[index]
+        console.log(ann);
+        const start = ann.start;
+        const end = ann.end;
+        console.log(start, end);
+        const found = labels.find(label => label===start || label ===end);
+        if (found === start && labels.lastIndexOf(end) === -1) {
+            console.log(start);
+            chart.options.annotation.annotations[index].xMin = start;
+            chart.options.annotation.annotations[index].xMax = labels[labels.length - 1]
+            console.log(chart.options.annotation.annotations[index].xMax);
+        }
+        else if(found === end) {
+            chart.options.annotation.annotations[index].xMin = labels[0];
+            chart.options.annotation.annotations[index].xMax = end;
+            console.log("End in current display");
+        }
+    }
+    chart.update(0);
+}
 
