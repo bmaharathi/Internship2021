@@ -1,5 +1,26 @@
 // Global object which will indicate the start of data recording for use with timeslider
 let startTime = new Date();
+/*
+    Handle ml model
+*/
+
+function startModel() {
+    $('#reference-input').show();
+    $('#reference-input').change(function () {
+        const val = $('#reference-input').val().toString();
+        const query = '/model?ref-index=' + val; //TODO: Add args
+        const source = new EventSource(query);
+        $('#reference-input').hide();
+        source.addEventListener('update', function (event) {
+            console.log(event);
+        });
+        source.addEventListener('close', function (event) {
+            console.log("closing event listener");
+            source.close();
+            alert("Model Successful: Ready for prediction");
+        });
+    });
+}
 
 /*
  Fetch selected electrode data
@@ -18,21 +39,37 @@ function displayData(delta=0) {
                 // If no existing chart create new chart
                 const graphs = document.getElementById('time_series');
                 if (!graphs.hasChildNodes()) {
-                    $('#time_series').append(createChartElementFrom(json.time, data_maps, parseInt(json.dataOffset)));
+                    $('#time_series').append(createChartElementFrom(json.time, data_maps, parseInt(json.dataOffset), json.update));
                 }
                 // else update current chart with new configurations and time labels
                 else {
-                    changeData(data_maps, json.time)
+                    changeData(data_maps, json.time, parseInt(json.dataOffset),json.update)
                 }
                 // Update duration display
                 $('#duration').val(parseInt(json.duration));
-                return parseInt(json.sliderval);
+                return json.update;
             })
-        .then(function (start) {
-            $('#time-select').val(start);
+        .then(function (update) {
+            setSlider();
+            $('#time-select').val(update.sliderval);
             $('#sliderdisplay').show();
             $('.slidecontainer').show();
+            const duration_qry = '#duration-input option[value=\''+ update.duration+ '\']';
+            $(duration_qry).prop('selected', true);
+            const filter_qry = '#filter-input option[value=\''+ update.filter + '\']';
+            $(filter_qry).prop('selected', true);
+            renderAnnotations();
         });
+        fetch("/subject")
+        .then(response=>response.json())
+        .then(json => {
+            for (let index in json.references) {
+                const ref = json.references[index];
+                const option = $('<option></option>', {val:ref.id});
+                option.text(ref.label);
+                $('#reference-input').append(option);
+            }
+        })
 }
 
 
@@ -69,12 +106,8 @@ function saveElectrodeSelect() {
     fetch('/electrode_select')
         .then(response => response.json())
         .then(json=> {
-            var val;
-            console.log(json);
-
-            for (val in json.data) {
+            for (let val in json.data) {
                 let str = json.data[val].toString().trim();
-                console.log(str);
                 document.getElementById(str).checked = true;
                 }
         })
@@ -107,6 +140,8 @@ function toggleAnnotate(selectArg="", chosenName="") {
                     xScaleID: 'x-axis-0',
                     yScaleID: 'y-axis-0',
                     scaleID: 'x-axis-0',
+                    start:start,
+                    end:end,
                     // Left edge of the box. in units along the x axis
                     xMin: start,
                     xMax: end,
@@ -124,7 +159,8 @@ function toggleAnnotate(selectArg="", chosenName="") {
         // } else {
         //     delete chart.options.annotation['annotations'];
         // }
-        chart.update();
+        chart.update(0);
+        renderAnnotations();
     });
 }
 
@@ -135,16 +171,20 @@ function getAnnotationsToList() {
         for (let index in json.annotations) {
             // Calculate offset to jump to when selected (currently .3 of selected duration ahead of annotation onset to the nearest second)
             const onset = parseInt(json.annotations[index]['Onset']);
-            const duration = parseInt(json.duration) * 1000;
+            const duration = parseInt(json.duration);
             let start = onset - Math.floor(.3 * duration)
-            start = start - start % 1000;
             start = (start > 0) ? start : 0;
 
             const label = json.annotations[index]['Annotation'];
             // create and append annotation item to right sider bar
-            $('#annotation-items').append(createAnnotationElementFrom(label, start));
+            $('#annotation-items').append(createAnnotationElementFrom(label, start, duration));
         }
-        chart.update();
+        $('div.card').mouseenter( function () {
+            $(this).addClass("card bg-dark text-white");
+        }).mouseleave( function () {
+            $(this).removeClass("card bg-dark text-white");
+            $(this).addClass("card");
+        })
     });
 }
 
@@ -162,7 +202,7 @@ function alterAmplitudes(delta) {
         chart.options.scales.max = newMax;
         chart.options.scales.min = newMin;
         chart.options.scales.yAxes[0].ticks.stepSize = amplitude;
-        chart.update(0)
+        chart.update()
         displayData(0);
     });
 }
@@ -171,37 +211,16 @@ function alterAmplitudes(delta) {
     Set up slider
  */
 function setSlider() {
-    $('#time-select').mouseup(function () {
-        $.post('/select-offset', {new_value: this.value},
-            function (response) {
-                displayData(0);
-                // let newTime = new Date();
-                // newTime.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
-                // newTime.setMilliseconds($('#time-select').val());
-                //  $('#sliderdisplay').text(newTime.toLocaleTimeString());
-        });
-
-    });
     const query = '/slider';
     fetch(query)
         .then(response => response.json())
         .then(json => {
+            startTime.setHours(parseInt(json.start[0]));
+            startTime.setMinutes(parseInt(json.start[1]));
+            startTime.setSeconds(parseInt(json.start[2]));
             // Set up attributes of slider
             $('#time-select').attr('min', json.min);
             $('#time-select').attr('max', json.max);
             $('#time-select').attr('value', json.min);
-
-            //set up function to change display on change of slider
-            $('#time-select').mouseup(function () {
-                $.post('/select-offset', {new_value: this.value},
-                        function (response) {
-                    displayData(0);
-                    let newTime = new Date();
-                    newTime.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
-                    newTime.setMilliseconds($('#time-select').val());
-                     $('#sliderdisplay').text(newTime.toLocaleTimeString());
-                });
-
-            });
-        })
+        });
 }

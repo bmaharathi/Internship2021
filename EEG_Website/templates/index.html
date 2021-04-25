@@ -19,7 +19,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
 
+
     <link href="../static/index_style.css" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <style>
@@ -55,11 +57,23 @@
                 <button class="btn btn-sm btn-outline-secondary" onclick="listAnnotations();" type="button" id = "ann_pop" aria-expanded="false">Annotations</button>
                 <!-- Select time duration-->
                 <div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Select Duration</button>
-                <form method="POST" id="duration_form" action="/upload_duration" style=" display: none" enctype="multipart/form-data">
-                    <input type="number" id="duration" name="duration" min="1" max="60">
-                    <input onclick="openDurationSelect();" type="submit"/>
-                </form>
+                    <h2 class="btn btn-sm btn-outline-secondary">Duration</h2>
+                    <select class="form-select form-select-sm" type="number" id="duration-input" name="duration">
+                        <option value="1">1 second</option>
+                        <option value="5">5 seconds</option>
+                        <option value="10">10 seconds</option>
+                        <option value="30">30 seconds</option>
+                        <option value="60">60 seconds</option>
+                    </select>
+               </div>
+                <div>
+                    <h2 class="btn btn-sm btn-outline-secondary">Filter</h2>
+                    <select class="form-select form-select-sm" type="number" id="filter-input" name="filter-input">
+                        <option value="1000">1000 HZ</option>
+                        <option value="500">500 HZ</option>
+                        <option value="250">250 HZ</option>
+                        <option value="100">100 HZ</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -88,13 +102,22 @@
                         <input onclick="openFileSelect();" type="submit"/>
                     </form>
                 </li>
+                <!-- SELECT ELECTRODE-->
                 <li>
-                    <!-- SELECT ELECTRODE-->
                     <button class="btn btn-sm btn-outline-secondary" onclick="openElectrodeSelect();">Select Electrodes</button><br>
                     <form method = "POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data"></form>
                 </li>
+                <br>
                 <li>
-                    <!-- SELECT ANNOTATION FILE -->
+                <!-- RUN MODEL -->
+                <li>
+                    <button id="model-button" class="btn btn-sm btn-outline-secondary" onclick="startModel();">Initiate Model</button><br>
+                    <select class="form-select form-select-sm" type="number" id="reference-input" name="reference-input">
+                        <option id="ref-default" selected>None Selected</option>
+                    </select>
+                    <a id="model-load"></a>
+                </li>
+                <!-- SELECT ANNOTATION FILE -->
                     <button type="button" onclick="openAnnotationSelect();" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
 
                     <form method = "POST" id = "ann_file_form" name = "annotation" enctype = 'multipart/form-data' action="/upload_ann" style="display: none">
@@ -106,10 +129,11 @@
                         <input type="submit"/>
                     </form>
                 </li>
+                <br>
                 <li>
                     <!-- Close EEG FILE -->
                     <form method = "POST" id="close_file" action="/delete" enctype="multipart/form-data">
-                        <input class="btn btn-sm btn-outline-secondary" type="submit" value="Close file">
+                        <input class="btn btn-sm btn-outline-secondary" type="submit" value="Close">
                         <br>
                     </form>
                 </li>
@@ -122,6 +146,12 @@
     </div>
     <!-- Graph area -->
     <div id="display-area">
+        <select id="color-select">
+            <option value="#51A1E8">Blue</option>
+            <option value="#000000">Black</option>
+            <option value="#ff0000">Red</option>
+            <option value="#ffff00">Yellow</option>
+        </select>
         <div id="time_series"></div>
         <footer class="slidecontainer">
             <p class="slidecontainer" id="sliderdisplay"></p>
