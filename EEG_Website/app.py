@@ -187,6 +187,9 @@ def set_filter():
     session['filter'] = request.args['new-value']
     return session['filter']
 
+@app.route('/average', methods=["GET"])
+def get_average():
+    return edf_manager.average_ref(session, data_handler)
 
 if __name__ == '__main__':
     app.run()

@@ -6,8 +6,66 @@ import threading
 import sys
 
 
+class DataHandler:
+
+    # Constructor feel free to add attributes as needed
+    def __init__(self):
+        self.f_name = ""
+        self.edf_reader = None
+        self.records_loaded = 0
+        self.num_channels = 0
+        self.data = None
+        self.record_start = None
+        self.status = False
+
+    # Initialize attributes based on session
+    def start(self, session):
+        self.f_name = session['filename']
+        self.edf_reader = EDFreader(self.f_name)
+        self.records_loaded = 0
+        self.num_channels = self.edf_reader.getNumSignals()
+        self.data = None
+        self.record_start = self.edf_reader.getStartDateTime()
+        self.status = True
+        self.regulate_buffering()
+
+    def get_data(self, offset, num):
+        return self.data[:, offset:num]
+
+    # Sorry for all the functions, easier to keep straight but this one just gets more information, and monitors the
+    # buffering process
+    def regulate_buffering(self):
+        # Maximum number of records available in the file
+        num_records = int(self.edf_reader.getFileDuration() / 10000)
+        # Number of channels
+        num_channels = self.num_channels
+        # NP array (channels x records)
+        self.data = np.zeros((num_channels, num_records))
+
+        # How many records to load before update handler
+        data_per_epoch = 10000
+
+        for record_start in range(0, num_records, data_per_epoch):
+            # Update records loaded
+            self.records_loaded += self.load_data(record_start, data_per_epoch)
+
+            if self.records_loaded % (data_per_epoch * 100) == 0:
+                print("Loaded %d records" % self.records_loaded, flush=True)
+                print("==>", self.data[:, record_start], flush=True)
+
+    # Utilize edf reader to load data
+    def load_data(self, record_start, N):
+        for signal in range(0, self.edf_reader.getNumSignals()):
+            # get buffer for current epoch
+            buf = self.data[signal, record_start: record_start + N]
+            # Load data
+            self.edf_reader.readSamples(signal, buf, N)
+        # Return values loaded
+        return N
+
+
 # GET DATA
-def get_data(session, data_handler):
+def get_data(session, data_handler: DataHandler):
     # Check if data is buffered by seeing if records asked for is within records loaded
     data_is_buffered = (int(session['offset']) + int(session['duration']) * 1000) < data_handler.records_loaded
     # Configure EDFReader for either style of data retrieval
@@ -76,6 +134,62 @@ def get_data(session, data_handler):
                    duration=session['duration'])
 
 
+# CALCULATE AVERAGE REFERENCES
+def average_ref(session, data_handler: DataHandler):
+    data_is_buffered = (int(session['offset']) + int(session['duration']) * 1000) < data_handler.records_loaded
+    labels = []
+    # store labels
+
+    print(int(session['duration']) * 1000 + 1)
+    # array stores the mean value for each datapoint, for each reference
+    means = [None]*(int(session['duration']) * 1000 + 1)  # x-> the number of references, y-> the number of data points
+
+    # if data not buffered
+    if not data_is_buffered:
+        curr = get_data(session, data_handler).json  # current screen data
+        data = curr['data']  # label and channel data for current screen
+        # avgRef = np.zeros(4) # change this based on number of references
+        # store means based on refs
+
+        for keys in data:
+            labels.append(keys[0])
+            labels = list(map(str.strip, labels))
+        avg = np.zeros((len(labels), int(session['duration']) * 1000 + 1))
+        for i in range(int(session['duration']) * 1000 + 1):
+            sum = 0.0
+            for j in range(len(labels)):
+                sum += float(data[j][1][i])
+            mean = sum // len(labels)  # int for simplicity, change to float for accuracy
+            means[i] = mean
+
+        # data = data - means
+        for i in range(int(session['duration']) * 1000 + 1):
+            for j in range(len(labels)):
+                print(float(data[j][1][i]))
+                avg[j][i] = float(data[j][1][i]) - means[i]
+
+        return jsonify(data=avg.tolist())
+    # if data buffered
+    # grab data from class object
+    # self.data = np.zeros((num_channels, num_records))
+    else:
+        data = data_handler.get_data(int(session['offset']), int(session['offset']) + int(session['duration']) * 1000+1) # current screen data
+        hdl = data_handler.edf_reader
+        num_labels = hdl.getNumSignals()
+        avg = np.zeros((num_labels, int(session['duration']) * 1000 + 1))
+        for i in range(int(session['duration']) * 1000 + 1):
+            sum = 0
+            for j in range(num_labels):
+                sum += data[j][i]
+            mean = sum // num_labels  # int for simplicity, change to float for accuracy
+            means[i] = mean
+
+        # data = data - means
+        for i in range(int(session['duration']) * 1000 + 1):
+            for j in range(len(labels)):
+                data[j][i] -= means[i]
+        return jsonify(data=data.tolist())
+
 # PARSE AVAILABLE ELECTRODES AND RETURN DICTIONARY => INDEX : ELECTRODE NAME
 def get_electrodes(session):
     hdl = EDFreader(session['filename'])
@@ -123,64 +237,9 @@ def get_amplitude(session):
                    newMax=new_max,
                    newMin=new_min)
 
+
 def get_references(session):
     hdl = EDFreader(session['filename'])
-    references = [{'label': hdl.getSignalLabel(i).strip()[-4:], 'id':i} for i in range(0, hdl.getNumSignals(), 6)]
+    references = [{'label': hdl.getSignalLabel(i).strip()[-4:], 'id': i} for i in range(0, hdl.getNumSignals(), 6)]
     print(references)
     return jsonify(references=references)
-
-
-
-class DataHandler:
-
-    # Constructor feel free to add attributes as needed
-    def __init__(self):
-        self.f_name = ""
-        self.edf_reader = None
-        self.records_loaded = 0
-        self.num_channels = 0
-        self.data = None
-        self.record_start = None
-        self.status = False
-
-    # Initialize attributes based on session
-    def start(self, session):
-        self.f_name = session['filename']
-        self.edf_reader = EDFreader(self.f_name)
-        self.records_loaded = 0
-        self.num_channels = self.edf_reader.getNumSignals()
-        self.data = None
-        self.record_start = self.edf_reader.getStartDateTime()
-        self.status = True
-        self.regulate_buffering()
-
-    # Sorry for all the functions, easier to keep straight but this one just gets more information, and monitors the
-    # buffering process
-    def regulate_buffering(self):
-        # Maximum number of records available in the file
-        num_records = int(self.edf_reader.getFileDuration() / 10000)
-        # Number of channels
-        num_channels = self.num_channels
-        # NP array (channels x records)
-        self.data = np.zeros((num_channels, num_records))
-
-        # How many records to load before update handler
-        data_per_epoch = 10000
-
-        for record_start in range(0, num_records, data_per_epoch):
-            # Update records loaded
-            self.records_loaded += self.load_data(record_start, data_per_epoch)
-
-            if self.records_loaded % (data_per_epoch * 100) == 0:
-                print("Loaded %d records" % self.records_loaded, flush=True)
-                print("==>", self.data[:, record_start], flush=True)
-
-    # Utilize edf reader to load data
-    def load_data(self, record_start, N):
-        for signal in range(0, self.edf_reader.getNumSignals()):
-            # get buffer for current epoch
-            buf = self.data[signal, record_start: record_start + N]
-            # Load data
-            self.edf_reader.readSamples(signal, buf, N)
-        # Return values loaded
-        return N
