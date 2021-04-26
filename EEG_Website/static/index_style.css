@@ -56,5 +56,6 @@ footer.slidecontainer {
 }
 
 p {
+    text-align: center;
     color: gainsboro;
 }
