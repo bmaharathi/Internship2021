@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+<<<<<<< HEAD
+    <list default="true" id="ec595682-0b86-4be1-8165-982ada124c73" name="Default Changelist" comment="collecting updates" />
+=======
+    <list default="true" id="bcadeba1-ce0c-4b79-ba0a-3c2cf43aaa2a" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EEG_Website/annreader.py" beforeDir="false" afterPath="$PROJECT_DIR$/EEG_Website/annreader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EEG_Website/static/index_source.js" beforeDir="false" afterPath="$PROJECT_DIR$/EEG_Website/static/index_source.js" afterDir="false" />
+    </list>
+>>>>>>> annotation_testing
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+<<<<<<< HEAD
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev1" />
+=======
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+>>>>>>> annotation_testing
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+<<<<<<< HEAD
+  <component name="ProjectId" id="1oMNVzq8s85OUsAA0xKp90RlbHt" />
+=======
+  <component name="ProjectId" id="1pDiO173Qp9dMvdnoa29vwfxC3V" />
+>>>>>>> annotation_testing
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+<<<<<<< HEAD
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+=======
+>>>>>>> annotation_testing
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="node.js.detected.package.eslint" value="true" />
+<<<<<<< HEAD
+    <property name="node.js.detected.package.tslint" value="true" />
+=======
+>>>>>>> annotation_testing
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="restartRequiresConfirmation" value="false" />
+<<<<<<< HEAD
+  </component>
+  <component name="RunManager" selected="Python.app">
+    <configuration name="127.0.0.1:5000" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://127.0.0.1:5000/">
+      <method v="2" />
+    </configuration>
+    <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="DPI" />
+=======
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+  </component>
+  <component name="RunManager">
+    <configuration name="app" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+>>>>>>> annotation_testing
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+<<<<<<< HEAD
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/EEG_Website" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+=======
+      <option name="SDK_HOME" value="/usr/local/bin/python3.9" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/EEG_Website" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+>>>>>>> annotation_testing
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/EEG_Website/app.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+<<<<<<< HEAD
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.app" />
+        <item itemvalue="JavaScript Debug.127.0.0.1:5000" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ec595682-0b86-4be1-8165-982ada124c73" name="Default Changelist" comment="" />
+      <created>1613092527326</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1613092527326</updated>
+      <workItem from="1613092528958" duration="18351000" />
+      <workItem from="1614129151824" duration="4000" />
+      <workItem from="1614308554171" duration="6370000" />
+      <workItem from="1614372857069" duration="1534000" />
+      <workItem from="1614374576744" duration="1241000" />
+    </task>
+    <task id="LOCAL-00001" summary="flask accepts .rec and .edf files">
+      <created>1613167586485</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1613167586485</updated>
+    </task>
+    <task id="LOCAL-00002" summary="added edfreader+writer libraries">
+      <created>1613681243128</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1613681243128</updated>
+    </task>
+    <task id="LOCAL-00003" summary="electrodes get sent to frontend for selection">
+      <created>1613851200492</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1613851200492</updated>
+    </task>
+    <task id="LOCAL-00004" summary="collecting updates">
+      <created>1614372648072</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1614372648072</updated>
+    </task>
+    <task id="LOCAL-00005" summary="collecting updates">
+      <created>1614373517235</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1614373517235</updated>
+    </task>
+    <task id="LOCAL-00006" summary="collecting updates">
+      <created>1614373806256</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1614373806256</updated>
+    </task>
+    <task id="LOCAL-00007" summary="collecting updates">
+      <created>1614373852835</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1614373852835</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
+=======
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task id="LOCAL-00001" summary="updating files">
+      <created>1614393452877</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1614393452877</updated>
+    </task>
+    <task id="LOCAL-00002" summary="constant checkboxes, checkboxes state saved">
+      <created>1614399841545</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1614399841545</updated>
+    </task>
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bcadeba1-ce0c-4b79-ba0a-3c2cf43aaa2a" name="Default Changelist" comment="" />
+      <created>1614724027364</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1614724027364</updated>
+      <workItem from="1614724030252" duration="581000" />
+      <workItem from="1615502411016" duration="947000" />
+      <workItem from="1615506608652" duration="1961000" />
+      <workItem from="1616117800165" duration="1078000" />
+      <workItem from="1616119002172" duration="899000" />
+    </task>
+    <option name="localTasksCounter" value="3" />
+>>>>>>> annotation_testing
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+<<<<<<< HEAD
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="flask accepts .rec and .edf files" />
+    <MESSAGE value="added edfreader+writer libraries" />
+    <MESSAGE value="electrodes get sent to frontend for selection" />
+    <MESSAGE value="collecting updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="collecting updates" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/DPI$app.coverage" NAME="app Coverage Results" MODIFIED="1614375255995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/EEG_Website" />
+=======
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="updating files" />
+    <MESSAGE value="constant checkboxes, checkboxes state saved" />
+    <option name="LAST_COMMIT_MESSAGE" value="constant checkboxes, checkboxes state saved" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/DPI$app.coverage" NAME="app Coverage Results" MODIFIED="1616119585449" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/EEG_Website" />
+>>>>>>> annotation_testing
+  </component>
+</project>

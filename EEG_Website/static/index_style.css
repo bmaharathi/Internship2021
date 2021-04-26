@@ -1,0 +1,61 @@
+footer.slidecontainer {
+    padding-left: 15%;
+}
+
+.slidecontainer {
+    align-self: center;
+    width: 1100px;
+}
+
+#sidebarMenu {
+    width: 13%;
+    height: 100%;
+    background-color: gainsboro;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    padding-left: 2%;
+    padding-top: 5%;
+
+}
+
+.annotation-menu {
+    width: 0%;
+    height: 100%;
+    background-color: gainsboro;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    left: 85%;
+    position: fixed;
+    padding-top: 5%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.annotation-item {
+    display: block;
+}
+
+#display-area {
+    position: relative;
+    padding-left: 1%;
+}
+
+#sliderdisplay {
+    display: inline;
+}
+
+#time-select {
+    display: inline-flex;
+}
+
+#color-select {
+    padding-left: 5%;
+}
+
+p {
+    text-align: center;
+    color: gainsboro;
+}

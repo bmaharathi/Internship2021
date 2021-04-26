@@ -1,0 +1,6 @@
+*.rec
+EEG_Website/__pycache__/
+
+/.idea/
+*.csv
+
