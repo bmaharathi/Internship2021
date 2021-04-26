@@ -47,7 +47,9 @@ def map_annotations_to_time(annotations, start_time, chart_max, chart_min, selec
 
 
 def annotations_by_offset(session):
+    start_time = str(get_file_start(session).time()).split(':')
     parsed = parse_annotation_file(session)
     duration = session['duration']
     return jsonify(annotations=parsed,
-                   duration=duration)
+                   duration=duration,
+                   time=start_time)

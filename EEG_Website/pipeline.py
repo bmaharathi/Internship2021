@@ -32,9 +32,9 @@ def getFeatures(X, edg_hdl, num_records, sam_per_record, sam_per_sec, num_signal
     num_feat_per_signal = 16
     # X = np.empty((num_records * num_signal, num_feat_per_signal))
     # set the file handler at the beginning of the signals
+
     for j in range(num_signal):
         edg_hdl.fseek(j, 0, EDFreader.EDFSEEK_SET)
-
 
     buf = np.empty((num_signal, int(sam_per_record)))
     for i in range(num_records):
@@ -154,28 +154,78 @@ def generate_filename(filename, index_signal):
 # index_signal : the index of the first of signal in the file. Here assume all the signals are sequential
 def detect_seizure(filename, edg_hdl, index_signal, num_signal=6, model_filename="finalized_model.sav",
                    assignemnt_filename="data.npy"):
-    print('in detecting siezures')
-    yield 'event: update\ndata: Process initiated\n\n'
+    yield 'event: update\ndata: 0%\n\n'
     # get meta data of the signals
     sam_per_sec, file_dur, sam_per_record, total_sam, num_records = getFileMetrics(edg_hdl)
     # load the model
     model = pickle.load(open(model_filename, 'rb'))
-    print(model)
-    yield 'event: update\ndata: Model Loaded\n\n'
+    yield 'event: update\ndata: 1%\n\n'
     # load the assignment
     pos_cluster_indices = (load(assignemnt_filename)).tolist()
-    print('Assignment loaded')
-    yield 'event: update\ndata: Assignment Loaded\n\n'
+    yield 'event: update\ndata: 2%\n\n'
     # extract features
     num_feat_per_signal = 16
+    norm = False
+    num_signal = 6
     X = np.empty((num_records * num_signal, num_feat_per_signal))
-    X = getFeatures(X, edg_hdl, num_records, sam_per_record, sam_per_sec)
-    print(X)
-    yield 'event: update\ndata: Features extracted\n\n'
-    print('Features extracted')
+    for j in range(num_signal):
+        edg_hdl.fseek(j, 0, EDFreader.EDFSEEK_SET)
+
+    buf = np.empty((num_signal, int(sam_per_record)))
+    for i in range(num_records):
+        if i % 250 == 0:
+            percent = str(int(i / num_records * 90) + 3) + '%'
+            print(i, "features extracted")
+            yield 'event: update\ndata:' + percent + '\n\n'
+        # get all the signals
+        for j in range(num_signal):
+            edg_hdl.readSamples(j, buf[j], sam_per_record)
+        buf_copy = buf.copy()  # a copy of the buf used for average montage
+        # get features from reference montage
+        for j in range(num_signal):
+            index = j * num_records + i
+            # normalization if required
+            if norm is True:
+                mean = np.mean((buf[j]))
+                std = np.std(buf[j])
+                buf[j] = (buf[j] - mean) / std
+            # feature extracting
+            X[index][0] = np.mean(np.absolute(buf[j]))
+            f, Pxx = signal.periodogram(buf[j], fs=sam_per_sec)
+            X[index][1] = bandPower(f, Pxx, 1, 2)
+            X[index][2] = bandPower(f, Pxx, 3, 4)
+            X[index][3] = bandPower(f, Pxx, 4, 6)
+            X[index][4] = bandPower(f, Pxx, 6, 9)
+            X[index][5] = bandPower(f, Pxx, 9, 12)
+            X[index][6] = bandPower(f, Pxx, 12, 30)
+            X[index][7] = bandPower(f, Pxx, 30, 50)
+
+        # calculate average montage
+        buf = buf_copy
+        avg = np.mean(buf, 0)
+        buf -= avg
+        # get features from average montage
+        for j in range(num_signal):
+            index = j * num_records + i
+            # normalization if required
+            if norm is True:
+                mean = np.mean((buf[j]))
+                std = np.std(buf[j])
+                buf[j] = (buf[j] - mean) / std
+            # feature extracting
+            X[index][8] = np.mean(np.absolute(buf[j]))
+            f, Pxx = signal.periodogram(buf[j], fs=sam_per_sec)
+            X[index][9] = bandPower(f, Pxx, 1, 2)
+            X[index][10] = bandPower(f, Pxx, 3, 4)
+            X[index][11] = bandPower(f, Pxx, 4, 6)
+            X[index][12] = bandPower(f, Pxx, 6, 9)
+            X[index][13] = bandPower(f, Pxx, 9, 12)
+            X[index][14] = bandPower(f, Pxx, 12, 30)
+            X[index][15] = bandPower(f, Pxx, 30, 50)
+
+    yield 'event: update\ndata: 99%\n\n'
     # make prediction
     predicted_raw_lables = model.predict(X)  # (num_records * num_signal)
-    print('Labels predicted')
     # assign lables of seizures i.e. 1
     labels = np.zeros(num_records * num_signal)
     for i in range(num_records * num_signal):
@@ -190,7 +240,8 @@ def detect_seizure(filename, edg_hdl, index_signal, num_signal=6, model_filename
     df = createDataFrame(labels, num_signal, num_records)
     result_filename = generate_filename(filename, index_signal)
     df.to_csv(result_filename, index=False)
-    yield 'event: close\ndata: Annotation file created\n\n'
+    yield 'event: update\ndata: 100%\n\n'
+    yield 'event: close\ndata:' + generate_filename(filename, index_signal) + '\n\n'
     return df, result_filename
 
 # test

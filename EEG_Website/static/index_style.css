@@ -54,3 +54,8 @@ footer.slidecontainer {
 #color-select {
     padding-left: 5%;
 }
+
+p {
+    text-align: center;
+    color: gainsboro;
+}

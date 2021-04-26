@@ -45,36 +45,44 @@
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
         <!-- Title -->
         <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">IBRAIN · EEG Reviewer</a>
-        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon">
-                <a>Menu</a>
-            </span>
-        </button>
-        <!-- Tools (annotation, and time duration -->
         <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <!-- Select time duration-->
+            <div>
+                <p>Duration</p>
+                <select class="form-select form-select-sm" type="number" id="duration-input" name="duration">
+                    <option value="1">1 second</option>
+                    <option value="5">5 seconds</option>
+                    <option value="10">10 seconds</option>
+                    <option value="30">30 seconds</option>
+                    <option value="60">60 seconds</option>
+                </select>
+           </div>
+            <div>
+                <p>Filter</p>
+                <select class="form-select form-select-sm" type="number" id="filter-input" name="filter-input">
+                    <option value="1000">1000 HZ</option>
+                    <option value="500">500 HZ</option>
+                    <option value="250">250 HZ</option>
+                    <option value="100">100 HZ</option>
+                </select>
+            </div>
+            <div>
+                <p>Amplitude</p>
+                <select class="form-select form-select-sm" type="number" id="amplitude-input" name="filter-input" disabled>
+                    <option id="amplitude-display" value="">200/-200</option>
+                </select>
+            </div>
+        </div>
+        <!-- Tools (annotation, and time duration -->
+
             <div class="btn-group me-2">
                 <!--Toggle display of buttons when annotations are uploaded is TODO -->
-                <button class="btn btn-sm btn-outline-secondary" onclick="listAnnotations();" type="button" id = "ann_pop" aria-expanded="false">Annotations</button>
-                <!-- Select time duration-->
-                <div>
-                    <h2 class="btn btn-sm btn-outline-secondary">Duration</h2>
-                    <select class="form-select form-select-sm" type="number" id="duration-input" name="duration">
-                        <option value="1">1 second</option>
-                        <option value="5">5 seconds</option>
-                        <option value="10">10 seconds</option>
-                        <option value="30">30 seconds</option>
-                        <option value="60">60 seconds</option>
-                    </select>
-               </div>
-                <div>
-                    <h2 class="btn btn-sm btn-outline-secondary">Filter</h2>
-                    <select class="form-select form-select-sm" type="number" id="filter-input" name="filter-input">
-                        <option value="1000">1000 HZ</option>
-                        <option value="500">500 HZ</option>
-                        <option value="250">250 HZ</option>
-                        <option value="100">100 HZ</option>
-                    </select>
-                </div>
+                <span>
+                    <br>
+                    <button class="btn btn-outline-light" onclick="listAnnotations();" type="button" id = "ann_pop" aria-expanded="false">Annotations</button>
+                </span>
+
             </div>
         </div>
     </header>
@@ -90,8 +98,8 @@
                 <li>
                     <div id="title"></div>
                 </li>
+                 <!-- SELECT EEG FILE -->
                 <li class="nav-item">
-                    <!-- SELECT EEG FILE -->
                     <button class="btn btn-sm btn-outline-secondary" onclick="openFileSelect();">Select File</button><br>
                     <form method="POST" id="file_form" action="/upload_eeg" style=" display: none" enctype="multipart/form-data">
                         <div class="form-group">
@@ -108,14 +116,14 @@
                     <form method = "POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data"></form>
                 </li>
                 <br>
-                <li>
                 <!-- RUN MODEL -->
-                <li>
                     <button id="model-button" class="btn btn-sm btn-outline-secondary" onclick="startModel();">Initiate Model</button><br>
                     <select class="form-select form-select-sm" type="number" id="reference-input" name="reference-input">
                         <option id="ref-default" selected>None Selected</option>
                     </select>
-                    <a id="model-load"></a>
+                    <div class="progress" id="ml-progress">
+                      <div id="ml-progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                    </div>
                 </li>
                 <!-- SELECT ANNOTATION FILE -->
                     <button type="button" onclick="openAnnotationSelect();" class="btn btn-sm btn-outline-secondary">Open Annotation</button>

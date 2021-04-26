@@ -86,6 +86,7 @@ function loadIndexPage() {
         })
     });
     $('#reference-input').hide();
+    $('#ml-progress').hide();
 }
 
 
@@ -332,7 +333,9 @@ function createAnnotationElementFrom(label, start, end) {
     let cardBody = $('<div>', {class: 'card-body'});
     card.text(label);
     let link = document.createElement("a");
-    link.appendChild(document.createTextNode("Onset: " + start.toString()));
+    let time = startTime;
+    time.setSeconds(parseInt(start));
+    link.appendChild(document.createTextNode("Onset: " + time.toLocaleTimeString()));
     link.appendChild(document.createElement('br'));
     link.appendChild(document.createTextNode("Duration: " + end.toString() + " seconds"));
     // ????
