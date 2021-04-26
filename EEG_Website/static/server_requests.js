@@ -183,6 +183,10 @@ function getAnnotationsToList() {
             start = (start > 0) ? start : 0;
 
             const label = json.annotations[index]['Annotation'];
+
+            startTime.setHours(parseInt(json.time[0]));
+            startTime.setMinutes(parseInt(json.time[1]));
+            startTime.setSeconds(parseInt(json.time[2]));
             // create and append annotation item to right sider bar
             $('#annotation-items').append(createAnnotationElementFrom(label, start, duration));
         }
