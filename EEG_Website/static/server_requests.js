@@ -7,17 +7,22 @@ let startTime = new Date();
 function startModel() {
     $('#reference-input').show();
     $('#reference-input').change(function () {
+        $('#ml-progress').show();
         const val = $('#reference-input').val().toString();
         const query = '/model?ref-index=' + val; //TODO: Add args
         const source = new EventSource(query);
         $('#reference-input').hide();
         source.addEventListener('update', function (event) {
+            $('#ml-progress-bar').css("width", event.data);
+            $('#ml-progress-bar').text(event.data);
             console.log(event);
         });
         source.addEventListener('close', function (event) {
             console.log("closing event listener");
             source.close();
-            alert("Model Successful: Ready for prediction");
+            $('#reference-input').hide();
+            $('#ml-progress').hide();
+            alert("Model Successful: Open annotation file (" + event.data + ") to view predictions" );
         });
     });
 }
@@ -54,6 +59,7 @@ function displayData(delta=0) {
             $('#time-select').val(update.sliderval);
             $('#sliderdisplay').show();
             $('.slidecontainer').show();
+            $('#amplitude-display').text(update.amplitude);
             const duration_qry = '#duration-input option[value=\''+ update.duration+ '\']';
             $(duration_qry).prop('selected', true);
             const filter_qry = '#filter-input option[value=\''+ update.filter + '\']';
