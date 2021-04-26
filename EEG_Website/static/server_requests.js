@@ -5,15 +5,20 @@ let startTime = new Date();
 */
 
 function startModel() {
-    const query = '/model?'; //TODO: Add args
-    const source = new EventSource(query);
-    source.addEventListener('update', function (event) {
-        console.log(event);
-    });
-    source.addEventListener('close', function (event) {
-        console.log("closing event listener");
-        source.close();
-        alert("Model Successful: Ready for prediction");
+    $('#reference-input').show();
+    $('#reference-input').change(function () {
+        const val = $('#reference-input').val().toString();
+        const query = '/model?ref-index=' + val; //TODO: Add args
+        const source = new EventSource(query);
+        $('#reference-input').hide();
+        source.addEventListener('update', function (event) {
+            console.log(event);
+        });
+        source.addEventListener('close', function (event) {
+            console.log("closing event listener");
+            source.close();
+            alert("Model Successful: Ready for prediction");
+        });
     });
 }
 
@@ -55,6 +60,16 @@ function displayData(delta=0) {
             $(filter_qry).prop('selected', true);
             renderAnnotations();
         });
+        fetch("/subject")
+        .then(response=>response.json())
+        .then(json => {
+            for (let index in json.references) {
+                const ref = json.references[index];
+                const option = $('<option></option>', {val:ref.id});
+                option.text(ref.label);
+                $('#reference-input').append(option);
+            }
+        })
 }
 
 
@@ -156,8 +171,9 @@ function getAnnotationsToList() {
         for (let index in json.annotations) {
             // Calculate offset to jump to when selected (currently .3 of selected duration ahead of annotation onset to the nearest second)
             const onset = parseInt(json.annotations[index]['Onset']);
-            const duration = parseInt(json.duration);
-            let start = onset - Math.floor(.3 * duration)
+            const duration = parseInt(json.annotations[index]['Duration']);
+            const display_duration = parseInt(json.duration)
+            let start = onset - Math.floor(.3 * display_duration)
             start = (start > 0) ? start : 0;
 
             const label = json.annotations[index]['Annotation'];

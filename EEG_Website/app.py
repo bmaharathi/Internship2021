@@ -1,9 +1,10 @@
 from flask import Flask, render_template, redirect, url_for, request, Response, after_this_request, session
-
+import edfreader
 import edf_manager
 import annreader
 import threading
 import logging
+import pipeline as mlpipe
 
 filename = ''  # reusable filename variable
 app = Flask(__name__)
@@ -162,13 +163,23 @@ def set_time_data():
     return session['offset']
 
 
-@app.route('/model', methods=['GET', 'POST'])
+@app.route('/subject')
+def get_references():
+    return edf_manager.get_references(session)
+
+
+@app.route('/model', methods=['GET'])
 def handle_model():
-    def test():
-        for i in range(10):
-            yield 'event: update\ndata: value of testing:' + str(i) + '\n\n'
-        yield 'event: close\ndata:this is over\n\n'
-    return Response(test(), mimetype="text/event-stream")
+    fname = session['filename']
+    print('Servicing model request')
+    hdl = edfreader.EDFreader(fname)
+    ref_index = int(request.args['ref-index'])
+
+    # def test():
+    #     for i in range(10):
+    #         yield 'event: update\ndata: value of testing:' + str(i) + '\n\n'
+    #     yield 'event: close\ndata:this is over\n\n'
+    return Response(mlpipe.detect_seizure(filename=fname, edg_hdl=hdl, index_signal=ref_index), mimetype="text/event-stream")
 
 
 @app.route('/filter', methods=['POST'])
