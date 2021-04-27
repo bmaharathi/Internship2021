@@ -142,7 +142,8 @@ def average_ref(session, data_handler: DataHandler):
 
     print(int(session['duration']) * 1000 + 1)
     # array stores the mean value for each datapoint, for each reference
-    means = [None] * (int(session['duration']) * 1000 + 1)  # x-> the number of references, y-> the number of data points
+    means = [None] * (
+                int(session['duration']) * 1000 + 1)  # x-> the number of references, y-> the number of data points
 
     # if data not buffered
     if not data_is_buffered:
@@ -176,15 +177,16 @@ def average_ref(session, data_handler: DataHandler):
 
         arr = list()
         for i, lst in enumerate(avg.tolist()):
-            arr.append([hdl.getSignalLabel(i)])
-            arr += lst
-
-        return jsonify(data=arr,
-                       time=times,
-                       offset=offset,
-                       dataOffset=map_val,
-                       duration=duration,
-                       update=update)
+            arr.append([hdl.getSignalLabel(i), lst])
+        arr.reverse()
+        return jsonify(
+            time=times,
+            data=arr,
+            update=update,
+            offset=offset,
+            dataOffset=map_val,
+            duration=duration
+        )
     # if data buffered
     # grab data from class object
     # self.data = np.zeros((num_channels, num_records))
@@ -202,6 +204,7 @@ def average_ref(session, data_handler: DataHandler):
             means[i] = mean
 
         offset = int(session['offset'])
+        filter_rate = int(1000 / int(session['filter']))
         N = int(session['duration']) * 1000 + 1
         start_time = hdl.getStartDateTime()
         times = [str((start_time + timedelta(milliseconds=i)).time()) for i in
@@ -219,15 +222,15 @@ def average_ref(session, data_handler: DataHandler):
                 data[j][i] -= means[i]
 
         arr = list()
-        for i, lst in enumerate(data):
-            arr.append([hdl.getSignalLabel(i)])
-            arr += lst
-        return jsonify(data=arr,
-                       time=times,
-                       duration=session['duration'],
+        for i, lst in enumerate(data.tolist()):
+            arr.append([hdl.getSignalLabel(i), [lst]])
+        arr.reverse()
+        return jsonify(time=times,
+                       data=[arr],
+                       update=update_vals,
                        offset=new_offset,
                        dataOffset=map_val,
-                       update=update_vals)
+                       duration=session['duration'])
 
 
 # PARSE AVAILABLE ELECTRODES AND RETURN DICTIONARY => INDEX : ELECTRODE NAME

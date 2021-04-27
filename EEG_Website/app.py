@@ -70,7 +70,7 @@ def upload_file():
         session['selected_count'] = '0'
         session['data_offset'] = data_mapping_default
         session['filter'] = filter_default
-        session['montage'] = False  # True -> Common, False -> Average
+        session['montage'] = True  # True -> Common, False -> Average
         # Redirect to electrode select
         return redirect(url_for('index', electrodes=True, filename=session['filename']))
     else:
@@ -193,9 +193,17 @@ def set_filter():
     return session['filter']
 
 
+'''
 @app.route('/average', methods=["GET"])
 def get_average():
     return edf_manager.average_ref(session, data_handler)
+'''
+
+
+@app.route('/setting_type', methods=["GET", "POST"])
+def settings():
+    session["montage"] = request.form['montage']
+    return session['montage']
 
 
 if __name__ == '__main__':

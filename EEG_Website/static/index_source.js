@@ -86,6 +86,17 @@ function loadIndexPage() {
         })
     });
     $('#reference-input').hide();
+    $('#montage').change(function (event) {
+        const val = $('#montage').val().toString();
+        var flag = val == "true" ? true : false;
+        const query = '/setting_type?montage=' + val;
+        $.post(query,  {montage:flag},
+            function(response) {
+            displayData(0);
+            }
+
+        )
+    });
 }
 
 

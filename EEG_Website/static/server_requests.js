@@ -225,3 +225,10 @@ function setSlider() {
         });
 }
 
+// function settings(id) {
+//     var flag = true;
+//     url = "/setting_type";
+//
+//     fetch(url)
+//         .then()
+// }
