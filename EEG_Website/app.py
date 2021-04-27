@@ -70,6 +70,7 @@ def upload_file():
         session['selected_count'] = '0'
         session['data_offset'] = data_mapping_default
         session['filter'] = filter_default
+        session['montage'] = False  # True -> Common, False -> Average
         # Redirect to electrode select
         return redirect(url_for('index', electrodes=True, filename=session['filename']))
     else:
@@ -115,8 +116,13 @@ def get_relevant_data():
         session['offset'] = new_offset
     else:
         session['offset'] = offset_default
-
-    return edf_manager.get_data(session, data_handler)
+    # if montage == 'avg' or 'common'
+    if session['montage']:
+        # common settings
+        return edf_manager.get_data(session, data_handler)
+    else:
+        # average settings
+        return edf_manager.average_ref(session, data_handler)
 
 
 # CHANGE AMPLITUDE
@@ -170,7 +176,6 @@ def get_references():
 
 @app.route('/model', methods=['GET'])
 def handle_model():
-
     print('Servicing model request')
     hdl = data_handler.edf_reader
     ref_index = int(request.args['ref-index'])
@@ -187,12 +192,13 @@ def set_filter():
     session['filter'] = request.args['new-value']
     return session['filter']
 
+
 @app.route('/average', methods=["GET"])
 def get_average():
     return edf_manager.average_ref(session, data_handler)
+
 
 if __name__ == '__main__':
     app.run()
     while len(session):
         session.popitem()
-

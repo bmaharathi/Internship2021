@@ -142,10 +142,11 @@ def average_ref(session, data_handler: DataHandler):
 
     print(int(session['duration']) * 1000 + 1)
     # array stores the mean value for each datapoint, for each reference
-    means = [None]*(int(session['duration']) * 1000 + 1)  # x-> the number of references, y-> the number of data points
+    means = [None] * (int(session['duration']) * 1000 + 1)  # x-> the number of references, y-> the number of data points
 
     # if data not buffered
     if not data_is_buffered:
+        hdl = EDFreader(session['filename'])
         curr = get_data(session, data_handler).json  # current screen data
         data = curr['data']  # label and channel data for current screen
         # avgRef = np.zeros(4) # change this based on number of references
@@ -167,13 +168,29 @@ def average_ref(session, data_handler: DataHandler):
             for j in range(len(labels)):
                 print(float(data[j][1][i]))
                 avg[j][i] = float(data[j][1][i]) - means[i]
+        times = curr['time']
+        update = curr['update']
+        offset = curr['offset']
+        map_val = curr['dataOffset']
+        duration = session['duration']
 
-        return jsonify(data=avg.tolist())
+        arr = list()
+        for i, lst in enumerate(avg.tolist()):
+            arr.append([hdl.getSignalLabel(i)])
+            arr += lst
+
+        return jsonify(data=arr,
+                       time=times,
+                       offset=offset,
+                       dataOffset=map_val,
+                       duration=duration,
+                       update=update)
     # if data buffered
     # grab data from class object
     # self.data = np.zeros((num_channels, num_records))
     else:
-        data = data_handler.get_data(int(session['offset']), int(session['offset']) + int(session['duration']) * 1000+1) # current screen data
+        data = data_handler.get_data(int(session['offset']), int(session['offset']) + int(
+            session['duration']) * 1000 + 1)  # current screen data
         hdl = data_handler.edf_reader
         num_labels = hdl.getNumSignals()
         avg = np.zeros((num_labels, int(session['duration']) * 1000 + 1))
@@ -184,11 +201,34 @@ def average_ref(session, data_handler: DataHandler):
             mean = sum // num_labels  # int for simplicity, change to float for accuracy
             means[i] = mean
 
+        offset = int(session['offset'])
+        N = int(session['duration']) * 1000 + 1
+        start_time = hdl.getStartDateTime()
+        times = [str((start_time + timedelta(milliseconds=i)).time()) for i in
+                 range(offset, offset + N + 1, filter_rate)]
+        times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
+        times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
+
+        # Increment offset by samples read
+        new_offset = offset + N - 1
+        map_val = int(session['data_offset'])
+        update_vals = {'sliderval': offset, 'duration': session['duration'], 'filter': session['filter']}
         # data = data - means
         for i in range(int(session['duration']) * 1000 + 1):
             for j in range(len(labels)):
                 data[j][i] -= means[i]
-        return jsonify(data=data.tolist())
+
+        arr = list()
+        for i, lst in enumerate(data):
+            arr.append([hdl.getSignalLabel(i)])
+            arr += lst
+        return jsonify(data=arr,
+                       time=times,
+                       duration=session['duration'],
+                       offset=new_offset,
+                       dataOffset=map_val,
+                       update=update_vals)
+
 
 # PARSE AVAILABLE ELECTRODES AND RETURN DICTIONARY => INDEX : ELECTRODE NAME
 def get_electrodes(session):

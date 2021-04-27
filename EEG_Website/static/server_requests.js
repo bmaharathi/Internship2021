@@ -224,3 +224,4 @@ function setSlider() {
             $('#time-select').attr('value', json.min);
         });
 }
+
