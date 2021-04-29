@@ -62,8 +62,10 @@ function displayData(delta=0) {
             $('#amplitude-display').text(update.amplitude);
             const duration_qry = '#duration-input option[value=\''+ update.duration+ '\']';
             $(duration_qry).prop('selected', true);
-            const filter_qry = '#filter-input option[value=\''+ update.filter + '\']';
-            $(filter_qry).prop('selected', true);
+            const filter_qry_u = '#filter-input-upper option[value=\''+ update.upper + '\']';
+            const filter_qry_l = '#filter-input-lower option[value=\''+ update.lower + '\']';
+            $(filter_qry_u).prop('selected', true);
+            $(filter_qry_l).prop('selected', true);
             renderAnnotations();
         });
         fetch("/subject")
@@ -86,7 +88,7 @@ function displayData(delta=0) {
  Dynamically add check inputs to electrode form for each electrode
  */
 function openElectrodeSelect() {
-    $('#electrode_form').slideToggle();
+    $('#electrode_form_container').slideToggle();
     fetch('/electrode_get')
             .then(response => response.json())
             .then(json => {

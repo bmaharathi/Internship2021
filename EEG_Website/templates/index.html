@@ -59,12 +59,33 @@
                 </select>
            </div>
             <div>
-                <p>Filter</p>
-                <select class="form-select form-select-sm" type="number" id="filter-input" name="filter-input">
-                    <option value="1000">1000 HZ</option>
-                    <option value="500">500 HZ</option>
-                    <option value="250">250 HZ</option>
+                <p>Lower</p>
+                <select class="form-select form-select-sm" type="number" id="filter-input-lower" name="filter-input-lower">
+                    <option value="-1">No Filter</option>
+                    <option value="1" selected>1 HZ</option>
+                    <option value="3">3 HZ</option>
+                    <option value="5">5 HZ</option>
+                    <option value="8">8 HZ</option>
+                    <option value="13">13 HZ</option>
+                    <option value="20">20 HZ</option>
+                    <option value="30">30 HZ</option>
+                    <option value="50">50 HZ</option>
+                    <option value="70">70 HZ</option>
+                </select>
+            </div>
+            <div>
+                <p>Upper</p>
+                <select class="form-select form-select-sm" type="number" id="filter-input-upper" name="filter-input-upper">
+                    <option value="-1">No Filter</option>
+                    <option value="1">1 HZ</option>
+                    <option value="4">4 HZ</option>
+                    <option value="8">8 HZ</option>
+                    <option value="13">13 HZ</option>
+                    <option value="20">20 HZ</option>
+                    <option selected value="35">35 HZ</option>
+                    <option value="50">50 HZ</option>
                     <option value="100">100 HZ</option>
+                    <option value="250">250 HZ</option>
                 </select>
             </div>
             <div>
@@ -113,7 +134,11 @@
                 <!-- SELECT ELECTRODE-->
                 <li>
                     <button class="btn btn-sm btn-outline-secondary" onclick="openElectrodeSelect();">Select Electrodes</button><br>
-                    <form method = "POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data"></form>
+                    <div id="electrode_form_container" style="display: none">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleElectrode(true);">Select All</button><br>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleElectrode(false);">Deselect All</button><br>
+                        <form method = "POST" id="electrode_form" action="electrode_select"  enctype="multipart/form-data"></form>
+                    </div>
                 </li>
                 <br>
                 <!-- RUN MODEL -->
