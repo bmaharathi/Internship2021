@@ -103,6 +103,7 @@ function loadIndexPage() {
     });
     $('#reference-input').hide();
     $('#ml-progress').hide();
+    $('#electrode_form_container').hide();
 }
 
 
@@ -157,6 +158,10 @@ function listAnnotations(isClosed=true) {
             listAnnotations(true)
         };
     }
+}
+
+function toggleElectrode(value) {
+    $('input:checkbox').prop('checked', value);
 }
 
 /*

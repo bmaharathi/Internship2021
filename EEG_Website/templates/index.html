@@ -134,7 +134,11 @@
                 <!-- SELECT ELECTRODE-->
                 <li>
                     <button class="btn btn-sm btn-outline-secondary" onclick="openElectrodeSelect();">Select Electrodes</button><br>
-                    <form method = "POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data"></form>
+                    <div id="electrode_form_container" style="display: none">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleElectrode(true);">Select All</button><br>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleElectrode(false);">Deselect All</button><br>
+                        <form method = "POST" id="electrode_form" action="electrode_select"  enctype="multipart/form-data"></form>
+                    </div>
                 </li>
                 <br>
                 <!-- RUN MODEL -->

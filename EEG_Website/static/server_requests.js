@@ -88,7 +88,7 @@ function displayData(delta=0) {
  Dynamically add check inputs to electrode form for each electrode
  */
 function openElectrodeSelect() {
-    $('#electrode_form').slideToggle();
+    $('#electrode_form_container').slideToggle();
     fetch('/electrode_get')
             .then(response => response.json())
             .then(json => {
