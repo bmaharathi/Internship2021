@@ -62,8 +62,10 @@ function displayData(delta=0) {
             $('#amplitude-display').text(update.amplitude);
             const duration_qry = '#duration-input option[value=\''+ update.duration+ '\']';
             $(duration_qry).prop('selected', true);
-            const filter_qry = '#filter-input option[value=\''+ update.filter + '\']';
-            $(filter_qry).prop('selected', true);
+            const filter_qry_u = '#filter-input-upper option[value=\''+ update.upper + '\']';
+            const filter_qry_l = '#filter-input-lower option[value=\''+ update.lower + '\']';
+            $(filter_qry_u).prop('selected', true);
+            $(filter_qry_l).prop('selected', true);
             renderAnnotations();
         });
         fetch("/subject")

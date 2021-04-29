@@ -69,11 +69,27 @@ function loadIndexPage() {
         timelabel.setMilliseconds(this.value);
         $('#sliderdisplay').text(timelabel.toLocaleTimeString());
     }
-    $('#filter-input').change(function (event) {
-        const val = $('#filter-input').val().toString();
-        const query = '/filter?new-value=' + val;
+    $('#filter-input-lower').change(function (event) {
+        const lower = parseInt($('#filter-input-lower').val());
+        const upper = parseInt($('#filter-input-upper').val());
+        if (lower >= upper) {
+            alert("The filter lower bound must be greater than the upper bound");
+            return;
+        }
+        const query = '/filter?lower=' + lower.toString() + '&upper=' + upper.toString();
         $.post(query, function () {
-            $('#time_series').empty();
+            displayData(0);
+        })
+    });
+    $('#filter-input-upper').change(function (event) {
+        const lower = parseInt($('#filter-input-lower').val());
+        const upper = parseInt($('#filter-input-upper').val());
+        if (lower >= upper && lower > 0 && upper > 0 ) {
+            alert("The filter lower bound must be greater than the upper bound");
+            return;
+        }
+        const query = '/filter?lower=' + lower.toString() + '&upper=' + upper.toString();
+        $.post(query, function () {
             displayData(0);
         })
     });
@@ -171,7 +187,7 @@ function createDataObject(data, id) {
 //Build single time series chart
 function createChartElementFrom(time, data_map, dataOffset, update) {
     const duration = parseInt(update.duration);
-    const filter = parseInt(update.filter);
+    const frequency = parseInt(update.frequency);
     // HTML Canvas element
     let canvasElem = document.createElement('canvas');
     canvasElem.setAttribute('id', 'main-chart');
@@ -210,7 +226,7 @@ function createChartElementFrom(time, data_map, dataOffset, update) {
                                 ticks: {
                                     padding: 15,
                                     maxTicksLimit: duration,
-                                    stepSize: filter,
+                                    stepSize: frequency,
                                     maxRotation: 0,
                                     minRotation: 0,
                                     fontWeight: 'bold',
