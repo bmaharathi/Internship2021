@@ -2,6 +2,7 @@ from edfreader import EDFreader
 from flask import jsonify
 import numpy as np
 from datetime import datetime, timedelta
+from scipy import signal
 import threading
 import sys
 
@@ -23,15 +24,17 @@ def get_data(session, data_handler):
     if session['selected_count'] == '0':
         session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
         session['selected_count'] = hdl.getNumSignals()
-    if session['filter'] == '':
-        session['filter'] = hdl.getSampleFrequency(0)
 
     # Reverse list of channels to appear in ascending order in chart later
     channels = session['selected_id'].copy()
     channels.reverse()
-    # Get filter rate
-    filter_rate = int(1000 / int(session['filter']))
-    print("filter_rate:", filter_rate)
+    # Get filter bounds
+    frequency = hdl.getSampleFrequency(0)
+    max_bound = frequency / 2
+    filter_lower = float(session['filter-lower'])
+    filter_lower = filter_lower if filter_lower < max_bound else -1
+    filter_upper = float(session['filter-upper'])
+    filter_upper = filter_upper if filter_upper < max_bound else -1
 
     data = []
     # for each chosen channel
@@ -42,32 +45,43 @@ def get_data(session, data_handler):
         if data_is_buffered:
             # Utilize Data_Handler
             # Load specified data (where rows are channels and columns are recorded
-            buf = data_handler.data[s_id, offset: offset + N: filter_rate]
+            buf = data_handler.data[s_id, offset: offset + N]
+            # Get filtered data
+            filtered_buf = applyBandpassFilter(buf, filter_lower, filter_upper, 1000)
+
             map_val = int(session['data_offset'])
             # Add data to list, while also flipping data and mapping it to owns area for chart js
-            data.append([hdl.getSignalLabel(s_id), list(map(lambda val: val * -1 + count * map_val, buf))])
+            data.append([hdl.getSignalLabel(s_id), list(map(lambda val: val * -1 + count * map_val, filtered_buf))])
         else:
             # Utilize edf_reader
             # set off set for sample
             hdl.fseek(s_id, offset, EDFreader.EDFSEEK_SET)
             # Get chart mping
-            map_val = count * int(session['data_offset'])
+            map_val = int(session['data_offset'])
             # read N samples for signal
-            data_read = hdl.readSamples_IBRAIN(s_id, N, map_val, filter_rate)
+            buf = np.empty(N)
+            hdl.readSamples(s_id, buf, N)
+            # Get filtered data
+            filtered_buf = applyBandpassFilter(buf, filter_lower, filter_upper, 1000)
+
             # Add data to list
-            data.append([hdl.getSignalLabel(s_id), data_read])
+            data.append([hdl.getSignalLabel(s_id), list(map(lambda val: val * -1 + count * map_val, filtered_buf))])
 
     # Get time labels
     start_time = hdl.getStartDateTime()
-    times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1, filter_rate)]
+    times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
     times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
     times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
 
     # Increment offset by samples read
     new_offset = offset + N - 1
     map_val = int(session['data_offset'])
+    amplitude = ''.join([str(session['amplitude']), '/-', str(session['amplitude'])])
+    print('freq:', frequency)
 
-    update_vals = {'sliderval': offset, 'duration': session['duration'], 'filter': session['filter']}
+    update_vals = {'sliderval': offset, 'duration': session['duration'], 'upper': filter_upper,
+                   'lower': filter_lower, 'frequency': frequency, 'amplitude': amplitude
+                   }
     return jsonify(time=times,
                    data=data,
                    update=update_vals,
@@ -123,12 +137,12 @@ def get_amplitude(session):
                    newMax=new_max,
                    newMin=new_min)
 
+
 def get_references(session):
     hdl = EDFreader(session['filename'])
-    references = [{'label': hdl.getSignalLabel(i).strip()[-4:], 'id':i} for i in range(0, hdl.getNumSignals(), 6)]
+    references = [{'label': hdl.getSignalLabel(i).strip()[-4:], 'id': i} for i in range(0, hdl.getNumSignals(), 6)]
     print(references)
     return jsonify(references=references)
-
 
 
 class DataHandler:
@@ -184,3 +198,11 @@ class DataHandler:
             self.edf_reader.readSamples(signal, buf, N)
         # Return values loaded
         return N
+
+
+def applyBandpassFilter(x, l_bound, u_bound, samp_rate, order=2):
+    if l_bound < 0 or u_bound < 0:
+        return x
+    sos = signal.butter(order, [2 * l_bound / samp_rate, 2 * u_bound / samp_rate], "bandpass", False, "sos")
+    filtered_x = signal.sosfilt(sos, x)
+    return filtered_x

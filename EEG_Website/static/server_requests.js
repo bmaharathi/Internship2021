@@ -1,3 +1,4 @@
+
 // Global object which will indicate the start of data recording for use with timeslider
 let startTime = new Date();
 /*
@@ -7,17 +8,22 @@ let startTime = new Date();
 function startModel() {
     $('#reference-input').show();
     $('#reference-input').change(function () {
+        $('#ml-progress').show();
         const val = $('#reference-input').val().toString();
         const query = '/model?ref-index=' + val; //TODO: Add args
         const source = new EventSource(query);
         $('#reference-input').hide();
         source.addEventListener('update', function (event) {
+            $('#ml-progress-bar').css("width", event.data);
+            $('#ml-progress-bar').text(event.data);
             console.log(event);
         });
         source.addEventListener('close', function (event) {
             console.log("closing event listener");
             source.close();
-            alert("Model Successful: Ready for prediction");
+            $('#reference-input').hide();
+            $('#ml-progress').hide();
+            alert("Model Successful: Open annotation file (" + event.data + ") to view predictions" );
         });
     });
 }
@@ -54,10 +60,13 @@ function displayData(delta=0) {
             $('#time-select').val(update.sliderval);
             $('#sliderdisplay').show();
             $('.slidecontainer').show();
+            $('#amplitude-display').text(update.amplitude);
             const duration_qry = '#duration-input option[value=\''+ update.duration+ '\']';
             $(duration_qry).prop('selected', true);
-            const filter_qry = '#filter-input option[value=\''+ update.filter + '\']';
-            $(filter_qry).prop('selected', true);
+            const filter_qry_u = '#filter-input-upper option[value=\''+ update.upper + '\']';
+            const filter_qry_l = '#filter-input-lower option[value=\''+ update.lower + '\']';
+            $(filter_qry_u).prop('selected', true);
+            $(filter_qry_l).prop('selected', true);
             renderAnnotations();
         });
         fetch("/subject")
@@ -80,7 +89,7 @@ function displayData(delta=0) {
  Dynamically add check inputs to electrode form for each electrode
  */
 function openElectrodeSelect() {
-    $('#electrode_form').slideToggle();
+    $('#electrode_form_container').slideToggle();
     fetch('/electrode_get')
             .then(response => response.json())
             .then(json => {
@@ -171,11 +180,16 @@ function getAnnotationsToList() {
         for (let index in json.annotations) {
             // Calculate offset to jump to when selected (currently .3 of selected duration ahead of annotation onset to the nearest second)
             const onset = parseInt(json.annotations[index]['Onset']);
-            const duration = parseInt(json.duration);
-            let start = onset - Math.floor(.3 * duration)
+            const duration = parseInt(json.annotations[index]['Duration']);
+            const display_duration = parseInt(json.duration)
+            let start = onset - Math.floor(.3 * display_duration)
             start = (start > 0) ? start : 0;
 
             const label = json.annotations[index]['Annotation'];
+
+            startTime.setHours(parseInt(json.time[0]));
+            startTime.setMinutes(parseInt(json.time[1]));
+            startTime.setSeconds(parseInt(json.time[2]));
             // create and append annotation item to right sider bar
             $('#annotation-items').append(createAnnotationElementFrom(label, start, duration));
         }

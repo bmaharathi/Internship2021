@@ -69,11 +69,27 @@ function loadIndexPage() {
         timelabel.setMilliseconds(this.value);
         $('#sliderdisplay').text(timelabel.toLocaleTimeString());
     }
-    $('#filter-input').change(function (event) {
-        const val = $('#filter-input').val().toString();
-        const query = '/filter?new-value=' + val;
+    $('#filter-input-lower').change(function (event) {
+        const lower = parseInt($('#filter-input-lower').val());
+        const upper = parseInt($('#filter-input-upper').val());
+        if (lower >= upper) {
+            alert("The filter lower bound must be greater than the upper bound");
+            return;
+        }
+        const query = '/filter?lower=' + lower.toString() + '&upper=' + upper.toString();
         $.post(query, function () {
-            $('#time_series').empty();
+            displayData(0);
+        })
+    });
+    $('#filter-input-upper').change(function (event) {
+        const lower = parseInt($('#filter-input-lower').val());
+        const upper = parseInt($('#filter-input-upper').val());
+        if (lower >= upper && lower > 0 && upper > 0 ) {
+            alert("The filter lower bound must be greater than the upper bound");
+            return;
+        }
+        const query = '/filter?lower=' + lower.toString() + '&upper=' + upper.toString();
+        $.post(query, function () {
             displayData(0);
         })
     });
@@ -86,6 +102,8 @@ function loadIndexPage() {
         })
     });
     $('#reference-input').hide();
+    $('#ml-progress').hide();
+    $('#electrode_form_container').hide();
 }
 
 
@@ -142,6 +160,10 @@ function listAnnotations(isClosed=true) {
     }
 }
 
+function toggleElectrode(value) {
+    $('input:checkbox').prop('checked', value);
+}
+
 /*
     CREATE ELEMENTS
  */
@@ -170,7 +192,7 @@ function createDataObject(data, id) {
 //Build single time series chart
 function createChartElementFrom(time, data_map, dataOffset, update) {
     const duration = parseInt(update.duration);
-    const filter = parseInt(update.filter);
+    const frequency = parseInt(update.frequency);
     // HTML Canvas element
     let canvasElem = document.createElement('canvas');
     canvasElem.setAttribute('id', 'main-chart');
@@ -179,6 +201,11 @@ function createChartElementFrom(time, data_map, dataOffset, update) {
     canvasElem.setAttribute('width', '80%');
     canvasElem.style.zIndex = -1;
     dataSet = data_map;
+    //transfer annotations
+    let annotations = {};
+    if (chart != null) {
+        annotations = chart.options.annotation;
+    }
     //Display actual chart
     chart = new Chart(canvasElem.getContext('2d'), {
                     type: 'line',
@@ -204,7 +231,7 @@ function createChartElementFrom(time, data_map, dataOffset, update) {
                                 ticks: {
                                     padding: 15,
                                     maxTicksLimit: duration,
-                                    stepSize: filter,
+                                    stepSize: frequency,
                                     maxRotation: 0,
                                     minRotation: 0,
                                     fontWeight: 'bold',
@@ -257,7 +284,7 @@ function createChartElementFrom(time, data_map, dataOffset, update) {
                             display: false
                         },
                         // Annotation section (filled in when displaying annotations
-                        annotation: {},
+                        annotation: annotations,
                         // Padding of graph
                         layout: {
                             padding: {
@@ -327,7 +354,9 @@ function createAnnotationElementFrom(label, start, end) {
     let cardBody = $('<div>', {class: 'card-body'});
     card.text(label);
     let link = document.createElement("a");
-    link.appendChild(document.createTextNode("Onset: " + start.toString()));
+    let time = startTime;
+    time.setSeconds(parseInt(start));
+    link.appendChild(document.createTextNode("Onset: " + time.toLocaleTimeString()));
     link.appendChild(document.createElement('br'));
     link.appendChild(document.createTextNode("Duration: " + end.toString() + " seconds"));
     // ????
@@ -388,4 +417,3 @@ function renderAnnotations() {
     }
     chart.update(0);
 }
-

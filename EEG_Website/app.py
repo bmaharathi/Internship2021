@@ -1,10 +1,10 @@
 from flask import Flask, render_template, redirect, url_for, request, Response, after_this_request, session
-
+import edfreader
 import edf_manager
 import annreader
 import threading
 import logging
-#import pipeline as mlpipe
+import pipeline as mlpipe
 
 filename = ''  # reusable filename variable
 app = Flask(__name__)
@@ -13,7 +13,9 @@ duration_default = '1'
 offset_default = '0'
 amplitude_default = '200'
 data_mapping_default = '300'
-filter_default = ''
+filter_lower_default = '1'
+filter_upper_default = '35'
+
 data_handler = edf_manager.DataHandler()
 
 
@@ -69,7 +71,8 @@ def upload_file():
         session['selected_annotation'] = []
         session['selected_count'] = '0'
         session['data_offset'] = data_mapping_default
-        session['filter'] = filter_default
+        session['filter-lower'] = filter_lower_default
+        session['filter-upper'] = filter_upper_default
         # Redirect to electrode select
         return redirect(url_for('index', electrodes=True, filename=session['filename']))
     else:
@@ -170,22 +173,23 @@ def get_references():
 
 @app.route('/model', methods=['GET'])
 def handle_model():
-
+    fname = session['filename']
     print('Servicing model request')
-    hdl = data_handler.edf_reader
+    hdl = edfreader.EDFreader(fname)
     ref_index = int(request.args['ref-index'])
 
     # def test():
     #     for i in range(10):
     #         yield 'event: update\ndata: value of testing:' + str(i) + '\n\n'
     #     yield 'event: close\ndata:this is over\n\n'
-    #return Response(mlpipe.detect_seizure(edg_hdl=hdl, index_signal=ref_index), mimetype="text/event-stream")
+    return Response(mlpipe.detect_seizure(filename=fname, edg_hdl=hdl, index_signal=ref_index), mimetype="text/event-stream")
 
 
 @app.route('/filter', methods=['POST'])
 def set_filter():
-    session['filter'] = request.args['new-value']
-    return session['filter']
+    session['filter-lower'] = request.args['lower']
+    session['filter-upper'] = request.args['upper']
+    return session['filter-upper']
 
 
 if __name__ == '__main__':
