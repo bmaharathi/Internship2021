@@ -1,8 +1,6 @@
 <!-- Authors: Elijah Rodriguez Beltran, Adi Dasgupta, Tarush Gupta !-->
 
-<!doctype html>
-<html lang="en">
-<head>
+<html lang="en"><head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -14,14 +12,16 @@
     <!-- IBRAIN javascript source -->
     <script type="text/javascript" src="../static/index_source.js"></script>
     <script type="text/javascript" src="../static/server_requests.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script><style type="text/css">/* Chart.js */
+@-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
+    <style type="text/css">/* Chart.js */
+@-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style><script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
 
 
     <link href="../static/index_style.css" rel="stylesheet">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="shortcut icon" href="/static/favicon.ico">
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <style>
@@ -39,88 +39,407 @@
             }
         }
     </style>
+
+
+    <style>
+.dropbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #3e8e41;
+}
+</style>
+
+    <style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color:  #5cb85c; /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  animation-name: animatetop;
+
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
 </head>
-<body id="body" onload="loadIndexPage();">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.80.0">
+    <title>EEG Display · Bootstrap v5.0</title>
+
+
+    <!-- IBRAIN javascript source -->
+    <script type="text/javascript" src="../static/index_source.js"></script>
+    <script type="text/javascript" src="../static/server_requests.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script><style type="text/css">/* Chart.js */
+@-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+
+
+    <link href="../static/index_style.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
+
+    <style>
+.dropbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #3e8e41;
+}
+</style>
+
+    <style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color:  #5cb85c; /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  animation-name: animatetop;
+
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
+</head><body id="body" onload="loadIndexPage();" data-new-gr-c-s-check-loaded="14.1008.0" data-gr-ext-installed="">
     <!-- TOP HEADER BAR -->
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
         <!-- Title -->
         <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">IBRAIN · EEG Reviewer</a>
-        <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <!-- Select time duration-->
-            <div>
-                <p>Duration</p>
-                <select class="form-select form-select-sm" type="number" id="duration-input" name="duration">
-                    <option value="1">1 second</option>
-                    <option value="5">5 seconds</option>
-                    <option value="10">10 seconds</option>
-                    <option value="30">30 seconds</option>
-                    <option value="60">60 seconds</option>
-                </select>
-           </div>
-            <div>
-                <p>Lower</p>
-                <select class="form-select form-select-sm" type="number" id="filter-input-lower" name="filter-input-lower">
-                    <option value="-1">No Filter</option>
-                    <option value="1" selected>1 HZ</option>
-                    <option value="3">3 HZ</option>
-                    <option value="5">5 HZ</option>
-                    <option value="8">8 HZ</option>
-                    <option value="13">13 HZ</option>
-                    <option value="20">20 HZ</option>
-                    <option value="30">30 HZ</option>
-                    <option value="50">50 HZ</option>
-                    <option value="70">70 HZ</option>
-                </select>
-            </div>
-            <div>
-                <p>Upper</p>
-                <select class="form-select form-select-sm" type="number" id="filter-input-upper" name="filter-input-upper">
-                    <option value="-1">No Filter</option>
-                    <option value="1">1 HZ</option>
-                    <option value="4">4 HZ</option>
-                    <option value="8">8 HZ</option>
-                    <option value="13">13 HZ</option>
-                    <option value="20">20 HZ</option>
-                    <option selected value="35">35 HZ</option>
-                    <option value="50">50 HZ</option>
-                    <option value="100">100 HZ</option>
-                    <option value="250">250 HZ</option>
-                </select>
-            </div>
-            <div>
-                <p>Amplitude</p>
-                <select class="form-select form-select-sm" type="number" id="amplitude-input" name="filter-input" disabled>
-                    <option id="amplitude-display" value="">200/-200</option>
-                </select>
-            </div>
-        </div>
-        <!-- Tools (annotation, and time duration -->
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon">
+                <a>Menu</a>
+            </span>
+        </button>
 
+
+<!--        Pop-up-->
+
+        <h2>Modal Example</h2>
+
+            <!-- Tools (annotation, and time duration -->
+        <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
                 <!--Toggle display of buttons when annotations are uploaded is TODO -->
-                <span>
-                    <br>
-                    <button class="btn btn-outline-light" onclick="listAnnotations();" type="button" id = "ann_pop" aria-expanded="false">Annotations</button>
-                </span>
+                <button class="btn btn-sm btn-outline-secondary" onclick="listAnnotations();" type="button" id="ann_pop" aria-expanded="false">Annotations</button>
+                <!-- Select time duration-->
+                <div class="dropdown">
+<!-- Trigger/Open The Modal -->
+<button class="btn btn-sm btn-outline-secondary" id="myBtn">Open Modal</button>
 
-            </div>
-        </div>
-    </header>
+<!-- The Modal -->
+<div id="myModal" class="modal" style="display: none;">
+
+  <!-- Modal content -->
+<!--  <button class="btn btn-sm btn-outline-secondary">Annotations Tools</button>-->
+<!--  <div class="dropdown-content">-->
+  <div class="modal-content">
+    <span class="close">×</span>
+<!--                      <button class="btn btn-sm btn-outline-secondary" onclick="listAnnotations();" type="button" id = "modal_popup" aria-expanded="false">Annotations</button>-->
+<!--       <div class="dropdown-content">-->
+
+        <div>
+                    <h2 class="btn btn-sm btn-outline-secondary">Duration</h2>
+                    <select class="form-select form-select-sm" type="number" id="duration-input" name="duration">
+                        <option value="1">1 second</option>
+                        <option value="5">5 seconds</option>
+                        <option value="10">10 seconds</option>
+                        <option value="30">30 seconds</option>
+                        <option value="60">60 seconds</option>
+                    </select>
+
+      <h3 class="btn btn-sm btn-outline-secondary">Onset Column </h3>
+                    <select class="form-select form-select-sm" type="number" id="filter-input" name="filter-input">
+                        <option value="716">716 </option>
+                        <option value="744">744 </option>
+                        <option value="751">751 </option>
+                        <option value="790">790 </option>
+                    </select>
+
+      <h4 class="btn btn-sm btn-outline-secondary">Description</h4>
+                    <select class="form-select form-select-sm" type="number" id="annotation-input" name="annotation-input">
+                        <option value="1000">E1_E6_seizure1</option>
+                        <option value="500">E1_E6_seizure2</option>
+                        <option value="250">E1_E6_seizure3</option>
+                        <option value="100">E1_E6_seizure5</option>
+
+                    </select>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Data Starts At</button>
+<!--            <form method="POST" id="duration_form" action="/upload_duration" style=" display: none" enctype="multipart/form-data">-->
+                    <input type="number" id="duration" name="duration" min="1" max="60">
+                    <input onclick="openDurationSelect();" type="submit">
+<!--                </form>-->
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDurationSelect();">Event Electrodes</button>
+
+  <input type="text" id="fname" name="fname"><br><br>
+  <input onclick="createAnnotationElementFrom;" type="submit" value="Submit">
+                       </div>
+           </div>
+
+  </div>
+
+</div>
+
+
+<!--        &lt;!&ndash; Tools (annotation, and time duration &ndash;&gt;-->
+<!--        <div class="btn-toolbar mb-2 mb-md-0">-->
+<!--            <div class="btn-group me-2">-->
+<!--                &lt;!&ndash;Toggle display of buttons when annotations are uploaded is TODO &ndash;&gt;-->
+<!--                <button class="btn btn-sm btn-outline-secondary" onclick="listAnnotations();" type="button" id = "ann_pop" aria-expanded="false">Annotations</button>-->
+<!--                &lt;!&ndash; Select time duration&ndash;&gt;-->
+<!--                <div class="dropdown">-->
+<!--  <button class="btn btn-sm btn-outline-secondary">Annotations Tools</button>-->
+<!--  <div class="dropdown-content">-->
+<!--  </div>-->
+
+<!--        <div>-->
+<!--                    <h2 class="btn btn-sm btn-outline-secondary">Duration</h2>-->
+<!--                    <select class="form-select form-select-sm" type="number" id="duration-input" name="duration">-->
+<!--                        <option value="1">1 second</option>-->
+<!--                        <option value="5">5 seconds</option>-->
+<!--                        <option value="10">10 seconds</option>-->
+<!--                        <option value="30">30 seconds</option>-->
+<!--                        <option value="60">60 seconds</option>-->
+<!--                    </select>-->
+<!--              <h3 class="btn btn-sm btn-outline-secondary">Onset</h3>-->
+<!--                    <select class="form-select form-select-sm" type="number" id="filter-input" name="filter-input">-->
+<!--                        <option value="716">716 </option>-->
+<!--                        <option value="744">744 </option>-->
+<!--                        <option value="751">751 </option>-->
+<!--                        <option value="790">790 </option>-->
+
+<!--                    </select>-->
+
+<!--             <h4 class="btn btn-sm btn-outline-secondary">Import Annotation</h4>-->
+<!--                    <select class="form-select form-select-sm" type="number" id="annotation-input" name="annotation-input">-->
+<!--                        <option value="1000">E1_E6_seizure1</option>-->
+<!--                        <option value="500">E1_E6_seizure2</option>-->
+<!--                        <option value="250">E1_E6_seizure3</option>-->
+<!--                        <option value="100">E1_E6_seizure5</option>-->
+
+<!--                    </select>-->
+<!--             <h5 class="btn btn-sm btn-outline-secondary">Check EDF</h5>-->
+<!--            <select class="form-select form-select-sm" type="number" id="edf-check" name="edf-check">-->
+<!--            </select>-->
+<!--             <h6 class="btn btn-sm btn-outline-secondary">Remove Duplicates in Annotations</h6>-->
+<!--            <select class="form-select form-select-sm" type="number" id="remove-duplicates" name="remove-duplicates">-->
+<!--            </select>-->
+
+
+<!--               </div>-->
+<!--&lt;!&ndash;  <a href="#">Link 1</a>&ndash;&gt;-->
+<!--&lt;!&ndash;  <a href="#">Link 2</a>&ndash;&gt;-->
+<!--&lt;!&ndash;  <a href="#">Link 3</a>&ndash;&gt;-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--                <div>-->
+<!--&lt;!&ndash;                    <h2 class="btn btn-sm btn-outline-secondary">Filter</h2>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <select class="form-select form-select-sm" type="number" id="filter-input" name="filter-input">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <option value="1000">1000 HZ</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <option value="500">500 HZ</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <option value="250">250 HZ</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <option value="100">100 HZ</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </select>&ndash;&gt;-->
+<!--                </div>-->
+<!--            </div>-->
+    </div></div></header>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 
+<!--    Script for the pop-up-->
+
+    <script>
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
 
     <!-- SIDE BAR-->
-    <div id="sidebarMenu">
+    <div id="sidebarMenu" style="width: 3%;">
     <nav>
-        <div id="sidebarItems">
+        <div id="sidebarItems" style="display: none;">
             <ul class="nav flex-column">
                 <li>
                     <div id="title"></div>
                 </li>
-                 <!-- SELECT EEG FILE -->
                 <li class="nav-item">
+                    <!-- SELECT EEG FILE -->
                     <button class="btn btn-sm btn-outline-secondary" onclick="openFileSelect();">Select File</button><br>
                     <form method="POST" id="file_form" action="/upload_eeg" style=" display: none" enctype="multipart/form-data">
                         <div class="form-group">
@@ -128,44 +447,40 @@
                                 <input type="file" class="custom-file-input" id="eeg_file" name="eeg_file" accept=".rec, .edf"><br> <!-- 'eeg_file' to be called in flask-->
                             </div>
                         </div>
-                        <input onclick="openFileSelect();" type="submit"/>
+                        <input onclick="openFileSelect();" type="submit">
                     </form>
                 </li>
                 <!-- SELECT ELECTRODE-->
                 <li>
                     <button class="btn btn-sm btn-outline-secondary" onclick="openElectrodeSelect();">Select Electrodes</button><br>
-                    <div id="electrode_form_container" style="display: none">
-                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleElectrode(true);">Select All</button><br>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleElectrode(false);">Deselect All</button><br>
-                        <form method = "POST" id="electrode_form" action="electrode_select"  enctype="multipart/form-data"></form>
-                    </div>
+                    <form method="POST" id="electrode_form" action="electrode_select" style="display: none" enctype="multipart/form-data"></form>
                 </li>
                 <br>
+                <li>
                 <!-- RUN MODEL -->
+                </li><li>
                     <button id="model-button" class="btn btn-sm btn-outline-secondary" onclick="startModel();">Initiate Model</button><br>
-                    <select class="form-select form-select-sm" type="number" id="reference-input" name="reference-input">
-                        <option id="ref-default" selected>None Selected</option>
-                    </select>
-                    <div class="progress" id="ml-progress">
-                      <div id="ml-progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                    </div>
+                    <select class="form-select form-select-sm" type="number" id="reference-input" name="reference-input" style="display: none;">
+                        <option id="ref-default" selected="">None Selected</option>
+                    <option value="0">REF1</option><option value="6">REF2</option><option value="12">REF3</option><option value="18">REF4</option><option value="0">REF1</option><option value="6">REF2</option><option value="12">REF3</option><option value="18">REF4</option><option value="0">REF1</option><option value="6">REF2</option><option value="12">REF3</option><option value="18">REF4</option></select>
+                    <a id="model-load"></a>
                 </li>
                 <!-- SELECT ANNOTATION FILE -->
                     <button type="button" onclick="openAnnotationSelect();" class="btn btn-sm btn-outline-secondary">Open Annotation</button>
 
-                    <form method = "POST" id = "ann_file_form" name = "annotation" enctype = 'multipart/form-data' action="/upload_ann" style="display: none">
+                    <form method="POST" id="ann_file_form" name="annotation" enctype="multipart/form-data" action="/upload_ann" style="display: none">
                         <div class="form-group-ann">
                             <div class="custom-file-ann">
                                 <input type="file" class="csv-file" id="ann_file" name="ann_file" accept=".csv"><br>
                             </div>
                         </div>
-                        <input type="submit"/>
+                        <input type="submit">
                     </form>
-                </li>
+
                 <br>
                 <li>
                     <!-- Close EEG FILE -->
-                    <form method = "POST" id="close_file" action="/delete" enctype="multipart/form-data">
+                    <form method="POST" id="close_file" action="/delete" enctype="multipart/form-data">
                         <input class="btn btn-sm btn-outline-secondary" type="submit" value="Close">
                         <br>
                     </form>
@@ -174,22 +489,22 @@
         </div>
     </nav>
     </div>
-    <div class="annotation-menu">
-        <nav id="annotation-items"></nav>
+    <div class="annotation-menu" style="left: 100%; width: 0%;">
+        <nav id="annotation-items" style="display: none;"></nav>
     </div>
     <!-- Graph area -->
     <div id="display-area">
-        <select id="color-select">
+        <select id="color-select" style="display: none;">
             <option value="#51A1E8">Blue</option>
             <option value="#000000">Black</option>
             <option value="#ff0000">Red</option>
             <option value="#ffff00">Yellow</option>
         </select>
-        <div id="time_series"></div>
-        <footer class="slidecontainer">
-            <p class="slidecontainer" id="sliderdisplay"></p>
-            <input class="slidecontainer" id="time-select" type="range" class="slider" id="myRange" step="1000">
+        <div id="time_series"><div class="chartjs-size-monitor" style="position: absolute; inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div><canvas id="main-chart" height="352" width="704" class="chartjs-render-monitor" style="z-index: -1; display: block; width: 704px; height: 352px;"></canvas></div>
+        <footer class="slidecontainer" style="">
+            <p class="slidecontainer" id="sliderdisplay" style=""></p>
+            <input class="slidecontainer" id="time-select" type="range" step="1000" min="0" max="19210000" value="0" style="">
         </footer>
     </div>
-</body>
-</html>
+
+</body></html>
