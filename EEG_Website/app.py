@@ -73,6 +73,7 @@ def upload_file():
         session['data_offset'] = data_mapping_default
         session['filter-lower'] = filter_lower_default
         session['filter-upper'] = filter_upper_default
+        session['montage'] = 'common' # default value
         # Redirect to electrode select
         return redirect(url_for('index', electrodes=True, filename=session['filename']))
     else:
@@ -118,9 +119,10 @@ def get_relevant_data():
         session['offset'] = new_offset
     else:
         session['offset'] = offset_default
-
-    return edf_manager.get_data(session, data_handler)
-
+    if session['montage'] == 'common':
+        return edf_manager.get_data(session, data_handler)
+    else:
+        return edf_manager.get_average(session, data_handler)
 
 # CHANGE AMPLITUDE
 @app.route('/amplitude', methods=['GET'])
@@ -190,6 +192,12 @@ def set_filter():
     session['filter-lower'] = request.args['lower']
     session['filter-upper'] = request.args['upper']
     return session['filter-upper']
+
+
+@app.route('/montage', methods=['POST'])
+def set_montage():
+    session['montage'] = request.args['montage']
+    return session['montage']
 
 
 if __name__ == '__main__':

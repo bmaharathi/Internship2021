@@ -101,6 +101,13 @@ function loadIndexPage() {
             displayData(0);
         })
     });
+    $('#montage').change(function (event) {
+        const val = $('#montage').val().toString();
+        const query = '/montage?montage=' + val;
+        $.post(query, function() {
+            displayData(0);
+        })
+    });
     $('#reference-input').hide();
     $('#ml-progress').hide();
     $('#electrode_form_container').hide();

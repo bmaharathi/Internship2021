@@ -90,6 +90,107 @@ def get_data(session, data_handler):
                    duration=session['duration'])
 
 
+def get_average(session, data_handler):
+    # Check if data is buffered by seeing if records asked for is within records loaded
+    data_is_buffered = (int(session['offset']) + int(session['duration']) * 1000) < data_handler.records_loaded
+    # Configure EDFReader for either style of data retrieval
+    if not data_is_buffered:
+        hdl = EDFreader(session['filename'])
+    else:
+        hdl = data_handler.edf_reader
+    # Declare the area of data the user is requesting
+    offset = int(session['offset'])
+    N = int(session['duration']) * 1000 + 1
+    numLabels = hdl.getNumSignals()
+    # Ask for all channels if user hasn't specificed which channels to look for
+    if session['selected_count'] == '0':
+        session['selected_id'] = list(map(str, range(0, hdl.getNumSignals())))
+        session['selected_count'] = hdl.getNumSignals()
+
+    # Reverse list of channels to appear in ascending order in chart later
+    channels = session['selected_id'].copy()
+    channels.reverse()
+    # Get filter bounds
+    frequency = hdl.getSampleFrequency(0)
+    max_bound = frequency / 2
+    filter_lower = float(session['filter-lower'])
+    filter_lower = filter_lower if filter_lower < max_bound else -1
+    filter_upper = float(session['filter-upper'])
+    filter_upper = filter_upper if filter_upper < max_bound else -1
+
+    data = []
+    # for each chosen channel
+    for count, s_id in enumerate(channels):
+        # get signal id
+        s_id = int(s_id)
+        # If data requested is buffered
+        if data_is_buffered:
+            # Utilize Data_Handler
+            # Load specified data (where rows are channels and columns are recorded
+            buf = data_handler.data[s_id, offset: offset + N]
+            # Get filtered data
+            filtered_buf = applyBandpassFilter(buf, filter_lower, filter_upper, 1000)
+
+            map_val = int(session['data_offset'])
+            # Add data to list, while also flipping data and mapping it to owns area for chart js
+            data.append(list(filtered_buf))
+        else:
+            # Utilize edf_reader
+            # set off set for sample
+            hdl.fseek(s_id, offset, EDFreader.EDFSEEK_SET)
+            # Get chart mping
+            map_val = int(session['data_offset'])
+            # read N samples for signal
+            buf = np.empty(N)
+            hdl.readSamples(s_id, buf, N)
+            # Get filtered data
+            filtered_buf = applyBandpassFilter(buf, filter_lower, filter_upper, 1000)
+
+            # Add data to list
+            data.append(list(filtered_buf))
+
+    start_time = hdl.getStartDateTime()
+    times = [str((start_time + timedelta(milliseconds=i)).time()) for i in range(offset, offset + N + 1)]
+    times[0] = times[0][:-7] if len(times[0]) > 8 else times[0]
+    times[-1] = times[-1][:-7] if len(times[-1]) > 8 else times[-1]
+
+    # Increment offset by samples read
+    new_offset = offset + N - 1
+    map_val = int(session['data_offset'])
+    amplitude = ''.join([str(session['amplitude']), '/-', str(session['amplitude'])])
+    print('freq:', frequency)
+
+    update_vals = {'sliderval': offset, 'duration': session['duration'], 'upper': filter_upper,
+                   'lower': filter_lower, 'frequency': frequency, 'amplitude': amplitude
+                   }
+    # calculate means
+    means = [None] * (
+            int(session['duration']) * 1000 + 1)
+    for i in range(int(session['duration']) * 1000 + 1):
+        sum = 0.0
+        for j in range(len(channels)):
+            sum += float(data[j][i])
+        mean = sum // int(len(channels))  # int for simplicity, change to float for accuracy
+        means[i] = mean
+
+    # data - data - refMeans
+    for i in range(int(session['duration']) * 1000 + 1):
+        for j in range(len(channels)):
+            data[j][i] = data[j][i] - means[i]
+
+    avg = []
+    for count, s_id in enumerate(channels):
+        # print(type(s_id))
+        avg.append([hdl.getSignalLabel(int(s_id)), list(map(lambda val: val * -1 + count * map_val, data[count]))])
+
+    return jsonify(time=times,
+                   data=avg,
+                   update=update_vals,
+                   offset=new_offset,
+                   dataOffset=map_val,
+                   duration=session['duration'])
+
+
 # PARSE AVAILABLE ELECTRODES AND RETURN DICTIONARY => INDEX : ELECTRODE NAME
 def get_electrodes(session):
     hdl = EDFreader(session['filename'])
