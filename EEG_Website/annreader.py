@@ -31,8 +31,8 @@ def map_annotations_to_time(annotations, start_time, chart_max, chart_min, selec
     for annotation in annotations:
         if len(selected) > 0 and annotation['Annotation'] not in selected:
             continue
-        onset = int(annotation['Onset'])
-        ann_duration = int(annotation['Duration'])
+        onset = int(float(annotation['Onset']))
+        ann_duration = int(float(annotation['Duration']))
 
         start = start_time + timedelta(seconds=onset)
         end = start + timedelta(seconds=ann_duration)
